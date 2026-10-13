@@ -5,7 +5,7 @@ Strict TDD: enabled (runner: vitest). Delivery strategy: ask-on-risk. Route: del
 
 ## Tasks
 - [x] T1 Foundations: Next.js scaffold, Tailwind, lint/prettier, vitest, drizzle config, env example
-- [ ] T2 Domain model: types, 9 types, wings, connections, triads, instincts (typed content)
+- [~] T2 Domain model (structure done: arrows, wings, centers, groups; editorial content pending T8): types, 9 types, wings, connections, triads, instincts (typed content)
 - [ ] T3 Scoring + adaptive engine (TDD, pure TS, versioned)
 - [ ] T4 Question bank (typed, versioned, reviewed-flag)
 - [ ] T5 DB schema + migrations + seeds + guest sessions + Better Auth
