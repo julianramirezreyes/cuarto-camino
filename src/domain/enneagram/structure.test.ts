@@ -35,3 +35,13 @@ describe("enneagram structure", () => {
     expect(HARMONIC_GROUPS.reactive).toEqual([4, 6, 8]);
   });
 });
+
+import { TYPE_NAMES } from "./structure";
+
+describe("type names", () => {
+  it("names all nine types in Spanish", () => {
+    expect(Object.keys(TYPE_NAMES)).toHaveLength(9);
+    expect(TYPE_NAMES[1]).toBe("Reformador");
+    expect(TYPE_NAMES[9]).toBe("Pacificador");
+  });
+});

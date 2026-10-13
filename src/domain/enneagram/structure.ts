@@ -38,3 +38,15 @@ export const HARMONIC_GROUPS = {
   positiveOutlook: [2, 7, 9],
   reactive: [4, 6, 8],
 } as const satisfies Record<string, readonly EnneagramType[]>;
+
+export const TYPE_NAMES: Record<EnneagramType, string> = {
+  1: "Reformador",
+  2: "Ayudador",
+  3: "Triunfador",
+  4: "Individualista",
+  5: "Investigador",
+  6: "Leal",
+  7: "Entusiasta",
+  8: "Desafiador",
+  9: "Pacificador",
+};
