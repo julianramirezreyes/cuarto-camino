@@ -1,0 +1,64 @@
+import type { Answer, Question } from "@/domain/assessment/types";
+import { wingsOf, type EnneagramType } from "@/domain/enneagram/structure";
+import { WING_MARGIN, round9 } from "./params";
+import { resolveAnswers, type ResolvedAnswer } from "./resolve";
+
+export interface WingResult {
+  main: EnneagramType;
+  /** [lower neighbour, upper neighbour]. */
+  wings: [EnneagramType, EnneagramType];
+  /** Weighted evidence toward [lower, upper]. */
+  scores: [number, number];
+  /** Relative shares of the two neighbours (0.5/0.5 without evidence). */
+  shares: [number, number];
+  /** |upper - lower| / (upper + lower), 0 without evidence. */
+  confidence: number;
+  /** Winning neighbour, or null when evidence is absent or too balanced. */
+  likelyWing: EnneagramType | null;
+  evidenceCount: number;
+}
+
+/**
+ * A wing question serves a main type when, across its options, it scores BOTH
+ * neighbours of that type. This keeps questions written for other mains from
+ * leaking into this main's wing estimate.
+ */
+export function questionServesMain(question: Question, main: EnneagramType): boolean {
+  if (question.module !== "wing") return false;
+  const [lo, hi] = wingsOf(main);
+  const scored = new Set<number>();
+  for (const o of question.options) {
+    for (const [t, s] of Object.entries(o.scores.types ?? {})) if ((s ?? 0) > 0) scored.add(Number(t));
+  }
+  return scored.has(lo) && scored.has(hi);
+}
+
+export function computeWing(
+  bank: readonly Question[],
+  answers: readonly Answer[],
+  main: EnneagramType,
+): WingResult {
+  return wingFromResolved(resolveAnswers(bank, answers), main);
+}
+
+export function wingFromResolved(resolved: readonly ResolvedAnswer[], main: EnneagramType): WingResult {
+  const [lo, hi] = wingsOf(main);
+  let sLo = 0;
+  let sHi = 0;
+  let evidenceCount = 0;
+  for (const { question, option } of resolved) {
+    if (!questionServesMain(question, main)) continue;
+    const a = option.scores.types?.[lo] ?? 0;
+    const b = option.scores.types?.[hi] ?? 0;
+    sLo += question.weight * a;
+    sHi += question.weight * b;
+    if (a > 0 || b > 0) evidenceCount += 1;
+  }
+  sLo = round9(sLo);
+  sHi = round9(sHi);
+  const total = sLo + sHi;
+  const confidence = total > 0 ? Math.abs(sHi - sLo) / total : 0;
+  const shares: [number, number] = total > 0 ? [sLo / total, sHi / total] : [0.5, 0.5];
+  const likelyWing = total > 0 && confidence >= WING_MARGIN ? (sHi > sLo ? hi : lo) : null;
+  return { main, wings: [lo, hi], scores: [sLo, sHi], shares, confidence, likelyWing, evidenceCount };
+}
