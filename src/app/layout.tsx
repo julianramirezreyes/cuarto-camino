@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Fraunces, Geist } from "next/font/google";
 import "./globals.css";
+import { PwaRegistrar } from "@/components/pwa/pwa-registrar";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const fraunces = Fraunces({ variable: "--font-fraunces", subsets: ["latin"] });
@@ -22,7 +23,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="es" className={`${geistSans.variable} ${fraunces.variable} h-full antialiased`}>
-      <body className="flex min-h-full flex-col">{children}</body>
+      <body className="flex min-h-full flex-col">
+        {children}
+        <PwaRegistrar />
+      </body>
     </html>
   );
 }
