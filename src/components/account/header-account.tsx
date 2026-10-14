@@ -15,13 +15,13 @@ export function HeaderAccountView({ state }: { state: HeaderAccountState }) {
           <Link href="/cuenta/entrar" className={linkClass}>
             Entrar
           </Link>
-          <Link href="/cuenta/registro" className={`${linkClass} border border-border`}>
+          <Link href="/cuenta/registro" className={`${linkClass} border border-control`}>
             Crear cuenta
           </Link>
         </>
       ) : null}
       {state.kind === "user" ? (
-        <Link href="/cuenta" className={`${linkClass} border border-border`}>
+        <Link href="/cuenta" className={`${linkClass} border border-control`}>
           {state.name.trim() || "Mi cuenta"}
         </Link>
       ) : null}

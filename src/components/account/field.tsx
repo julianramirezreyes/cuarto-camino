@@ -2,7 +2,7 @@ import type { ComponentProps, Ref } from "react";
 import { cn } from "@/lib/utils";
 
 export const inputClass =
-  "min-h-12 w-full rounded-xl border border-border bg-background px-4 text-base text-foreground placeholder:text-muted-foreground disabled:opacity-50 aria-[invalid=true]:border-accent";
+  "min-h-12 w-full rounded-xl border border-control bg-background px-4 text-base text-foreground placeholder:text-muted-foreground disabled:opacity-50 aria-[invalid=true]:border-accent";
 
 export interface TextFieldProps extends Omit<ComponentProps<"input">, "id"> {
   id: string;

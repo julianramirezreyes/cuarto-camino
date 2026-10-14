@@ -28,7 +28,7 @@ export default function Home() {
             <Link href="/introduccion" className={`${linkButton} bg-primary text-primary-foreground hover:opacity-90`}>
               Comenzar mi descubrimiento
             </Link>
-            <Link href="/biblioteca" className={`${linkButton} border border-border bg-card text-foreground hover:bg-muted`}>
+            <Link href="/biblioteca" className={`${linkButton} border border-control bg-card text-foreground hover:bg-muted`}>
               Explorar la biblioteca
             </Link>
           </div>

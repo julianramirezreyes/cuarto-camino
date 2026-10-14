@@ -8,6 +8,7 @@
   --muted: #1b2342;
   --muted-foreground: #a3a9c9;
   --border: #2b3563;
+  --control-border: #6470a8; /* >= 3:1 on background and card (WCAG 1.4.11) */
   --primary: #6d5efc;
   --primary-foreground: #ffffff;
   --accent: #d4af6a;
@@ -23,6 +24,7 @@
     --muted: #ebe9f6;
     --muted-foreground: #4a5072;
     --border: #c9cce3;
+    --control-border: #7a809c;
     --primary: #4a3fd1;
     --primary-foreground: #ffffff;
     --accent: #8a6a1f;
@@ -38,6 +40,7 @@
   --muted: #ebe9f6;
   --muted-foreground: #4a5072;
   --border: #c9cce3;
+  --control-border: #7a809c;
   --primary: #4a3fd1;
   --primary-foreground: #ffffff;
   --accent: #8a6a1f;
@@ -52,6 +55,7 @@
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-border: var(--border);
+  --color-control: var(--control-border);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
   --color-accent: var(--accent);

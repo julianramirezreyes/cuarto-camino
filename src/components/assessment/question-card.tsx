@@ -92,7 +92,7 @@ export function QuestionCard({ question, onSelect, pendingOptionId = null, disab
                   isScale && "sm:flex-col sm:justify-center sm:text-center",
                   selected
                     ? "border-primary bg-primary/15"
-                    : "border-border bg-card hover:border-violet hover:bg-muted",
+                    : "border-control bg-card hover:border-violet hover:bg-muted",
                   disabled && !selected && "opacity-60",
                 )}
               >

@@ -12,7 +12,7 @@ export function CreateAccountCtaView({ signedIn }: { signedIn: boolean | "loadin
       </p>
       <Link
         href="/cuenta/registro?next=/resultado"
-        className="mt-3 inline-flex min-h-12 items-center justify-center rounded-full border border-border px-6 text-base font-medium hover:bg-muted"
+        className="mt-3 inline-flex min-h-12 items-center justify-center rounded-full border border-control px-6 text-base font-medium hover:bg-muted"
       >
         Crear cuenta para conservar tu resultado
       </Link>
