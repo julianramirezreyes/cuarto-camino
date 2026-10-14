@@ -72,7 +72,8 @@ export const assessmentApi = {
     post("/api/assessments", { consent: true, policyVersion }) as Promise<StartResponse>,
   answer: (id: string, questionId: string, optionId: string) =>
     post(`/api/assessments/${id}/answers`, { questionId, optionId }) as Promise<AnswerResponse>,
-  back: (id: string) => post(`/api/assessments/${id}/back`) as Promise<BackResponse>,
+  back: (id: string, questionId: string) =>
+    post(`/api/assessments/${id}/back`, { questionId }) as Promise<BackResponse>,
   pause: (id: string) => post(`/api/assessments/${id}/pause`) as Promise<{ status: "paused" }>,
   remove: (id: string) => request<void>(`/api/assessments/${id}`, { method: "DELETE" }),
 };

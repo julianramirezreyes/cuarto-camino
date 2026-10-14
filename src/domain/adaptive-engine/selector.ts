@@ -112,10 +112,10 @@ function pickFunctioning(state: EngineState, pool: Question[]): NextStep {
  */
 export function planNext(bank: readonly Question[], answers: readonly Answer[], config: EngineConfig): NextStep | null {
   const state = analyze(bank, answers, config);
-  for (const module of MODULE_ORDER) {
-    if (moduleDecision(state, module).stop) continue;
-    const pool = eligibleQuestions(state, module);
-    switch (module) {
+  for (const currentModule of MODULE_ORDER) {
+    if (moduleDecision(state, currentModule).stop) continue;
+    const pool = eligibleQuestions(state, currentModule);
+    switch (currentModule) {
       case "type":
         return pickType(state, pool);
       case "wing":

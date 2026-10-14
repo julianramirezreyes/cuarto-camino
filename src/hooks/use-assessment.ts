@@ -198,11 +198,11 @@ export function useAssessment() {
   );
 
   const back = useCallback(() => {
-    const { status, assessmentId } = stateRef.current;
-    if (status !== "question" || !assessmentId) return;
+    const { status, assessmentId, question } = stateRef.current;
+    if (status !== "question" || !assessmentId || !question) return;
     dispatch({ type: "BACK_START" });
     void attempt(async () => {
-      const res = await assessmentApi.back(assessmentId);
+      const res = await assessmentApi.back(assessmentId, question.id);
       dispatch({ type: "BACKED", ...res });
     });
   }, [attempt]);
