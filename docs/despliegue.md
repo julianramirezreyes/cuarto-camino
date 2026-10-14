@@ -59,9 +59,13 @@ Vercel que permite esta frecuencia, y revisa **Settings → Cron Jobs** tras el 
 
 La app es un instrumento **provisional y sin validar**. Para un piloto:
 
-- Completa los datos del responsable del tratamiento en el aviso de consentimiento (hoy dice que «se completarán antes del
-  lanzamiento») y publica una política de privacidad, conforme a la Ley 1581 de 2012.
-- Di claramente a los testers que es una versión de prueba y que su resultado es una pista, no un diagnóstico.
+- Completa los datos legales en **un solo archivo: `src/config/legal.ts`** (nombre o razón social del responsable, correo de
+  contacto y URL de la política de privacidad, conforme a la Ley 1581 de 2012). Mientras estén en `null`, el aviso de
+  consentimiento y el formulario de registro dicen explícitamente que están «pendientes de completar». Al completarlos, **cambia
+  `policyVersion`**: se guarda con cada consentimiento y deja trazable qué texto aceptó cada persona. Haz revisar el texto final
+  por alguien con formación legal.
+- La pantalla de consentimiento ya muestra un aviso de **versión de prueba** (`isPilot: true` en `src/config/legal.ts`; ponlo en
+  `false` solo tras la revisión de contenido y el piloto). Di además a los testers que su resultado es una pista, no un diagnóstico.
 - El contenido editorial está en **borrador**: no lo presentes como material revisado.
 - Plan de validación del cuestionario: `docs/validacion-psicometrica.md`.
 

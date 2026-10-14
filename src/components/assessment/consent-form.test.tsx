@@ -37,6 +37,18 @@ describe("ConsentForm", () => {
     expect(text).toContain(POLICY_VERSION);
   });
 
+  it("tells the user this is a test version with draft content (pilot banner)", () => {
+    render(<ConsentForm onAccept={() => {}} />);
+    const banner = screen.getByRole("note", { name: /versión de prueba/i });
+    expect(banner).toHaveTextContent(/borrador/i);
+    expect(banner).toHaveTextContent(/no ha sido validad/i);
+  });
+
+  it("shows the pending-controller note while the legal data is not configured", () => {
+    render(<ConsentForm onAccept={() => {}} />);
+    expect(document.body.textContent).toMatch(/pendientes de completar/i);
+  });
+
   it("disables the form while busy", () => {
     render(<ConsentForm onAccept={() => {}} busy />);
     expect(screen.getByRole("checkbox")).toBeDisabled();

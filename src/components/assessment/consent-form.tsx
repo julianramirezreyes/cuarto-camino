@@ -2,7 +2,8 @@
 
 import { useId, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { POLICY_VERSION } from "@/hooks/assessment-types";
+import { LEGAL } from "@/config/legal";
+import { LegalNotice } from "@/components/legal/legal-notice";
 
 export function ConsentForm({ onAccept, busy = false }: { onAccept: () => void; busy?: boolean }) {
   const [accepted, setAccepted] = useState(false);
@@ -17,6 +18,19 @@ export function ConsentForm({ onAccept, busy = false }: { onAccept: () => void; 
       }}
     >
       <h1 className="font-serif text-3xl md:text-4xl">Antes de empezar</h1>
+      {LEGAL.isPilot ? (
+        <div
+          role="note"
+          aria-label="Versión de prueba"
+          className="rounded-2xl border border-accent bg-card p-4 text-sm text-muted-foreground"
+        >
+          <p className="font-medium text-foreground">Versión de prueba</p>
+          <p>
+            Estás probando una versión en desarrollo: el contenido es un borrador pendiente de revisión por especialistas y
+            el cuestionario no ha sido validado. Tu resultado es una pista para explorar, no una medición confiable.
+          </p>
+        </div>
+      ) : null}
       <div className="space-y-4 rounded-2xl border border-border bg-card p-5 text-muted-foreground">
         <section>
           <h2 className="font-medium text-foreground">Qué guardamos</h2>
@@ -40,10 +54,7 @@ export function ConsentForm({ onAccept, busy = false }: { onAccept: () => void; 
             clínica.
           </p>
         </section>
-        <p className="text-sm">
-          Tratamiento de datos personales conforme a la Ley 1581 de 2012 (Colombia). Los datos del responsable del
-          tratamiento se completarán antes del lanzamiento. Versión de la política: {POLICY_VERSION}.
-        </p>
+        <LegalNotice />
       </div>
       <div className="flex items-start gap-3">
         <input

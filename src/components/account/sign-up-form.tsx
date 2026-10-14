@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useId, useRef, useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
-import { POLICY_VERSION } from "@/hooks/assessment-types";
+import { LegalNotice } from "@/components/legal/legal-notice";
 import { TextField, type SubmitResult } from "./field";
 import { MIN_PASSWORD_LENGTH, validateEmail, validateName, validateNewPassword } from "./validation";
 
@@ -155,10 +155,7 @@ export function SignUpForm({
               bien escrito.
             </p>
           )}
-          <p>
-            Tratamiento de datos personales conforme a la Ley 1581 de 2012 (Colombia). Versión de la política:{" "}
-            {POLICY_VERSION}.
-          </p>
+          <LegalNotice />
         </div>
       </details>
       {formError ? (

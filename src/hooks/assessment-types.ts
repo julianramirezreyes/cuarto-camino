@@ -1,5 +1,7 @@
-/** Version of the privacy notice the user accepts. Bump it whenever the text changes. */
-export const POLICY_VERSION = "2026-10-draft";
+import { LEGAL } from "@/config/legal";
+
+/** Version of the consent notice saved with every consent. Edit it in src/config/legal.ts. */
+export const POLICY_VERSION = LEGAL.policyVersion;
 
 export type QuestionKind =
   | "scenario-choice"
