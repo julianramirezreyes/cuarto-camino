@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useAssessment } from "@/hooks/use-assessment";
+import { useRedirectOnDone } from "@/hooks/use-redirect-on-done";
 import { ConsentForm } from "./consent-form";
 import { PauseDialog } from "./pause-dialog";
 import { ProgressHeader } from "./progress-header";
@@ -18,9 +19,8 @@ export function AssessmentFlow() {
   const [pauseOpen, setPauseOpen] = useState(false);
   const { status, question, progress } = state;
 
-  useEffect(() => {
-    if (status === "done") router.push("/resultado");
-  }, [status, router]);
+  const goToResult = useCallback(() => router.push("/resultado"), [router]);
+  useRedirectOnDone(status, goToResult);
 
   const questionVisible = (status === "question" || status === "submitting") && question && progress;
 
