@@ -55,3 +55,50 @@ test.describe("diagrama del eneagrama (portada)", () => {
     await expect(page.getByText(/^Tipo 9: /)).toBeVisible();
   });
 });
+
+const CENTRO: Record<number, string> = {
+  1: "instintivo", 2: "emocional", 3: "emocional", 4: "emocional", 5: "mental", 6: "mental", 7: "mental", 8: "instintivo", 9: "instintivo",
+};
+
+test.describe("grupos en el diagrama", () => {
+  test("la portada muestra los tres centros con leyenda y cada punto nombra el suyo (el color no es la única pista)", async ({ page }) => {
+    await page.goto("/");
+    const leyenda = page.getByRole("list", { name: "Leyenda de grupos" });
+    await expect(leyenda).toContainText("Instintivo · 8, 9, 1");
+    await expect(leyenda).toContainText("Emocional · 2, 3, 4");
+    await expect(leyenda).toContainText("Mental · 5, 6, 7");
+    await expect(page.locator("[data-group-mark]")).toHaveCount(9);
+    for (const n of TIPOS) {
+      await expect(page.getByRole("button", { name: new RegExp(`^Eneatipo ${n}, centro ${CENTRO[n]}`) })).toBeVisible();
+    }
+  });
+
+  test("seleccionar un tipo resalta su grupo y atenúa los demás", async ({ page }) => {
+    await page.goto("/");
+    await nodo(page, 4).click();
+    await expect(page.locator('[data-group-mark="3"]')).toHaveAttribute("data-emphasis", "on");
+    await expect(page.locator('[data-group-mark="2"]')).toHaveAttribute("data-emphasis", "on");
+    await expect(page.locator('[data-group-mark="8"]')).toHaveAttribute("data-emphasis", "off");
+  });
+
+  test("en la biblioteca se puede cambiar entre centros, estilos, armónicos y sin grupos", async ({ page }) => {
+    await page.goto("/biblioteca");
+    const leyenda = page.getByRole("list", { name: "Leyenda de grupos" });
+    await expect(leyenda).toContainText("Instintivo");
+
+    await page.getByRole("button", { name: "Estilos" }).click();
+    await expect(leyenda).toContainText("Asertivo · 3, 7, 8");
+    await expect(page.getByRole("button", { name: /^Eneatipo 7, estilo asertivo/ })).toBeVisible();
+
+    await page.getByRole("button", { name: "Armónicos" }).click();
+    await expect(leyenda).toContainText("Perspectiva positiva · 2, 7, 9");
+    await expect(page.getByRole("button", { name: /^Eneatipo 4, grupo reactivo/ })).toBeVisible();
+
+    await page.getByRole("button", { name: "Sin grupos" }).click();
+    await expect(leyenda).toHaveCount(0);
+    await expect(page.locator("[data-group-mark]")).toHaveCount(0);
+    // Con los grupos ocultos todos los puntos siguen siendo seleccionables.
+    await nodo(page, 5).click();
+    await expect(nodo(page, 5)).toHaveAttribute("aria-pressed", "true");
+  });
+});

@@ -45,3 +45,27 @@ describe("type names", () => {
     expect(TYPE_NAMES[9]).toBe("Pacificador");
   });
 });
+
+import { GROUP_SYSTEMS, groupKeyOf } from "./structure";
+
+describe("group systems", () => {
+  it("exposes the three triad systems", () => {
+    expect(Object.keys(GROUP_SYSTEMS)).toEqual(["centers", "hornevian", "harmonic"]);
+  });
+
+  it("finds the group of every type in every system, and the group contains that type", () => {
+    for (const system of Object.keys(GROUP_SYSTEMS) as (keyof typeof GROUP_SYSTEMS)[]) {
+      for (const type of ENNEAGRAM_TYPES) {
+        const key = groupKeyOf(system, type);
+        expect((GROUP_SYSTEMS[system] as Record<string, readonly number[]>)[key]).toContain(type);
+      }
+    }
+  });
+
+  it("matches the traditional memberships", () => {
+    expect(groupKeyOf("centers", 4)).toBe("emotional");
+    expect(groupKeyOf("centers", 9)).toBe("instinctive");
+    expect(groupKeyOf("hornevian", 7)).toBe("assertive");
+    expect(groupKeyOf("harmonic", 6)).toBe("reactive");
+  });
+});

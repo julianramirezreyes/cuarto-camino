@@ -11,6 +11,8 @@ import {
   type EnneagramType,
 } from "@/domain/enneagram/structure";
 import { EnneagramDiagram, type ArrowMode } from "@/components/enneagram/enneagram-diagram";
+import { GroupSwitcher } from "@/components/enneagram/group-switcher";
+import type { GroupMode } from "@/components/enneagram/groups";
 import { SectionShell, ToggleButton } from "../common";
 import type { TypeBundle } from "../types";
 
@@ -34,6 +36,7 @@ export function ConnectionsSection({
 }) {
   const [integration, setIntegration] = useState(true);
   const [stress, setStress] = useState(true);
+  const [groups, setGroups] = useState<GroupMode>("centers");
   const mode: ArrowMode = integration && stress ? "both" : integration ? "integration" : stress ? "stress" : "none";
   const t = bundle.type;
   const center = groupOf(CENTERS, t);
@@ -46,7 +49,7 @@ export function ConnectionsSection({
       intro="El símbolo muestra cómo se relacionan los nueve tipos. Toca un punto para explorar ese eneatipo."
     >
       <div className="grid items-center gap-6 md:grid-cols-2">
-        <EnneagramDiagram selected={t} onSelect={onSelectType} arrows={mode} className="mx-auto" />
+        <EnneagramDiagram selected={t} onSelect={onSelectType} arrows={mode} groups={groups} className="mx-auto" />
         <div className="space-y-4">
           <div className="flex flex-wrap gap-2" role="group" aria-label="Flechas del diagrama">
             <ToggleButton pressed={integration} onClick={() => setIntegration((v) => !v)}>
@@ -56,6 +59,7 @@ export function ConnectionsSection({
               Mostrar estrés
             </ToggleButton>
           </div>
+          <GroupSwitcher value={groups} onChange={setGroups} />
           <ul className="space-y-2">
             <li>
               Dirección de integración (línea continua): tipo {INTEGRATION[t]} · {TYPE_NAMES[INTEGRATION[t]]}.

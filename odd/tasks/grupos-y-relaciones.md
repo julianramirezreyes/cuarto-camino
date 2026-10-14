@@ -7,7 +7,7 @@ Strict TDD: enabled (vitest). Delivery: direct commits to main (user's standing 
 delegated read-only research, delegated writers for content.
 
 ## Tasks
-- [ ] T1 Groups on the diagram: centers as arcs (contiguous), Hornevian/harmonic as markers, legend, switcher, a11y labels, tokens
+- [x] T1 Groups on the diagram: centers as arcs (contiguous), Hornevian/harmonic as markers, legend, switcher, a11y labels, tokens
 - [ ] T2 Research: relationship frameworks in the enneagram tradition + empirical evidence (read-only agent)
 - [ ] T3 Domain: pure pair-dynamics derived from structure (shared/different groups, arrows, wings) + tests
 - [ ] T4 Content: per-type relationship profiles (friendship, work/society, family, partner), draft, sourced

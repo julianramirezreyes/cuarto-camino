@@ -35,4 +35,13 @@ describe("TypePicker", () => {
     expect(toggle).toHaveAttribute("aria-pressed", "true");
     expect(screen.getByRole("button", { name: /^Eneatipo 7\b.*integración/ })).toBeInTheDocument();
   });
+
+  it("lets the reader choose which grouping is drawn around the symbol", async () => {
+    render(<TypePicker />);
+    expect(screen.getByRole("list", { name: /leyenda de grupos/i })).toHaveTextContent(/Instintivo/);
+    await userEvent.click(screen.getByRole("button", { name: "Estilos" }));
+    expect(screen.getByRole("list", { name: /leyenda de grupos/i })).toHaveTextContent(/Retraído/);
+    await userEvent.click(screen.getByRole("button", { name: "Sin grupos" }));
+    expect(screen.queryByRole("list", { name: /leyenda de grupos/i })).not.toBeInTheDocument();
+  });
 });

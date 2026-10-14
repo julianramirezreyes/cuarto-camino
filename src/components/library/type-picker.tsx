@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useState } from "react";
 import { EnneagramDiagram } from "@/components/enneagram/enneagram-diagram";
+import { GroupSwitcher } from "@/components/enneagram/group-switcher";
+import type { GroupMode } from "@/components/enneagram/groups";
 import {
   CENTERS,
   ENNEAGRAM_TYPES,
@@ -26,11 +28,13 @@ interface Props {
 export function TypePicker({ summaries }: Props) {
   const [selected, setSelected] = useState<EnneagramType | null>(null);
   const [showArrows, setShowArrows] = useState(false);
+  const [groups, setGroups] = useState<GroupMode>("centers");
 
   return (
     <div className="grid gap-8 md:grid-cols-2 md:items-start">
       <div className="space-y-3">
-        <EnneagramDiagram selected={selected} onSelect={setSelected} arrows={showArrows ? "both" : "none"} className="mx-auto" />
+        <EnneagramDiagram selected={selected} onSelect={setSelected} arrows={showArrows ? "both" : "none"} groups={groups} className="mx-auto" />
+        <GroupSwitcher value={groups} onChange={setGroups} className="mx-auto max-w-md" />
         <button
           type="button"
           aria-pressed={showArrows}

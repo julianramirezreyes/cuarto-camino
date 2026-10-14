@@ -9,6 +9,10 @@
   --muted-foreground: #a3a9c9;
   --border: #2b3563;
   --control-border: #6470a8; /* >= 3:1 on background and card (WCAG 1.4.11) */
+  /* Group markers on the enneagram diagram (decorative, never the only cue). >= 3:1 on background and card. */
+  --group-1: #4fb3a9;
+  --group-2: #e08aa0;
+  --group-3: #6fa8e8;
   --primary: #6d5efc;
   --primary-foreground: #ffffff;
   --accent: #d4af6a;
@@ -25,6 +29,9 @@
     --muted-foreground: #4a5072;
     --border: #c9cce3;
     --control-border: #7a809c;
+    --group-1: #1f7a72;
+    --group-2: #b0415f;
+    --group-3: #2b63b5;
     --primary: #4a3fd1;
     --primary-foreground: #ffffff;
     --accent: #8a6a1f;
@@ -41,6 +48,9 @@
   --muted-foreground: #4a5072;
   --border: #c9cce3;
   --control-border: #7a809c;
+  --group-1: #1f7a72;
+  --group-2: #b0415f;
+  --group-3: #2b63b5;
   --primary: #4a3fd1;
   --primary-foreground: #ffffff;
   --accent: #8a6a1f;
@@ -56,6 +66,9 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-border: var(--border);
   --color-control: var(--control-border);
+  --color-group-1: var(--group-1);
+  --color-group-2: var(--group-2);
+  --color-group-3: var(--group-3);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
   --color-accent: var(--accent);

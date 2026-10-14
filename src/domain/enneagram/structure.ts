@@ -50,3 +50,20 @@ export const TYPE_NAMES: Record<EnneagramType, string> = {
   8: "Desafiador",
   9: "Pacificador",
 };
+
+export type GroupSystem = "centers" | "hornevian" | "harmonic";
+
+/** The three classic groupings of the nine types, each splitting them into three groups of three. */
+export const GROUP_SYSTEMS = {
+  centers: CENTERS,
+  hornevian: HORNEVIAN_GROUPS,
+  harmonic: HARMONIC_GROUPS,
+} as const;
+
+/** Key of the group a type belongs to in the given system (e.g. ("centers", 4) -> "emotional"). */
+export function groupKeyOf(system: GroupSystem, type: EnneagramType): string {
+  const groups = GROUP_SYSTEMS[system] as Record<string, readonly EnneagramType[]>;
+  const key = Object.keys(groups).find((k) => groups[k].includes(type));
+  if (!key) throw new Error(`type ${type} is not in system ${system}`);
+  return key;
+}

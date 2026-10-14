@@ -169,13 +169,25 @@ describe("ConnectionsSection", () => {
     expect(integ).toHaveAttribute("aria-pressed", "true");
     await userEvent.click(integ);
     expect(integ).toHaveAttribute("aria-pressed", "false");
-    expect(screen.getByRole("button", { name: "Eneatipo 1" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /^Eneatipo 1\b/ })).toBeInTheDocument();
     await userEvent.click(stress);
     expect(stress).toHaveAttribute("aria-pressed", "false");
     expect(screen.getByText(/varían según la escuela/i)).toBeInTheDocument();
-    expect(screen.getByText(/emocional/i)).toBeInTheDocument();
-    expect(screen.getByText(/retraído|retraídos/i)).toBeInTheDocument();
-    expect(screen.getByText(/reactiv/i)).toBeInTheDocument();
+    expect(screen.getByText(/Centro emocional: tipos/i)).toBeInTheDocument();
+    expect(screen.getByText(/Estilo hornevian retraído/i)).toBeInTheDocument();
+    expect(screen.getByText(/Grupo armónico reactivo/i)).toBeInTheDocument();
+  });
+
+  it("lets the user switch the grouping drawn on the diagram (centers by default)", async () => {
+    render(<ConnectionsSection bundle={bundle} onSelectType={() => {}} />);
+    const legend = () => screen.queryByRole("list", { name: /leyenda de grupos/i });
+    expect(legend()).toHaveTextContent(/Instintivo/);
+    await userEvent.click(screen.getByRole("button", { name: "Estilos" }));
+    expect(legend()).toHaveTextContent(/Asertivo/);
+    await userEvent.click(screen.getByRole("button", { name: "Armónicos" }));
+    expect(legend()).toHaveTextContent(/Perspectiva positiva/);
+    await userEvent.click(screen.getByRole("button", { name: "Sin grupos" }));
+    expect(legend()).not.toBeInTheDocument();
   });
 
   it("selecting a diagram point calls onSelectType", async () => {
