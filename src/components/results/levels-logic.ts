@@ -11,6 +11,14 @@ export const BAND_LABEL: Record<FunctioningBand, string> = {
   maladaptive: "rígido o poco adaptativo",
 };
 
+/** Normalized entropy at or above this means the shares are nearly uniform: no usable signal. */
+export const NO_SIGNAL_UNCERTAINTY = 0.95;
+
+/** True when the functioning answers support suggesting a band at all. */
+export function hasFunctioningSignal(functioning: FunctioningResult): boolean {
+  return functioning.band !== null && functioning.uncertainty < NO_SIGNAL_UNCERTAINTY;
+}
+
 export function bandOfLevel(level: number): FunctioningBand {
   return level <= 3 ? "flexible" : level <= 6 ? "intermediate" : "maladaptive";
 }
@@ -22,7 +30,7 @@ export function bandOfLevel(level: number): FunctioningBand {
  */
 export function plausibleLevels(functioning: FunctioningResult): number[] {
   const { band, decided, shares } = functioning;
-  if (band === null) return [];
+  if (band === null || !hasFunctioningSignal(functioning)) return [];
   const mid = MIDDLE[band];
   if (decided) return [mid];
   const second = ORDER.filter((b) => b !== band).sort((a, b) => shares[b] - shares[a])[0];

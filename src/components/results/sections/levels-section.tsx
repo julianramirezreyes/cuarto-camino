@@ -4,7 +4,7 @@ import { useState } from "react";
 import type { FunctioningResult } from "@/domain/scoring/functioning";
 import { cn } from "@/lib/utils";
 import { BulletList, Card, SectionShell, pct } from "../common";
-import { BAND_LABEL, bandOfLevel, plausibleLevels } from "../levels-logic";
+import { BAND_LABEL, bandOfLevel, hasFunctioningSignal, plausibleLevels } from "../levels-logic";
 import type { TypeBundle } from "../types";
 
 const BAND_STYLE = {
@@ -27,7 +27,7 @@ export function LevelsSection({ bundle, functioning, title = "Tu estado actual" 
       title={title}
       intro="Un mismo tipo puede vivirse de maneras muy distintas según el momento. Los niveles describen ese rango; no son una nota ni un diagnóstico."
     >
-      {functioning?.band ? (
+      {functioning && functioning.band && hasFunctioningSignal(functioning) ? (
         <div className="space-y-1 rounded-xl border border-border bg-muted p-4">
           <p>
             Banda más compatible (últimas 4 semanas): <strong>{BAND_LABEL[functioning.band]}</strong>.

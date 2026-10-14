@@ -121,6 +121,16 @@ describe("LevelsSection", () => {
     expect(screen.getAllByText(/no es una medida clínica|sin validación clínica/i).length).toBeGreaterThan(0);
   });
 
+  it("with almost no signal (uncertainty >= 0.95) it suggests no band and no plausible level", () => {
+    render(<LevelsSection bundle={bundle} functioning={{ ...report.functioning, uncertainty: 0.99, decided: false }} />);
+    expect(screen.getByText(/no hay evidencia suficiente/i)).toBeInTheDocument();
+    expect(screen.queryByText(/Banda más compatible/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Niveles plausibles/)).not.toBeInTheDocument();
+    for (const b of within(screen.getByRole("group", { name: /nueve niveles/i })).getAllByRole("button")) {
+      expect(b).toHaveAttribute("aria-pressed", "false");
+    }
+  });
+
   it("with no functioning data (explorer) nothing is preselected", () => {
     render(<LevelsSection bundle={bundle} />);
     for (const b of within(screen.getByRole("group", { name: /nueve niveles/i })).getAllByRole("button")) {

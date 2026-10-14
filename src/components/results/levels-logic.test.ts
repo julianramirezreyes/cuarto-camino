@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { FunctioningResult } from "@/domain/scoring/functioning";
-import { bandOfLevel, plausibleLevels } from "./levels-logic";
+import { bandOfLevel, hasFunctioningSignal, plausibleLevels } from "./levels-logic";
 
 const f = (over: Partial<FunctioningResult>): FunctioningResult => ({
   raw: { flexible: 0, intermediate: 0, maladaptive: 0 },
@@ -35,5 +35,17 @@ describe("plausibleLevels", () => {
 describe("bandOfLevel", () => {
   it("groups 1-3, 4-6, 7-9", () => {
     expect([1, 3, 4, 6, 7, 9].map(bandOfLevel)).toEqual(["flexible", "flexible", "intermediate", "intermediate", "maladaptive", "maladaptive"]);
+  });
+});
+
+describe("hasFunctioningSignal", () => {
+  it("is true with a band and moderate uncertainty", () => expect(hasFunctioningSignal(f({ uncertainty: 0.5 }))).toBe(true));
+  it("is false without a band", () => expect(hasFunctioningSignal(f({ band: null }))).toBe(false));
+  it("is false when the shares carry almost no information (uncertainty >= 0.95)", () => {
+    expect(hasFunctioningSignal(f({ uncertainty: 0.95 }))).toBe(false);
+    expect(hasFunctioningSignal(f({ uncertainty: 0.99 }))).toBe(false);
+  });
+  it("suggests no plausible levels when there is no signal", () => {
+    expect(plausibleLevels(f({ uncertainty: 0.99 }))).toEqual([]);
   });
 });
