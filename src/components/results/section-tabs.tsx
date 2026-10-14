@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, type KeyboardEvent, type ReactNode } from "react";
+import { useEffect, useRef, type KeyboardEvent, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 export interface TabDef {
@@ -26,6 +26,11 @@ export function SectionTabs({
   renderPanel: (id: string) => ReactNode;
 }) {
   const refs = useRef<Record<string, HTMLButtonElement | null>>({});
+
+  // Keep the active tab visible in the horizontally scrollable bar (block: nearest => no page jump).
+  useEffect(() => {
+    refs.current[active]?.scrollIntoView({ block: "nearest", inline: "center" });
+  }, [active]);
 
   function go(index: number) {
     const target = tabs[(index + tabs.length) % tabs.length];
