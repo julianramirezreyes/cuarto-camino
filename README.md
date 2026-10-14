@@ -180,7 +180,8 @@ Nunca se suben al repositorio (`.env*` está ignorado). Ninguna llega al navegad
 
 - **Más de mil pruebas unitarias y de componentes** (dominio, motor, contenido, API, formularios, tema) con Vitest.
 - **Playwright** sobre la compilación de producción, en escritorio y móvil (Pixel 7): recorrido completo hasta el resultado,
-  retroceso y pausa, privacidad entre visitantes, responsive en seis anchos, PWA y **accesibilidad con axe** (sin violaciones
+  retroceso y pausa, **cuentas (registro, vinculación del resultado, salir/entrar y eliminar)**, privacidad entre visitantes,
+  responsive en seis anchos, PWA y **accesibilidad con axe** (sin violaciones
   WCAG A/AA). Guía en [`docs/pruebas-e2e.md`](docs/pruebas-e2e.md).
 - **Desarrollo guiado por pruebas:** primero la prueba que falla, luego el código.
 - Las pruebas sintéticas del motor **no** son validación psicométrica.

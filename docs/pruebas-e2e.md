@@ -44,6 +44,7 @@ JSON de axe adjuntos). Ambos están en `.gitignore`.
 | `07-responsive.spec.ts` | 360×740, 390×844, 430×932, 768×1024, 1024×768 y 1440×900 en `/`, `/introduccion`, `/evaluacion`, `/biblioteca`, `/biblioteca/tipos/4`: sin desbordamiento horizontal y botones ≥ 44 px de alto. |
 | `08-accesibilidad.spec.ts` | axe (WCAG 2.0/2.1/2.2 A y AA) en claro y oscuro sobre páginas públicas y de cuenta; pregunta, diálogo de pausa, resultado (varias pestañas) y diálogo de reinicio. **Falla con `serious` y `critical`**; el resto se adjunta como `axe-*.json`. |
 | `09-pwa.spec.ts` | Iconos del manifiesto (200, `image/png`), registro y control del service worker, `/api`, `/evaluacion` y `/resultado` fuera de la caché, y caída a `/offline` sin red. |
+| `10-cuentas.spec.ts` | Cuentas **sin correo configurado**: validación del registro campo a campo (no envía nada al servidor si falta un dato), mensaje genérico idéntico al entrar con datos incorrectos exista o no la cuenta, `/cuenta` sin sesión, y el recorrido completo invitado → crear cuenta desde el resultado → resultado vinculado (legible con la sesión, `404` para otro visitante) → axe en `/cuenta` → cerrar sesión → volver a entrar → eliminar cuenta con contraseña (el resultado desaparece y no se puede volver a entrar). La fixture `account` borra la cuenta al terminar aunque el test falle. |
 
 Las pruebas **no** afirman un tipo concreto de eneagrama: el cuestionario no está validado. Solo comprueban estructura
 y redacción honesta («provisional», «compatibilidad relativa», sin prometer «precisión» del test). La palabra
@@ -52,8 +53,12 @@ cabecera y en frases que atribuyan precisión al test.
 
 ## No cubre
 
-- **Cuentas, reclamación de evaluaciones y correos** (`/cuenta/**`, `POST /api/assessments/claim`, verificación de
-  correo): pendiente de una tarea aparte. Las páginas de entrar/registro solo se escanean con axe.
+- **Correo (verificación y recuperación de contraseña):** la suite corre contra la compilación de **producción**, donde el buzón de
+  desarrollo (`EMAIL_TRANSPORT=outbox`) se niega a arrancar, y no hay SMTP real. Esos flujos están cubiertos solo con pruebas
+  unitarias y con una verificación manual contra un servidor SMTP falso (ver `docs/correo.md`). Cuando exista un dominio y un
+  proveedor, habrá que añadir un spec contra un buzón de pruebas.
+- **Cuentas en producción real:** estas pruebas usan el servidor local (con la misma base de Neon). Contra https://cuartocamino.vercel.app
+  solo se ha hecho una verificación manual por HTTP.
 - **Navegadores**: solo Chrome (canal `chrome`). Firefox y Safari/WebKit no se prueban; iOS Safari tampoco. La
   emulación «mobile» es Chrome con perfil de Pixel 7, no un dispositivo real.
 - Rendimiento/Lighthouse, instalación real de la PWA, límite de tasa (se evita a propósito, ver abajo) y cookies

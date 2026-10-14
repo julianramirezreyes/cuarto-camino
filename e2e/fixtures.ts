@@ -8,7 +8,19 @@ function fakeIp() {
 
 export const visitorHeaders = () => ({ "x-forwarded-for": fakeIp() });
 
+/** Credenciales de una cuenta de prueba (correo `.invalid`, nunca entregable). */
+export interface TestAccount {
+  name: string;
+  email: string;
+  password: string;
+}
+
 interface Fixtures {
+  /**
+   * Credenciales únicas para una cuenta de prueba. Al terminar el test, aunque haya fallado a mitad,
+   * se intenta entrar con ellas y borrar la cuenta por la API (los datos cuelgan en cascada).
+   */
+  account: TestAccount;
   /** Crea un visitante nuevo (contexto aislado, cookie de invitado propia) y limpia sus evaluaciones al terminar. */
   newVisitor: () => Promise<BrowserContext>;
   /** Registra una evaluación creada por API para que se elimine al terminar el test. */
@@ -35,6 +47,30 @@ export const test = base.extend<Fixtures & { _cleanup: void }>({
     for (const context of created) {
       await deleteTracked(context, baseURL!);
       await context.close();
+    }
+  },
+
+  account: async ({ context, baseURL }, provide) => {
+    const id = Math.random().toString(36).slice(2, 10);
+    const account: TestAccount = {
+      name: "Cuenta E2E",
+      email: `e2e+${id}@example.invalid`,
+      password: `Frase-larga-${id}-de-prueba`,
+    };
+    await provide(account);
+    const origin = new URL(baseURL!).origin;
+    const headers = { Origin: origin, "content-type": "application/json" };
+    try {
+      const login = await context.request.post(`${origin}/api/auth/sign-in/email`, {
+        headers,
+        data: { email: account.email, password: account.password },
+      });
+      // 401 si el test ya borró la cuenta: no hay nada que limpiar.
+      if (login.ok()) {
+        await context.request.post(`${origin}/api/auth/delete-user`, { headers, data: { password: account.password } });
+      }
+    } catch {
+      /* limpieza de mejor esfuerzo */
     }
   },
 
