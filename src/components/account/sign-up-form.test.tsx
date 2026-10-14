@@ -101,4 +101,13 @@ describe("SignUpForm", () => {
     expect(text).toMatch(/eliminar tu cuenta/i);
     expect(text).toMatch(/sin verificar|no verificamos/i);
   });
+
+  it("tells the truth about verification and recovery depending on whether email is enabled", () => {
+    const { unmount } = render(<SignUpForm onSubmit={vi.fn()} />);
+    expect(document.body.textContent).toMatch(/no verificamos los correos ni podemos recuperar contraseñas/i);
+    unmount();
+    render(<SignUpForm onSubmit={vi.fn()} emailEnabled />);
+    expect(document.body.textContent).not.toMatch(/no verificamos/i);
+    expect(document.body.textContent).toMatch(/te enviaremos un correo para confirmar/i);
+  });
 });

@@ -7,7 +7,8 @@ Registro y acceso con correo y contraseña. Todo es opcional: la evaluación fun
 - Servidor: `src/lib/auth/auth.ts` (fábrica `createAuth`, singleton perezoso `getAuth`), ruta `src/app/api/auth/[...all]/route.ts`
   (`toNextJsHandler`, perezoso: `next build` no necesita variables de entorno).
 - Cliente: `src/lib/auth/auth-client.ts` (`createAuthClient`, mismo origen).
-- Páginas: `/cuenta/registro`, `/cuenta/entrar`, `/cuenta` (perfil: cerrar sesión y eliminar cuenta).
+- Páginas: `/cuenta/registro`, `/cuenta/entrar`, `/cuenta` (perfil: cerrar sesión y eliminar cuenta) y, con correo activo,
+  `/cuenta/verifica-tu-correo`, `/cuenta/recuperar` y `/cuenta/restablecer` (ver `docs/correo.md`).
 - Cabecera: `HeaderAccount` es una isla de cliente (`useSession`); las páginas estáticas (`/`, `/biblioteca`…) siguen estáticas.
 - `/resultado` muestra «Crear cuenta para conservar tu resultado» (`/cuenta/registro?next=/resultado`) solo sin sesión.
 
@@ -36,13 +37,25 @@ tiene su propio estado vacío con enlace a la evaluación).
 `consent_records`. `guest_sessions.claimed_by_user_id` es `ON DELETE SET NULL`: la fila de invitado (solo el hash del token) queda
 huérfana y la elimina la purga por caducidad. Verificado con Neon real (ver abajo). «Descargar mis datos» queda fuera de alcance.
 
+## Verificación de correo y recuperación de contraseña
+
+Activas **solo si hay transporte de correo** (`docs/correo.md`); sin SMTP todo funciona como antes. Con correo:
+
+- `requireEmailVerification` y envío al registrarse; tras confirmar, Better Auth inicia sesión (`autoSignInAfterVerification`).
+- Los enlaces caducan a la hora; el de restablecimiento se usa una vez y cierra todas las sesiones (`revokeSessionsOnPasswordReset`).
+- El registro no inicia sesión: va a `/cuenta/verifica-tu-correo` («Reenviar correo» con 60 s de espera). Entrar sin confirmar da
+  un mensaje específico y el botón de reenvío.
+- Las páginas siguen siendo prerenderizadas (parciales): si hay correo se decide por petición, dentro de `<Suspense>`.
+- **Reclamar el resultado de invitado:** como no hay sesión al registrarse, el reclamo ocurre al volver del enlace de confirmación
+  (ya con sesión) o en el primer acceso. Si el enlace se abre en **otro navegador o dispositivo**, no existe la cookie de invitado
+  y el resultado de invitado **no se puede reclamar** desde allí.
+
 ## Limitaciones conocidas (leer antes de lanzar)
 
-- **Correo sin verificar.** No hay proveedor de correo, así que `requireEmailVerification` está en `false`. Cualquiera puede
-  registrar un correo ajeno o con una errata; quien se equivoque al escribir el suyo deja una cuenta a la que otra persona
-  podría acceder (toma de cuenta por correo con errata). Habilitar la verificación cuando exista proveedor.
-- **Sin recuperación de contraseña**: necesita correo. Por eso no hay botón «Olvidé mi contraseña». Perder la contraseña es perder
-  la cuenta (se avisa en el formulario de registro).
+- **Sin SMTP configurado no hay verificación ni recuperación.** Cualquiera puede registrar un correo ajeno o con una errata, y
+  perder la contraseña es perder la cuenta (se avisa en el registro). Configurar SMTP antes de un lanzamiento público.
+- Cuentas anteriores a activar el correo quedan sin confirmar: deben usar «Reenviar correo» la primera vez.
+- No se probó entrega real con un proveedor; sí el flujo completo contra un servidor SMTP local (ver abajo).
 - El registro devuelve un mensaje genérico si el correo ya existe; el acceso devuelve el mismo error para correo inexistente y
   contraseña incorrecta (verificado: mismo estado y mensaje).
 - Límite de tasa por instancia (ver arriba). Sin captcha.
@@ -57,3 +70,14 @@ correcta 200; después resultado 404, sesión inválida y no se puede volver a e
 `e2e+`, 0 filas de la evaluación (`assessments`, `assessment_results`, `assessment_answers`), 0 `guest_sessions` con
 `claimed_by_user_id`. Quedan solo las filas del segundo invitado de la prueba (evaluación con borrado lógico, consentimiento,
 `guest_sessions`) y la fila huérfana del primero, que corresponden a la purga por caducidad.
+
+## Verificación del flujo de correo, 2026-10-13
+
+`next build` + `next start` contra Neon real, con un receptor SMTP local en el puerto 2525 (el transporte SMTP real de nodemailer; no
+es entrega a un buzón). Correo `e2e+…@example.invalid`: registro (200, sin sesión), correo de confirmación recibido, entrar sin
+confirmar 403 `EMAIL_NOT_VERIFIED`, registro duplicado con la misma respuesta genérica, enlace de confirmación (302 + sesión,
+`emailVerified: true`), token alterado redirige con `?error`, solicitud de restablecimiento idéntica para correo conocido y
+desconocido (sin correo para el desconocido), restablecimiento (200) con aviso por correo, contraseña antigua rechazada, nueva
+válida, sesión antigua revocada, reutilizar el token 400 `INVALID_TOKEN`, reenvío idéntico para desconocido y ya confirmado, y
+eliminación de la cuenta. Consulta de solo lectura posterior: 0 usuarios `e2e+`, 0 sesiones y 0 filas en `verification`.
+

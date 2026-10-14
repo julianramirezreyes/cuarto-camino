@@ -44,4 +44,6 @@ export function TextField({ id, label, hint, error, className, ref, ...props }: 
   );
 }
 
-export type SubmitResult = { ok: true } | { ok: false; message: string };
+/** `code` lets a form react to a specific, non-sensitive failure (e.g. unverified email, dead link). */
+export type SubmitFailureCode = "email-not-verified" | "invalid-token";
+export type SubmitResult = { ok: true } | { ok: false; message: string; code?: SubmitFailureCode };

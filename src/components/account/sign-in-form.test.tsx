@@ -47,9 +47,31 @@ describe("SignInForm", () => {
     resolve({ ok: true });
   });
 
-  it("does not offer a password reset (no email provider yet)", () => {
+  it("does not offer a password reset unless email is enabled", () => {
     render(<SignInForm onSubmit={vi.fn()} />);
     expect(document.body.textContent).not.toMatch(/olvid/i);
+  });
+
+  it("offers '¿Olvidaste tu contraseña?' when email is enabled", () => {
+    render(<SignInForm onSubmit={vi.fn()} showForgotPassword />);
+    expect(screen.getByRole("link", { name: /¿olvidaste tu contraseña\?/i })).toHaveAttribute("href", "/cuenta/recuperar");
+  });
+
+  it("shows a notice passed by the page", () => {
+    render(<SignInForm onSubmit={vi.fn()} notice="Contraseña cambiada." />);
+    expect(screen.getByRole("status")).toHaveTextContent("Contraseña cambiada.");
+  });
+
+  it("when the server says the email is not verified, shows a specific message and a resend action", async () => {
+    const onSubmit = vi.fn().mockResolvedValue({ ok: false, code: "email-not-verified", message: "Tienes que confirmar tu correo." });
+    const onResend = vi.fn().mockResolvedValue({ ok: true });
+    render(<SignInForm onSubmit={onSubmit} onResendVerification={onResend} />);
+    await userEvent.type(screen.getByLabelText(/correo/i), "a@example.com");
+    await userEvent.type(screen.getByLabelText(/contraseña/i), "whatever-pass");
+    await submit();
+    expect(await screen.findByRole("alert")).toHaveTextContent(/confirmar tu correo/i);
+    await userEvent.click(screen.getByRole("button", { name: /reenviar correo/i }));
+    expect(onResend).toHaveBeenCalledWith("a@example.com");
   });
 
   it("links to sign-up keeping next", () => {

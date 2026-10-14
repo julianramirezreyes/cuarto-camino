@@ -18,9 +18,12 @@ type Errors = Partial<Record<"name" | "email" | "password" | "consent", string>>
 export function SignUpForm({
   onSubmit,
   next,
+  emailEnabled = false,
 }: {
   onSubmit: (values: SignUpValues) => Promise<SubmitResult>;
   next?: string | null;
+  /** The server can send mail: we confirm the address and can recover the password. */
+  emailEnabled?: boolean;
 }) {
   const uid = useId();
   const [name, setName] = useState("");
@@ -141,10 +144,17 @@ export function SignUpForm({
             y tus respuestas, para que puedas volver a verlos en otro momento o dispositivo.
           </p>
           <p>Puedes eliminar tu cuenta y todos esos datos cuando quieras desde «Mi cuenta». No se puede deshacer.</p>
-          <p>
-            Aún no verificamos los correos ni podemos recuperar contraseñas: guarda la tuya y revisa que el correo esté
-            bien escrito.
-          </p>
+          {emailEnabled ? (
+            <p>
+              Te enviaremos un correo para confirmar tu dirección antes de entrar. Si olvidas tu contraseña, podrás
+              restablecerla con ese mismo correo.
+            </p>
+          ) : (
+            <p>
+              Aún no verificamos los correos ni podemos recuperar contraseñas: guarda la tuya y revisa que el correo esté
+              bien escrito.
+            </p>
+          )}
           <p>
             Tratamiento de datos personales conforme a la Ley 1581 de 2012 (Colombia). Versión de la política:{" "}
             {POLICY_VERSION}.

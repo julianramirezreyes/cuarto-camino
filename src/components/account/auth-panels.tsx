@@ -6,59 +6,79 @@ import { authClient } from "@/lib/auth/auth-client";
 import { safeNextPath } from "@/lib/auth/next-param";
 import { AccountView } from "./account-view";
 import type { SubmitResult } from "./field";
+import { isRateLimited, NETWORK_ERROR, RATE_LIMITED, signInFailure, signUpFailure } from "./auth-errors";
+import { verificationCallbackURL } from "./auth-urls";
+import { savePendingVerification } from "./pending-verification";
 import { PostAuth } from "./post-auth";
+import { resendVerification } from "./recovery-panels";
 import { SignInForm } from "./sign-in-form";
 import { SignUpForm } from "./sign-up-form";
-
-type AuthError = { status?: number; code?: string } | null | undefined;
-
-const RATE_LIMITED = "Hiciste muchos intentos seguidos. Espera un minuto e inténtalo de nuevo.";
-const NETWORK = "No pudimos conectar. Revisa tu conexión e inténtalo de nuevo.";
 
 /** `?next=` read in the browser (keeps page shells static) and validated as a same-origin path. */
 function useNextParam(): string | null {
   return safeNextPath(useSearchParams().get("next"));
 }
 
-function isRateLimited(error: AuthError) {
-  return error?.status === 429;
-}
-
-export function SignUpPanel() {
+export function SignUpPanel({ emailEnabled = false }: { emailEnabled?: boolean }) {
+  const router = useRouter();
   const next = useNextParam();
   const [done, setDone] = useState(false);
   if (done) return <PostAuth intent="sign-up" next={next} />;
   return (
     <SignUpForm
       next={next}
+      emailEnabled={emailEnabled}
       onSubmit={async (values): Promise<SubmitResult> => {
         try {
-          const { error } = await authClient.signUp.email(values);
-          if (!error) {
-            setDone(true);
+          const { data, error } = await authClient.signUp.email({
+            ...values,
+            callbackURL: emailEnabled ? verificationCallbackURL(next) : undefined,
+          });
+          if (error) return signUpFailure(error);
+          // No session token means the server requires a confirmed email first (the claim of the guest
+          // result then happens on the first sign-in, or right after the confirmation link signs in).
+          if (data?.token === null) {
+            savePendingVerification({ email: values.email, next, sentAt: Date.now() });
+            router.replace("/cuenta/verifica-tu-correo");
             return { ok: true };
           }
-          if (isRateLimited(error)) return { ok: false, message: RATE_LIMITED };
-          // Deliberately generic: do not confirm whether an email is already registered.
-          return {
-            ok: false,
-            message: "No pudimos crear la cuenta con esos datos. Si ya tienes una, entra con tu correo y contraseña.",
-          };
+          setDone(true);
+          return { ok: true };
         } catch {
-          return { ok: false, message: NETWORK };
+          return { ok: false, message: NETWORK_ERROR };
         }
       }}
     />
   );
 }
 
-export function SignInPanel() {
+export function SignInPanel({ emailEnabled = false }: { emailEnabled?: boolean }) {
   const next = useNextParam();
+  const params = useSearchParams();
+  const { data: session } = authClient.useSession();
   const [done, setDone] = useState(false);
-  if (done) return <PostAuth intent="sign-in" next={next} />;
+
+  const justVerified = params.get("verificado") === "1";
+  const linkError = Boolean(params.get("error"));
+  // Back from the confirmation link: Better Auth already signed the user in; claim the guest result once.
+  if (done || (justVerified && !linkError && session)) {
+    return <PostAuth intent={justVerified && !done ? "sign-up" : "sign-in"} next={next} />;
+  }
+
+  const notice = linkError
+    ? "El enlace de confirmación no es válido o ya venció. Pide otro desde «Reenviar correo» al intentar entrar."
+    : justVerified
+      ? "Correo confirmado. Ya puedes entrar."
+      : params.get("restablecida") === "1"
+        ? "Tu contraseña cambió. Entra con la nueva."
+        : undefined;
+
   return (
     <SignInForm
       next={next}
+      notice={notice}
+      showForgotPassword={emailEnabled}
+      onResendVerification={emailEnabled ? resendVerification(next) : undefined}
       onSubmit={async (values): Promise<SubmitResult> => {
         try {
           const { error } = await authClient.signIn.email(values);
@@ -66,10 +86,9 @@ export function SignInPanel() {
             setDone(true);
             return { ok: true };
           }
-          if (isRateLimited(error)) return { ok: false, message: RATE_LIMITED };
-          return { ok: false, message: "Correo o contraseña incorrectos." };
+          return signInFailure(error);
         } catch {
-          return { ok: false, message: NETWORK };
+          return { ok: false, message: NETWORK_ERROR };
         }
       }}
     />
@@ -114,7 +133,7 @@ export function AccountPanel() {
           if (isRateLimited(error)) return { ok: false, message: RATE_LIMITED };
           return { ok: false, message: "No pudimos eliminar tu cuenta. Revisa tu contraseña e inténtalo de nuevo." };
         } catch {
-          return { ok: false, message: NETWORK };
+          return { ok: false, message: NETWORK_ERROR };
         }
       }}
     />

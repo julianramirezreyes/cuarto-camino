@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { SignUpPanel } from "@/components/account/auth-panels";
 import { SiteHeader } from "@/components/layout/site-header";
+import { WithEmail } from "../with-email";
 
 export const metadata: Metadata = { title: "Crear cuenta · Cuarto Camino", robots: { index: false, follow: false } };
 
@@ -16,7 +17,7 @@ export default function SignUpPage() {
           cuenta.
         </p>
         <Suspense fallback={null}>
-          <SignUpPanel />
+          <WithEmail>{(emailEnabled) => <SignUpPanel emailEnabled={emailEnabled} />}</WithEmail>
         </Suspense>
       </main>
     </>

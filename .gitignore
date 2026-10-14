@@ -45,3 +45,6 @@ next-env.d.ts
 .env.local
 /test-results
 /playwright-report
+
+# local dev email outbox
+/.tmp/
