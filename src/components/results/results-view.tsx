@@ -143,13 +143,23 @@ export function ResultsView({ assessmentId, report, meta, primary, alternatives,
       case "alternatives":
         return <AlternativesSection bundle={primary} report={report} alternatives={alternatives} onExplore={exploreType} />;
       case "wing":
-        return <WingSection key={bundle.type} bundle={bundle} wing={exploring ? undefined : report.wing} title={title("Tu ala")} />;
+        return <WingSection
+            key={bundle.type}
+            bundle={bundle}
+            wing={exploring ? undefined : report.wing}
+            title={title("Tu ala")}
+            explorerNote={
+              exploring
+                ? `Las preguntas de ala se hicieron para tu tipo (${primary.type}), no para el tipo ${bundle.type}, así que no hay una estimación de ala para este tipo. Compara las dos alas y elige la que te resuene.`
+                : undefined
+            }
+          />;
       case "instincts":
-        return <InstinctSection key={bundle.type} bundle={bundle} instinct={exploring ? undefined : report.instinct} title={title("Tus instintos")} />;
+        return <InstinctSection key={bundle.type} bundle={bundle} instinct={report.instinct} title={title("Tus instintos")} />;
       case "state":
         return (
           <Suspense fallback={<Loading />}>
-            <LevelsSection key={bundle.type} bundle={bundle} functioning={exploring ? undefined : report.functioning} title={title("Tu estado actual")} />
+            <LevelsSection key={bundle.type} bundle={bundle} functioning={report.functioning} title={title("Tu estado actual")} />
           </Suspense>
         );
       case "patterns":

@@ -103,6 +103,18 @@ describe("InstinctSection", () => {
     expect(screen.queryByText(/tu orden de instintos es/i)).not.toBeInTheDocument();
   });
 
+  it("shows how the answers split across the three instincts as bars, so a close call is visible", () => {
+    render(<InstinctSection bundle={bundle} instinct={report.instinct} />);
+    const meters = screen.getAllByRole("meter");
+    expect(meters).toHaveLength(3);
+    expect(screen.getByRole("meter", { name: /Social \(so\).*50%/ })).toBeInTheDocument();
+  });
+
+  it("explains that the suggestion comes only from the instinct questions and does not depend on the type being read", () => {
+    render(<InstinctSection bundle={bundle} instinct={report.instinct} />);
+    expect(screen.getByText(/no depende del tipo/i)).toBeInTheDocument();
+  });
+
   it("says so when no dominant instinct is clear", () => {
     render(<InstinctSection bundle={bundle} instinct={{ ...report.instinct, dominant: null }} />);
     expect(screen.getByText(/no hay un instinto dominante claro/i)).toBeInTheDocument();
@@ -131,14 +143,31 @@ describe("LevelsSection", () => {
     expect(screen.getAllByText(/no es una medida clínica|sin validación clínica/i).length).toBeGreaterThan(0);
   });
 
-  it("with almost no signal (uncertainty >= 0.95) it suggests no band and no plausible level", () => {
-    render(<LevelsSection bundle={bundle} functioning={{ ...report.functioning, uncertainty: 0.99, decided: false }} />);
-    expect(screen.getByText(/no hay evidencia suficiente/i)).toBeInTheDocument();
+  it("when the three bands are practically even it says no band stands out, but still shows how the answers split (never a blank panel)", () => {
+    render(
+      <LevelsSection
+        bundle={bundle}
+        functioning={{ ...report.functioning, margin: 0.02, decided: false, uncertainty: 0.99, shares: { flexible: 0.33, intermediate: 0.35, maladaptive: 0.32 } }}
+      />,
+    );
+    expect(screen.getByText(/ninguna banda destaca/i)).toBeInTheDocument();
     expect(screen.queryByText(/Banda más afín/)).not.toBeInTheDocument();
     expect(screen.queryByText(/Niveles plausibles/)).not.toBeInTheDocument();
+    expect(screen.getAllByRole("meter")).toHaveLength(3);
     for (const b of within(screen.getByRole("group", { name: /nueve niveles/i })).getAllByRole("button")) {
       expect(b).toHaveAttribute("aria-pressed", "false");
     }
+  });
+
+  it("an ordinary mixed pattern (high entropy, clear leader) still shows the band and its plausible levels", () => {
+    render(
+      <LevelsSection
+        bundle={bundle}
+        functioning={{ ...report.functioning, decided: true, margin: 0.18, uncertainty: 0.952, shares: { flexible: 0.3, intermediate: 0.48, maladaptive: 0.22 } }}
+      />,
+    );
+    expect(screen.getByText(/Banda más afín/)).toHaveTextContent(/intermedio/);
+    expect(screen.getByText(/Niveles plausibles/)).toBeInTheDocument();
   });
 
   it("with no functioning data (explorer) nothing is preselected", () => {

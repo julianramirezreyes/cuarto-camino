@@ -39,13 +39,19 @@ describe("bandOfLevel", () => {
 });
 
 describe("hasFunctioningSignal", () => {
-  it("is true with a band and moderate uncertainty", () => expect(hasFunctioningSignal(f({ uncertainty: 0.5 }))).toBe(true));
+  it("is true with a band whose share clearly leads the runner-up (margin >= 0.06)", () => {
+    expect(hasFunctioningSignal(f({ margin: 0.18 }))).toBe(true);
+    expect(hasFunctioningSignal(f({ margin: 0.06 }))).toBe(true);
+  });
   it("is false without a band", () => expect(hasFunctioningSignal(f({ band: null }))).toBe(false));
-  it("is false when the shares carry almost no information (uncertainty >= 0.95)", () => {
-    expect(hasFunctioningSignal(f({ uncertainty: 0.95 }))).toBe(false);
-    expect(hasFunctioningSignal(f({ uncertainty: 0.99 }))).toBe(false);
+  it("is false when the three bands are practically even (margin < 0.06)", () => {
+    expect(hasFunctioningSignal(f({ margin: 0.02 }))).toBe(false);
+    expect(hasFunctioningSignal(f({ margin: 0.059 }))).toBe(false);
+  });
+  it("an ordinary mixed pattern still counts: high entropy alone must not hide the band (shares 30/48/22)", () => {
+    expect(hasFunctioningSignal(f({ uncertainty: 0.952, margin: 0.18, shares: { flexible: 0.3, intermediate: 0.48, maladaptive: 0.22 } }))).toBe(true);
   });
   it("suggests no plausible levels when there is no signal", () => {
-    expect(plausibleLevels(f({ uncertainty: 0.99 }))).toEqual([]);
+    expect(plausibleLevels(f({ margin: 0.01, uncertainty: 0.99 }))).toEqual([]);
   });
 });

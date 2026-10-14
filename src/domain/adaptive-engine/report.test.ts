@@ -7,9 +7,9 @@ import { runAssessment } from "./session";
 
 describe("DEFAULT_ENGINE_CONFIG", () => {
   it("has the documented parameters", () => {
-    expect(DEFAULT_ENGINE_CONFIG.engineVersion).toBe("1.0.0");
+    expect(DEFAULT_ENGINE_CONFIG.engineVersion).toBe("1.1.0");
     expect(DEFAULT_ENGINE_CONFIG.limits).toEqual({
-      type: { min: 18, max: 28 },
+      type: { min: 18, max: 36 },
       wing: { min: 4, max: 6 },
       instinct: { min: 6, max: 10 },
       functioning: { min: 8, max: 12 },
@@ -27,7 +27,7 @@ describe("buildReport", () => {
     const a = buildReport(MINI_BANK, answers, DEFAULT_ENGINE_CONFIG);
     const b = buildReport(MINI_BANK, [...answers], DEFAULT_ENGINE_CONFIG);
     expect(a).toEqual(b);
-    expect(a.engineVersion).toBe("1.0.0");
+    expect(a.engineVersion).toBe("1.1.0");
     const v2 = buildReport(MINI_BANK, answers, { ...DEFAULT_ENGINE_CONFIG, engineVersion: "9.9.9" });
     expect(v2.engineVersion).toBe("9.9.9");
   });

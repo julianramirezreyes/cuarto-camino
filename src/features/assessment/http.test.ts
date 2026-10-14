@@ -53,7 +53,7 @@ describe("POST /api/assessments", () => {
     expect(body.resumed).toBe(false);
     expect(Object.keys(body.question).sort()).toEqual(["id", "kind", "module", "options", "text"]);
     expect(Object.keys(body.question.options[0]).sort()).toEqual(["id", "text"]);
-    expect(body.progress).toEqual({ answered: 0, position: 1, module: "type", moduleIndex: 0, moduleMin: 18, moduleMax: 28 });
+    expect(body.progress).toEqual({ answered: 0, position: 1, module: "type", moduleIndex: 0, moduleMin: 18, moduleMax: 36 });
     const c = cookieOf(res);
     expect(c).toMatch(/^cc_guest=[A-Za-z0-9_-]{43};/);
     expect(c).toContain("HttpOnly");
@@ -232,8 +232,8 @@ describe("assessment flow over HTTP", () => {
     expect(res.status).toBe(200);
     const body = await res.json();
     expect(body.report.primaryType).toBe(5);
-    expect(body.engineVersion).toBe("1.0.0");
-    expect(body.bankVersion).toBe("1.1.0-draft");
+    expect(body.engineVersion).toBe("1.1.0");
+    expect(body.bankVersion).toBe("1.1.1-draft");
     expect(new Date(body.completedAt).toString()).not.toBe("Invalid Date");
   });
 

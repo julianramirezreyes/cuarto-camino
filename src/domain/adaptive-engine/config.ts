@@ -18,9 +18,9 @@ import type { EngineConfig } from "@/domain/assessment/types";
  * All values are design hypotheses, not calibrated against real data.
  */
 export const DEFAULT_ENGINE_CONFIG: EngineConfig = {
-  engineVersion: "1.0.0",
+  engineVersion: "1.1.0",
   limits: {
-    type: { min: 18, max: 28 },
+    type: { min: 18, max: 36 },
     wing: { min: 4, max: 6 },
     instinct: { min: 6, max: 10 },
     functioning: { min: 8, max: 12 },

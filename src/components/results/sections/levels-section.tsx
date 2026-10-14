@@ -3,7 +3,7 @@
 import { useState } from "react";
 import type { FunctioningResult } from "@/domain/scoring/functioning";
 import { cn } from "@/lib/utils";
-import { BulletList, Card, SectionShell, pct } from "../common";
+import { BulletList, Card, SectionShell, ShareBar, pct } from "../common";
 import { BAND_LABEL, bandOfLevel, hasFunctioningSignal, plausibleLevels } from "../levels-logic";
 import type { TypeBundle } from "../types";
 
@@ -40,9 +40,17 @@ export function LevelsSection({ bundle, functioning, title = "Tu estado actual" 
           </p>
         </div>
       ) : functioning ? (
-        <p className="rounded-xl border border-border bg-muted p-4">
-          Con tus respuestas no hay evidencia suficiente para situar una banda de funcionamiento.
-        </p>
+        <div className="space-y-3 rounded-xl border border-border bg-muted p-4">
+          <p>
+            Con tus respuestas ninguna banda destaca claramente: no hay evidencia suficiente para situar tu momento actual en una
+            sola. Así se repartieron:
+          </p>
+          <div className="space-y-2">
+            <ShareBar label="Más flexible" share={functioning.shares.flexible} />
+            <ShareBar label="Intermedio" share={functioning.shares.intermediate} />
+            <ShareBar label="Más rígido o poco adaptativo" share={functioning.shares.maladaptive} />
+          </div>
+        </div>
       ) : null}
       <div role="group" aria-label="Los nueve niveles del tipo" className="grid grid-cols-9 gap-1.5 sm:gap-2">
         {bundle.levels.map((l) => {

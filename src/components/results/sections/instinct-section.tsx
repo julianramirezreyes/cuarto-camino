@@ -3,14 +3,9 @@
 import { useState } from "react";
 import type { InstinctResult } from "@/domain/scoring/instinct";
 import { INSTINCTS, type Instinct } from "@/domain/enneagram/structure";
-import { BulletList, Card, SectionShell, ToggleButton } from "../common";
+import { BulletList, Card, SectionShell, ShareBar, ToggleButton } from "../common";
+import { INSTINCT_ES } from "../labels";
 import type { TypeBundle } from "../types";
-
-const INSTINCT_ES: Record<Instinct, string> = {
-  sp: "Conservación (sp)",
-  so: "Social (so)",
-  sx: "Sexual / uno a uno (sx)",
-};
 
 /**
  * D · Tus instintos. All three instincts are always explorable. The data may suggest a
@@ -27,11 +22,23 @@ export function InstinctSection({ bundle, instinct, title = "Tus instintos" }: {
       intro="Los tres instintos están presentes en todas las personas. Explora cada subtipo de tu tipo y observa con cuál te reconoces."
     >
       {instinct ? (
-        <p className="rounded-xl border border-border bg-muted p-4">
-          {dominant
-            ? `Tus respuestas sugieren que el instinto dominante podría ser ${INSTINCT_ES[dominant]}. Es solo una pista del instinto dominante: no se afirma un orden completo de instintos.`
-            : "No hay un instinto dominante claro con las respuestas disponibles. Explora los tres sin prisa."}
-        </p>
+        <div className="space-y-3 rounded-xl border border-border bg-muted p-4">
+          <p>
+            {dominant
+              ? `Tus respuestas sugieren que el instinto dominante podría ser ${INSTINCT_ES[dominant]}. Es solo una pista del instinto dominante: no se afirma un orden completo de instintos.`
+              : "No hay un instinto dominante claro con las respuestas disponibles. Explora los tres sin prisa."}
+          </p>
+          <div className="space-y-2">
+            {INSTINCTS.map((i) => (
+              <ShareBar key={i} label={INSTINCT_ES[i]} share={instinct.shares[i]} strong={dominant === i} />
+            ))}
+          </div>
+          <p className="text-sm text-muted-foreground">
+            Se calcula solo con tus respuestas a las preguntas de instinto y no depende del tipo que estés leyendo: es la misma
+            pista para cualquier tipo. Si dos instintos quedan muy cerca, tómalo como un empate: lee los tres y quédate con el que
+            reconozcas.
+          </p>
+        </div>
       ) : null}
       <div className="flex flex-wrap gap-2" role="group" aria-label="Explorar instintos">
         {INSTINCTS.map((i) => (

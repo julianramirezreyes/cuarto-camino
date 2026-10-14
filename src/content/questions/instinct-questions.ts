@@ -519,10 +519,24 @@ function isScale(d: Draft): d is ScaleDraft {
 
 const ALL: Instinct[] = ["sp", "so", "sx"];
 
+/**
+ * Choice drafts are written sp / so / sx. Showing them that way would put the
+ * same instinct first in every question, and people lean toward the first
+ * option, so each choice question rotates its options by a fixed offset.
+ */
+function rotated<T>(items: readonly T[], offset: number): T[] {
+  const k = offset % items.length;
+  return [...items.slice(k), ...items.slice(0, k)];
+}
+
+let choiceIndex = 0;
+
 export const INSTINCT_QUESTIONS: Question[] = DRAFTS.map((draft, index) => {
   if (!isScale(draft)) {
     const options = opts(
-      draft.items.map(([text, instincts]) => [text, { instincts }] as const),
+      rotated(draft.items, choiceIndex++).map(
+        ([text, instincts]) => [text, { instincts }] as const,
+      ),
     );
     return finish("instinct", index, draft, { options, related: [] });
   }

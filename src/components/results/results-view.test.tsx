@@ -143,7 +143,7 @@ describe("Relaciones tab", () => {
     });
     render(<ResultsView {...makeProps()} />);
     await userEvent.click(screen.getByRole("button", { name: "Explorar otros eneatipos" }));
-    await userEvent.click(await screen.findByRole("button", { name: /^Eneatipo 8\b/ }));
+    await userEvent.click(await within(screen.getByRole("tabpanel")).findByRole("button", { name: /^Eneatipo 8\b/ }));
     await screen.findByRole("status", { name: /explorando/i });
     await userEvent.click(screen.getByRole("tab", { name: "Relaciones" }));
     expect(await screen.findByRole("heading", { name: /Cómo se relaciona el tipo 8/ })).toBeInTheDocument();
@@ -156,14 +156,14 @@ describe("actions", () => {
     render(<ResultsView {...makeProps()} />);
     await userEvent.click(screen.getByRole("button", { name: "Explorar otros eneatipos" }));
     expect(screen.getByRole("tab", { name: /Conexiones/ })).toHaveAttribute("aria-selected", "true");
-    expect(await screen.findByRole("button", { name: /^Eneatipo 8\b/ })).toBeInTheDocument();
+    expect(await within(screen.getByRole("tabpanel")).findByRole("button", { name: /^Eneatipo 8\b/ })).toBeInTheDocument();
   });
 
   it("explores any other type through the lazy endpoint and can go back", async () => {
     fetchMock.mockResolvedValue(json(buildTypeBundle(8)));
     render(<ResultsView {...makeProps()} />);
     await userEvent.click(screen.getByRole("button", { name: "Explorar otros eneatipos" }));
-    await userEvent.click(await screen.findByRole("button", { name: /^Eneatipo 8\b/ }));
+    await userEvent.click(await within(screen.getByRole("tabpanel")).findByRole("button", { name: /^Eneatipo 8\b/ }));
     await waitFor(() => expect(screen.getByRole("status", { name: /explorando/i })).toBeInTheDocument());
     expect(fetchMock).toHaveBeenCalledWith("/api/content/type/8");
     expect(screen.getByRole("status", { name: /explorando/i })).toHaveTextContent(buildTypeBundle(8).profile.name);
@@ -211,6 +211,28 @@ describe("actions", () => {
       expect(within(group).getByRole("button", { name: new RegExp(`Tipo ${props.primary.type} ·`) })).toHaveAttribute("aria-pressed", "true");
     });
 
+    it("keeps the person-level results (suggested instinct, current state) while reading another type, and explains the wing", async () => {
+      const props = makeProps();
+      const alt = props.alternatives[0];
+      fetchMock.mockResolvedValue(json(buildTypeBundle(alt.type)));
+      render(<ResultsView {...props} />);
+      const group = screen.getByRole("group", { name: /tus tipos más cercanos/i });
+      await userEvent.click(within(group).getByRole("button", { name: new RegExp(`Tipo ${alt.type} · ${alt.name}`) }));
+      await screen.findByRole("status", { name: /explorando/i });
+
+      await userEvent.click(screen.getByRole("tab", { name: /Tus instintos/ }));
+      expect(screen.getByRole("button", { name: /Social \(so\).*sugerido/ })).toBeInTheDocument();
+      expect(within(screen.getByRole("tabpanel")).getAllByRole("meter")).toHaveLength(3);
+
+      await userEvent.click(screen.getByRole("tab", { name: /Tu estado actual/ }));
+      expect(await screen.findByText(/Banda más afín/)).toBeInTheDocument();
+      const strip = screen.getByRole("group", { name: /nueve niveles/i });
+      expect(within(strip).getByRole("button", { name: /Nivel 5/ })).toHaveAttribute("aria-pressed", "true");
+
+      await userEvent.click(screen.getByRole("tab", { name: /Tu ala/ }));
+      expect(screen.getByText(/preguntas de ala se hicieron para tu tipo/i)).toBeInTheDocument();
+    });
+
     it("the 'Tus alternativas' tab also offers 'Ver todo sobre el tipo N' for each alternative", async () => {
       const props = makeProps();
       const alt = props.alternatives[1];
@@ -222,15 +244,71 @@ describe("actions", () => {
     });
   });
 
+  describe("overview diagram in the header", () => {
+    it("shows the whole enneagram up front, with your type selected, the groups legend and chips for what the test suggests", () => {
+      const props = makeProps();
+      render(<ResultsView {...props} />);
+      const overview = screen.getByRole("region", { name: /tu lugar en el eneagrama/i });
+      expect(within(overview).getByRole("group", { name: /símbolo del eneagrama/i })).toBeInTheDocument();
+      expect(within(overview).getByRole("button", { name: new RegExp(`^Eneatipo ${props.primary.type}\\b`) })).toHaveAttribute("aria-pressed", "true");
+      expect(within(overview).getByRole("list", { name: /leyenda de grupos/i })).toBeInTheDocument();
+      // chips: wing, instinct and recent state belong to the person, not to the drawing
+      expect(within(overview).getByText(/Ala probable/)).toHaveTextContent(/5/);
+      expect(within(overview).getByText(/Instinto sugerido/)).toHaveTextContent(/Social \(so\)/);
+      expect(within(overview).getByText(/Momento reciente/)).toHaveTextContent(/intermedio/);
+      // arrows of the selected type, in words
+      expect(within(overview).getByText(/Integración/)).toBeInTheDocument();
+      expect(within(overview).getByText(/Estrés/)).toBeInTheDocument();
+    });
+
+    it("lets you switch the grouping (centers, styles, harmonic) right there", async () => {
+      render(<ResultsView {...makeProps()} />);
+      const overview = screen.getByRole("region", { name: /tu lugar en el eneagrama/i });
+      await userEvent.click(within(overview).getByRole("button", { name: "Estilos" }));
+      expect(within(overview).getByRole("list", { name: /leyenda de grupos/i })).toHaveTextContent(/Asertivo/);
+    });
+
+    it("tapping a number opens that type; the wing chip is hidden while reading a type that is not yours (it belongs to your own)", async () => {
+      const props = makeProps();
+      fetchMock.mockResolvedValue(json(buildTypeBundle(8)));
+      render(<ResultsView {...props} />);
+      const overview = screen.getByRole("region", { name: /tu lugar en el eneagrama/i });
+      await userEvent.click(within(overview).getByRole("button", { name: /^Eneatipo 8\b/ }));
+      expect(await screen.findByRole("status", { name: /explorando/i })).toHaveTextContent(/tipo 8/i);
+      expect(within(overview).getByRole("button", { name: /^Eneatipo 8\b/ })).toHaveAttribute("aria-pressed", "true");
+      expect(within(overview).queryByText(/Ala probable/)).not.toBeInTheDocument();
+      // instinct and recent state stay: they are about the person
+      expect(within(overview).getByText(/Instinto sugerido/)).toBeInTheDocument();
+      expect(within(overview).getByText(/Momento reciente/)).toBeInTheDocument();
+    });
+  });
+
+  describe("type choice cards", () => {
+    it("look and behave like buttons: a chevron, and a 'Viendo' marker on the one being read", async () => {
+      const props = makeProps();
+      const alt = props.alternatives[0];
+      fetchMock.mockResolvedValue(json(buildTypeBundle(alt.type)));
+      render(<ResultsView {...props} />);
+      const group = screen.getByRole("group", { name: /tus tipos más cercanos/i });
+      const own = within(group).getByRole("button", { name: new RegExp(`Tipo ${props.primary.type} ·`) });
+      expect(own).toHaveTextContent(/Viendo/);
+      expect(own.querySelector("svg")).not.toBeNull();
+      await userEvent.click(within(group).getByRole("button", { name: new RegExp(`Tipo ${alt.type} ·`) }));
+      await screen.findByRole("status", { name: /explorando/i });
+      expect(within(group).getByRole("button", { name: new RegExp(`Tipo ${alt.type} ·`) })).toHaveTextContent(/Viendo/);
+      expect(within(group).getByRole("button", { name: new RegExp(`Tipo ${props.primary.type} ·`) })).not.toHaveTextContent(/Viendo/);
+    });
+  });
+
   it("reuses an already loaded type without fetching again", async () => {
     fetchMock.mockResolvedValue(json(buildTypeBundle(8)));
     render(<ResultsView {...makeProps()} />);
     await userEvent.click(screen.getByRole("button", { name: "Explorar otros eneatipos" }));
-    await userEvent.click(await screen.findByRole("button", { name: /^Eneatipo 8\b/ }));
+    await userEvent.click(await within(screen.getByRole("tabpanel")).findByRole("button", { name: /^Eneatipo 8\b/ }));
     await screen.findByRole("status", { name: /explorando/i });
     await userEvent.click(screen.getByRole("button", { name: "Volver a mi resultado" }));
     await userEvent.click(screen.getByRole("tab", { name: /Conexiones/ }));
-    await userEvent.click(await screen.findByRole("button", { name: /^Eneatipo 8\b/ }));
+    await userEvent.click(await within(screen.getByRole("tabpanel")).findByRole("button", { name: /^Eneatipo 8\b/ }));
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
@@ -238,7 +316,7 @@ describe("actions", () => {
     fetchMock.mockResolvedValue(json({ error: "not_found" }, 404));
     render(<ResultsView {...makeProps()} />);
     await userEvent.click(screen.getByRole("button", { name: "Explorar otros eneatipos" }));
-    await userEvent.click(await screen.findByRole("button", { name: /^Eneatipo 8\b/ }));
+    await userEvent.click(await within(screen.getByRole("tabpanel")).findByRole("button", { name: /^Eneatipo 8\b/ }));
     expect(await screen.findByRole("alert")).toHaveTextContent(/no pudimos cargar/i);
     expect(screen.queryByRole("status", { name: /explorando/i })).not.toBeInTheDocument();
   });

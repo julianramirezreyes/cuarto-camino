@@ -120,8 +120,8 @@ Incluye: `engineVersion`, `primaryType` (null sin evidencia), `ranking` (9 tipos
 
 | Parámetro | Valor |
 |---|---|
-| `engineVersion` | `1.0.0` |
-| tipo (min–max) | 18–28 |
+| `engineVersion` | `1.1.0` |
+| tipo (min–max) | 18–36 |
 | ala | 4–6 |
 | instinto | 6–10 |
 | funcionamiento | 8–12 |
@@ -152,3 +152,13 @@ reservar la palabra «compatibilidad» (que sugiere una predicción sobre pareja
 evita a propósito (ver `docs/relaciones.md`). El cambio es solo de redacción: **no cambia ningún cálculo**, por eso `engineVersion` sigue
 siendo `1.0.0`. Los identificadores internos (`computeCompatibility`, `Compatibility`) conservan el nombre antiguo. Los informes ya
 guardados son inmutables y conservan las frases con la redacción de cuando se generaron.
+
+## Historial de versiones del motor
+
+- **1.0.0** — versión inicial. Tipo: 18–28 preguntas.
+- **1.1.0** — el tope de preguntas de tipo sube de 28 a 36. Motivo: las personas con resultado ambiguo (dos tipos muy cerca) reciben
+  más preguntas dirigidas a separar a los candidatos; quien ya está claro termina igual de rápido (el criterio de parada no cambió).
+  En una simulación con respondientes sintéticos que se inclinan 75 % hacia un tipo y 25 % hacia otro, el acierto del primer lugar pasó de
+  94 % a 96 % y los casos marcados como ambiguos de 9 % a 3 %, con unas 2 preguntas más de promedio; con 65 % la mejora fue mínima (81 % → 83 %)
+  porque esa persona realmente es ambigua. **Es un resultado sintético, no evidencia de validez.** Los resultados guardados con 1.0.0 no se tocan;
+  las evaluaciones abiertas con 1.0.0 no se pueden reanudar y empiezan de cero.

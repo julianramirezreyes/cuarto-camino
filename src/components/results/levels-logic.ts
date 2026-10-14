@@ -11,12 +11,16 @@ export const BAND_LABEL: Record<FunctioningBand, string> = {
   maladaptive: "rígido o poco adaptativo",
 };
 
-/** Normalized entropy at or above this means the shares are nearly uniform: no usable signal. */
-export const NO_SIGNAL_UNCERTAINTY = 0.95;
+/**
+ * The top band must lead the runner-up by at least this much of the share for the band to be suggested.
+ * (Entropy alone is a poor gate: an ordinary mixed pattern such as 30/48/22 already has normalized entropy
+ * ~0.95 although one band clearly leads, so it used to hide the band for most people.)
+ */
+export const MIN_FUNCTIONING_MARGIN = 0.06;
 
 /** True when the functioning answers support suggesting a band at all. */
 export function hasFunctioningSignal(functioning: FunctioningResult): boolean {
-  return functioning.band !== null && functioning.uncertainty < NO_SIGNAL_UNCERTAINTY;
+  return functioning.band !== null && functioning.margin >= MIN_FUNCTIONING_MARGIN;
 }
 
 export function bandOfLevel(level: number): FunctioningBand {

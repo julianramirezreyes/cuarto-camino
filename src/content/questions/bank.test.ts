@@ -413,3 +413,23 @@ describe("question bank: equivalence groups", () => {
     }
   });
 });
+
+describe("question bank: instinct option order", () => {
+  const CHOICE_KINDS = ["scenario-choice", "motivation-comparison", "forced-choice"];
+  const leader = (scores: Record<string, number> | undefined) =>
+    Object.entries(scores ?? {}).sort((a, b) => b[1] - a[1])[0]?.[0];
+  const choices = byModule("instinct").filter((q) => CHOICE_KINDS.includes(q.kind));
+
+  it("does not always lead with the same instinct in the same position", () => {
+    for (const position of [0, 1, 2]) {
+      const counts: Record<string, number> = {};
+      for (const q of choices) {
+        const l = leader(q.options[position]?.scores.instincts);
+        counts[l ?? "none"] = (counts[l ?? "none"] ?? 0) + 1;
+      }
+      for (const n of Object.values(counts)) {
+        expect(n, `position ${position + 1}: ${JSON.stringify(counts)}`).toBeLessThanOrEqual(Math.ceil(choices.length / 3) + 1);
+      }
+    }
+  });
+});

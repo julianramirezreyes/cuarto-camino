@@ -43,7 +43,18 @@ function WingDetail({ wing }: { wing: WingProfile }) {
  * C · Tu ala. `wing` (the report's estimate) is optional: without it (type explorer) the
  * section starts in the open "por explorar" state. The user can always leave the wing open.
  */
-export function WingSection({ bundle, wing, title = "Tu ala" }: { bundle: TypeBundle; wing?: ReportWing; title?: string }) {
+export function WingSection({
+  bundle,
+  wing,
+  title = "Tu ala",
+  explorerNote,
+}: {
+  bundle: TypeBundle;
+  wing?: ReportWing;
+  title?: string;
+  /** Shown when the user is reading a type other than their result (the wing estimate belongs to their own type). */
+  explorerNote?: string;
+}) {
   const wings = [...bundle.wings].sort((a, b) => a.wing - b.wing);
   const [choice, setChoice] = useState<Choice>(wing?.likelyWing ?? "open");
   const selected = choice === "open" ? null : wings.find((w) => w.wing === choice) ?? null;
@@ -56,6 +67,7 @@ export function WingSection({ bundle, wing, title = "Tu ala" }: { bundle: TypeBu
       title={title}
       intro="El ala es la influencia de uno de los dos tipos vecinos. Compara ambas y elige la que te resuene, o déjala abierta."
     >
+      {explorerNote ? <p className="rounded-xl border border-border bg-muted p-4">{explorerNote}</p> : null}
       {showShares && wing.wings ? (
         <Card title="Afinidad relativa entre las dos alas">
           <ShareBar label={`ala ${wing.wings[0]}`} share={shown[0]} />

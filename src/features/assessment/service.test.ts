@@ -40,7 +40,7 @@ describe("startOrResume", () => {
     expect(r.resumed).toBe(false);
     expect(r.assessment.status).toBe("in_progress");
     expect(r.question).not.toBeNull();
-    expect(r.progress).toMatchObject({ answered: 0, module: "type", moduleIndex: 0, moduleMin: 18, moduleMax: 28 });
+    expect(r.progress).toMatchObject({ answered: 0, module: "type", moduleIndex: 0, moduleMin: 18, moduleMax: 36 });
     const json = JSON.stringify(r);
     for (const leaked of ["scores", "weight", "discrimination", "rationale", "references", "relatedTypes"]) {
       expect(json).not.toContain(leaked);
@@ -81,7 +81,7 @@ describe("full flow with the real bank", () => {
     const res = await h.service.getResult(p, id);
     expect(res.report.primaryType).toBe(5);
     expect(res.engineVersion).toBe(ENGINE_VERSION);
-    expect(res.bankVersion).toBe("1.1.0-draft");
+    expect(res.bankVersion).toBe("1.1.1-draft");
     expect(res.completedAt).toBeInstanceOf(Date);
     expect(h.repo.assessments.get(id)?.status).toBe("completed");
     await rejectsWith(h.service.getCurrent(p), "not_found");

@@ -2,7 +2,8 @@ import type { Locator, Page } from "@playwright/test";
 import { expect, test } from "./fixtures";
 import { completeAssessment } from "./helpers";
 
-const nodo = (page: Page, n: number) => page.getByRole("button", { name: new RegExp(`^Eneatipo ${n}(,|$)`) });
+// El informe tiene dos diagramas (resumen de la cabecera y pestaña «Conexiones»): estos nodos son los de la pestaña abierta.
+const nodo = (page: Page, n: number) => page.getByRole("tabpanel").getByRole("button", { name: new RegExp(`^Eneatipo ${n}(,|$)`) });
 const pestana = (page: Page, nombre: string) => page.getByRole("tab", { name: nombre, exact: true });
 
 async function abrir(page: Page, nombre: string) {
@@ -35,6 +36,13 @@ test.describe("evaluación completa de extremo a extremo", () => {
     await expect(cabecera).not.toContainText(/precisi[oó]n/i);
     await expect(cabecera.getByRole("meter").first()).toBeVisible();
 
+    // Resumen del eneagrama completo en la cabecera, con tu tipo marcado y lo que el test sugiere de ti.
+    const resumen = page.getByRole("region", { name: "Tu lugar en el eneagrama" });
+    await expect(resumen).toBeVisible();
+    await expect(resumen.getByRole("button", { name: new RegExp(`^Eneatipo ${tipo}(,|$)`) })).toHaveAttribute("aria-pressed", "true");
+    await expect(resumen.getByRole("list", { name: "Leyenda de grupos" })).toBeVisible();
+    await expect(resumen.getByText(/^Instinto /)).toBeVisible();
+
     // Selector de tus tipos más cercanos: tocar una alternativa abre todo sobre ese tipo; tocar el tuyo vuelve.
     const cercanos = cabecera.getByRole("group", { name: "Tus tipos más cercanos" });
     const botones = cercanos.getByRole("button");
@@ -49,6 +57,14 @@ test.describe("evaluación completa de extremo a extremo", () => {
     await expect(alternativa).toHaveAttribute("aria-pressed", "true");
     await expect(page.getByRole("tabpanel").first()).toContainText(`Personalidad del tipo ${tipoAlt}`);
     await expect(titulo).toHaveText(new RegExp(`^Tipo ${tipo} · `)); // tu resultado no cambia
+    // Al leer otro tipo siguen visibles los datos que son de la persona (instinto y estado), no solo los del tipo.
+    await pestana(page, "Tus instintos").click();
+    await expect(page.getByRole("tabpanel").getByRole("meter")).toHaveCount(3);
+    await expect(page.getByRole("tabpanel")).toContainText(/no depende del tipo/);
+    await pestana(page, "Tu estado actual").click();
+    await expect(page.getByRole("tabpanel")).toContainText(/Banda más afín|ninguna banda destaca/);
+    await pestana(page, "Tu ala").click();
+    await expect(page.getByRole("tabpanel")).toContainText(/preguntas de ala se hicieron para tu tipo/);
     await botones.first().click();
     await expect(avisoExplorando).toHaveCount(0);
     await expect(botones.first()).toHaveAttribute("aria-pressed", "true");
@@ -105,8 +121,8 @@ test.describe("evaluación completa de extremo a extremo", () => {
     const estres = page.getByRole("button", { name: "Mostrar estrés" });
     await pulsado(integracion, true);
     await pulsado(estres, true);
-    const conIntegracion = page.getByRole("button", { name: /dirección de integración tradicional/ });
-    const conEstres = page.getByRole("button", { name: /dirección de estrés tradicional/ });
+    const conIntegracion = page.getByRole("tabpanel").getByRole("button", { name: /dirección de integración tradicional/ });
+    const conEstres = page.getByRole("tabpanel").getByRole("button", { name: /dirección de estrés tradicional/ });
     await expect(conIntegracion).toHaveCount(1);
     await expect(conEstres).toHaveCount(1);
     await integracion.click();

@@ -1,3 +1,4 @@
+import { ChevronRight } from "lucide-react";
 import type { ReactNode } from "react";
 import type { Attribution } from "@/content/schema";
 import { cn } from "@/lib/utils";
@@ -62,21 +63,30 @@ export function ShareBar({
   selected?: boolean;
 }) {
   const value = Math.round(share * 100);
+  const selector = onSelect !== undefined;
   return (
-    <div className="space-y-1">
-      <div className="flex items-baseline justify-between gap-3 text-sm">
+    <div
+      className={cn(
+        "space-y-1",
+        // Selector: a real card. The button stretches over the whole card, so any tap on it counts; the meter stays outside the button.
+        selector &&
+          cn(
+            "relative space-y-2 rounded-xl border p-3 transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-accent",
+            selected ? "border-primary bg-primary/10" : "border-control bg-card hover:border-primary hover:bg-muted",
+          ),
+      )}
+    >
+      <div className={cn("flex justify-between gap-3 text-sm", selector ? "items-center" : "items-baseline")}>
         {onSelect ? (
           <button
             type="button"
             aria-pressed={selected === true}
             onClick={onSelect}
-            className={cn(
-              "min-h-11 rounded-lg px-2 py-1 text-left font-medium underline underline-offset-4 transition-colors hover:bg-muted",
-              selected ? "bg-muted" : "",
-            )}
+            className="flex min-h-9 items-center gap-2 text-left font-medium outline-none after:absolute after:inset-0 after:rounded-xl after:content-['']"
           >
             {label}
-            <span aria-hidden="true"> ›</span>
+            {selected ? <span className="rounded-full border border-primary px-2 py-0.5 text-xs">Viendo</span> : null}
+            <ChevronRight aria-hidden="true" className="size-4 shrink-0 text-muted-foreground" />
           </button>
         ) : (
           <span>{label}</span>

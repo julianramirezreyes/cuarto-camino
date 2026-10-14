@@ -1,6 +1,6 @@
 # Plan de validación del cuestionario
 
-Que la app funcione técnicamente **no** significa que el cuestionario sea válido. Hoy el banco de 177 preguntas (versión `1.1.0-draft`), sus puntajes y los
+Que la app funcione técnicamente **no** significa que el cuestionario sea válido. Hoy el banco de 177 preguntas (versión `1.1.1-draft`), sus puntajes y los
 criterios de parada son **hipótesis de diseño**. Las pruebas automáticas con respondientes simulados (`src/tests/engine-real-bank.test.ts`)
 comprueban que el motor converge y que el cableado funciona; **no son evidencia de precisión psicológica**.
 
@@ -39,7 +39,7 @@ versión del motor y del banco, fechas. **No** hay analítica de producto ni pre
 
 Análisis previstos:
 
-1. **Abandono:** en qué pregunta/módulo se abandona; duración total. Meta de diseño de 18–28 preguntas de tipo; hoy una sesión real
+1. **Abandono:** en qué pregunta/módulo se abandona; duración total. Meta de diseño de 18–36 preguntas de tipo (el tope subió de 28 a 36 en el motor 1.1.0); hoy una sesión real
    ronda los 35 a 55 en total entre módulos: confirmar si es tolerable.
 2. **Calidad de ítems:** frecuencia de cada opción, ítems con una opción dominante (>85 %) o nunca elegida, correlación ítem-total,
    y comparación entre ítems del mismo `equivalenceGroup` (consistencia).
