@@ -23,3 +23,6 @@ Strict TDD: enabled (runner: vitest). Delivery strategy: ask-on-risk. Route: del
 - Engine + real bank (synthetic respondents, wiring only): 35-40 questions/session; wing module gets 3 questions (target 4-6) -> add wing questions.
 - All editorial content is draft; countertypes for 1/3/9 unresolved; sources need verification.
 - Commits: 1fc0451 db, c421690 engine, 097a24b bank, 906e1cd wings, 8d47ecc types, a0aa7de subtypes, 4672fa2 levels
+- Neon project `cuarto-camino` (id late-poetry-51140321, aws-us-east-1, PG18) created via Neon MCP. Migration 0000_init applied (17 tables) and registered in drizzle.__drizzle_migrations.
+- Verified on real Postgres (rolled-back DO block): single_owner, consent_required, completed_at/status, token_hash shape CHECKs; FK; unique answer; guest->assessments->answers cascade. Not yet verified: seed script, Drizzle repository SQL via the app, Better Auth sign-up.
+- Blocked: agent cannot write .env.local (permission settings). User must create it with DATABASE_URL, AUTH_SECRET, BETTER_AUTH_URL, APP_URL.
