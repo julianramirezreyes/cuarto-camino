@@ -1,8 +1,9 @@
 /**
- * Retention job: deletes expired guest sessions (and their assessments), expired
- * assessments and soft-deleted assessments past the grace window.
+ * Retention job: deletes expired guest sessions (and their assessments), soft-deleted
+ * assessments past the grace window and stale rate-limit rows. Same function as the
+ * protected cron route GET /api/cron/purge (src/lib/db/retention.ts).
  * Usage: npx tsx scripts/purge-expired.ts   (requires DATABASE_URL)
- * Schedule daily (e.g. Vercel Cron hitting a protected route, or a GitHub Action).
+ * In production Vercel Cron runs it daily through /api/cron/purge (vercel.json).
  */
 import { loadEnvOrExit } from "./_env";
 
@@ -15,7 +16,7 @@ async function main() {
   try {
     const result = await purgeExpired(db);
     console.log(
-      `Purge OK: ${result.assessments} assessments, ${result.guestSessions} guest sessions removed.`,
+      `Purge OK: ${result.assessments} assessments, ${result.guestSessions} guest sessions, ${result.rateLimits} rate-limit rows removed.`,
     );
   } finally {
     await close();

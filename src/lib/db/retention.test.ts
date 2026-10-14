@@ -1,6 +1,6 @@
 import { drizzle } from "drizzle-orm/neon-serverless";
 import { describe, expect, it, vi } from "vitest";
-import { purgeExpired, SOFT_DELETE_GRACE_DAYS } from "./retention";
+import { purgeExpired, retentionCutoffs, SOFT_DELETE_GRACE_DAYS, RATE_LIMIT_ROW_TTL_HOURS } from "./retention";
 import * as schema from "./schema";
 import type { TransactionalDb } from "./transactional";
 
@@ -31,7 +31,7 @@ describe("purgeExpired (SQL shape only)", () => {
           where: (w: never) => ({
             returning: () => {
               sqls.push(b.where(w).toSQL().sql);
-              return Promise.resolve([{ id: "x" }]);
+              return Promise.resolve(sqls.length > 3 ? [{ key: "a" }, { key: "b" }] : [{ id: "x" }]);
             },
           }),
         };
@@ -43,13 +43,33 @@ describe("purgeExpired (SQL shape only)", () => {
 
     const result = await purgeExpired(db, new Date("2026-06-01T00:00:00Z"));
 
-    expect(result).toEqual({ assessments: 1, guestSessions: 1 });
+    expect(result).toEqual({ assessments: 1, guestSessions: 1, rateLimits: 4 });
     expect(sqls[0]).toMatch(
       /from "guest_sessions" where "guest_sessions"\."expires_at" </,
     );
     expect(sqls[1]).toMatch(/^delete from "assessments"/);
     expect(sqls[1]).toMatch(/"assessments"\."guest_session_id" in/);
     expect(sqls[2]).toMatch(/^delete from "guest_sessions"/);
+    expect(sqls[3]).toMatch(/^delete from "rate_limits" where "rate_limits"\."window_start" </);
+    expect(sqls[4]).toMatch(/^delete from "auth_rate_limit" where "auth_rate_limit"\."last_request" </);
+    // assessments.expires_at is intentionally NOT used (never set); see docs/retencion-y-limites.md
+    expect(sqls[1]).not.toMatch(/expires_at/);
     expect(SOFT_DELETE_GRACE_DAYS).toBeGreaterThan(0);
+  });
+});
+
+describe("retentionCutoffs (pure, injected clock)", () => {
+  const now = new Date("2026-06-15T12:00:00Z");
+
+  it("soft-deleted assessments are purged after exactly 7 days", () => {
+    expect(SOFT_DELETE_GRACE_DAYS).toBe(7);
+    expect(retentionCutoffs(now).softDeletedBefore.toISOString()).toBe("2026-06-08T12:00:00.000Z");
+  });
+
+  it("rate limit rows are purged after the row TTL (both stores)", () => {
+    const c = retentionCutoffs(now);
+    const cutoff = now.getTime() - RATE_LIMIT_ROW_TTL_HOURS * 3_600_000;
+    expect(c.rateLimitsBefore.getTime()).toBe(cutoff);
+    expect(c.authRateLimitBeforeMs).toBe(cutoff);
   });
 });

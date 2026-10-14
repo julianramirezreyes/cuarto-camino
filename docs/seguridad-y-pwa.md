@@ -63,7 +63,10 @@ Usa `sharp`, que está en `node_modules` como dependencia opcional de Next (no d
 ## Pendiente antes del lanzamiento
 
 - [ ] Política de tratamiento de datos (Ley 1581 de 2012) y aviso de privacidad.
-- [ ] Rate limiting con almacén compartido (en serverless un contador en memoria no sirve entre instancias).
+- [x] Rate limiting con almacén compartido: Postgres/Neon (`rate_limits`), falla abierto a memoria. Ver `docs/retencion-y-limites.md`.
+- [ ] Activar `rateLimit.storage: "database"` en Better Auth (fragmento en `docs/retencion-y-limites.md`).
+- [x] Purga de retención programada: `GET /api/cron/purge` + `vercel.json` (requiere `CRON_SECRET` en Vercel).
+- [ ] Revisión legal de los plazos de retención propuestos (`docs/retencion-y-limites.md`).
 - [ ] Decidir HSTS `preload` (es difícil de revertir; exige dominio definitivo y todos los subdominios en HTTPS).
 - [ ] Evaluar CSP basada en SRI/hashes para retirar `'unsafe-inline'` de `script-src`.
 - [ ] Reemplazar `src/app/favicon.ico` por el icono propio.

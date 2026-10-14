@@ -10,7 +10,8 @@ import { createTransactionalDb } from "@/lib/db/transactional";
 import { createDrizzleAssessmentRepository, type Db } from "./drizzle-repository";
 import { createGuestService } from "./guest-service";
 import { createAssessmentHandlers, type AssessmentApiDeps } from "./http";
-import { createFixedWindowRateLimiter } from "./rate-limit";
+import { createFixedWindowRateLimiter, type RateLimiter } from "./rate-limit";
+import { RATE_LIMITS, createSharedRateLimiter, resolveRateLimitSalt } from "./rate-limit-shared";
 import { createAssessmentService } from "./service";
 import { BANK_VERSION } from "./versions";
 
@@ -44,19 +45,30 @@ function configuredOrigins(): string[] {
   return out;
 }
 
+/** Postgres-backed (shared across instances); falls back to per-instance memory if the DB is down. */
+function buildLimiter(db: Db, { limit, windowSeconds }: { limit: number; windowSeconds: number }): RateLimiter {
+  return createSharedRateLimiter({
+    db: db as unknown as Parameters<typeof createSharedRateLimiter>[0]["db"],
+    limit,
+    windowSeconds,
+    salt: resolveRateLimitSalt(),
+    fallback: createFixedWindowRateLimiter({ limit, windowMs: windowSeconds * 1000 }),
+  });
+}
+
 let cached: AssessmentApiDeps | undefined;
 
 export function getAssessmentApiDeps(): AssessmentApiDeps {
   if (!cached) {
-    const repo = createDrizzleAssessmentRepository({ db: getDb() as unknown as Db, transaction: runInTransaction });
+    const db = getDb() as unknown as Db;
+    const repo = createDrizzleAssessmentRepository({ db, transaction: runInTransaction });
     cached = {
       service: createAssessmentService({ repo, bank: QUESTION_BANK, config: DEFAULT_ENGINE_CONFIG, bankVersion: BANK_VERSION }),
       guests: createGuestService({ repo }),
       getUserId,
-      // In-memory per instance: best effort only, see rate-limit.ts.
       limiters: {
-        general: createFixedWindowRateLimiter({ limit: 120, windowMs: 60_000 }),
-        start: createFixedWindowRateLimiter({ limit: 10, windowMs: 60_000 }),
+        general: buildLimiter(db, RATE_LIMITS.general),
+        start: buildLimiter(db, RATE_LIMITS.start),
       },
       allowedOrigins: configuredOrigins(),
       secureCookies: process.env.NODE_ENV === "production",

@@ -5,7 +5,8 @@ export interface RateLimitResult {
 }
 
 export interface RateLimiter {
-  check(key: string): RateLimitResult;
+  /** Sync for the in-memory limiter, async for shared stores. Always `await` it. */
+  check(key: string): RateLimitResult | Promise<RateLimitResult>;
 }
 
 export interface FixedWindowOptions {
@@ -20,10 +21,10 @@ export interface FixedWindowOptions {
 /**
  * Fixed-window counter held in process memory.
  *
- * NOTE: on serverless (Vercel/Neon setup) every instance has its own memory and
- * instances are recycled, so this is only a best-effort brake against bursts from a
- * single instance, NOT a global limit. For real enforcement implement `RateLimiter`
- * over a shared store (Redis/Upstash/Vercel KV) and inject it in the container.
+ * NOTE: on serverless every instance has its own memory and instances are recycled, so
+ * this is only a best-effort brake for ONE instance, NOT a global limit. Production uses
+ * the Postgres-backed limiter (rate-limit-shared.ts); this one is its fail-open fallback
+ * and the limiter used in tests.
  */
 export function createFixedWindowRateLimiter({
   limit,

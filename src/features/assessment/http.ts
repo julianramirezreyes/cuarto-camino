@@ -3,6 +3,7 @@ import { guestCookieName, guestCookieOptions } from "@/lib/guest";
 import { AssessmentError, type AssessmentErrorCode } from "./errors";
 import type { GuestService } from "./guest-service";
 import type { RateLimiter } from "./rate-limit";
+import { clientIp } from "./rate-limit-shared";
 import { answerBody, assessmentIdParam, backBody, startBody } from "./schemas";
 import type { AssessmentService, Principal } from "./service";
 
@@ -70,11 +71,6 @@ export function isSameOrigin(request: Request, allowedOrigins: readonly string[]
   return request.headers.get("sec-fetch-site") === "same-origin";
 }
 
-function clientKey(request: Request): string {
-  const forwarded = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
-  return forwarded || request.headers.get("x-real-ip")?.trim() || "unknown";
-}
-
 function readCookie(request: Request, name: string): string | undefined {
   const header = request.headers.get("cookie");
   if (!header) return undefined;
@@ -119,9 +115,9 @@ function parseId(raw: string): string {
  * service. `getDeps` is lazy so importing a route never needs env or a database.
  */
 export function createAssessmentHandlers(getDeps: () => AssessmentApiDeps) {
-  function gate(request: Request, deps: AssessmentApiDeps, scope: string, limiter: RateLimiter) {
+  async function gate(request: Request, deps: AssessmentApiDeps, scope: string, limiter: RateLimiter) {
     if (!isSameOrigin(request, deps.allowedOrigins)) throw new HttpError(403, "forbidden_origin");
-    const r = limiter.check(`${scope}:${clientKey(request)}`);
+    const r = await limiter.check(`${scope}:${clientIp(request)}`);
     if (!r.allowed) throw new HttpError(429, "rate_limited", { "Retry-After": String(r.retryAfterSeconds) });
   }
 
@@ -154,7 +150,7 @@ export function createAssessmentHandlers(getDeps: () => AssessmentApiDeps) {
     async start(request: Request): Promise<Response> {
       try {
         const deps = getDeps();
-        gate(request, deps, "start", deps.limiters.start);
+        await gate(request, deps, "start", deps.limiters.start);
         const body = await readJson(request, startBody);
         const resolved = await resolvePrincipal(deps, request);
         const cookies = [...resolved.cookies];
@@ -184,7 +180,7 @@ export function createAssessmentHandlers(getDeps: () => AssessmentApiDeps) {
     async answer(request: Request, ctx: IdContext): Promise<Response> {
       try {
         const deps = getDeps();
-        gate(request, deps, "answer", deps.limiters.general);
+        await gate(request, deps, "answer", deps.limiters.general);
         const id = parseId((await ctx.params).id);
         const body = await readJson(request, answerBody);
         const { principal, cookies } = await requirePrincipal(deps, request);
@@ -197,7 +193,7 @@ export function createAssessmentHandlers(getDeps: () => AssessmentApiDeps) {
     async back(request: Request, ctx: IdContext): Promise<Response> {
       try {
         const deps = getDeps();
-        gate(request, deps, "back", deps.limiters.general);
+        await gate(request, deps, "back", deps.limiters.general);
         const id = parseId((await ctx.params).id);
         const body = await readJson(request, backBody, true);
         const { principal, cookies } = await requirePrincipal(deps, request);
@@ -210,7 +206,7 @@ export function createAssessmentHandlers(getDeps: () => AssessmentApiDeps) {
     async pause(request: Request, ctx: IdContext): Promise<Response> {
       try {
         const deps = getDeps();
-        gate(request, deps, "pause", deps.limiters.general);
+        await gate(request, deps, "pause", deps.limiters.general);
         const id = parseId((await ctx.params).id);
         const { principal, cookies } = await requirePrincipal(deps, request);
         return reply(200, await deps.service.pause(principal, id), cookies);
@@ -233,7 +229,7 @@ export function createAssessmentHandlers(getDeps: () => AssessmentApiDeps) {
     async remove(request: Request, ctx: IdContext): Promise<Response> {
       try {
         const deps = getDeps();
-        gate(request, deps, "delete", deps.limiters.general);
+        await gate(request, deps, "delete", deps.limiters.general);
         const id = parseId((await ctx.params).id);
         const { principal, cookies } = await requirePrincipal(deps, request);
         await deps.service.deleteAssessment(principal, id);
@@ -247,7 +243,7 @@ export function createAssessmentHandlers(getDeps: () => AssessmentApiDeps) {
     async claim(request: Request): Promise<Response> {
       try {
         const deps = getDeps();
-        gate(request, deps, "claim", deps.limiters.general);
+        await gate(request, deps, "claim", deps.limiters.general);
         const userId = await deps.getUserId(request);
         if (!userId) throw new HttpError(401, "unauthorized");
         const result = await deps.guests.claim(userId, readCookie(request, cookieName(deps)));
