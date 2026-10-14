@@ -1,11 +1,13 @@
 import Link from "next/link";
+import { HeaderAccount } from "@/components/account/header-account";
 
 export function SiteHeader() {
   return (
-    <header className="mx-auto flex w-full max-w-5xl items-center justify-between px-4 py-4">
+    <header className="mx-auto flex w-full max-w-5xl items-center justify-between gap-2 px-4 py-4">
       <Link href="/" className="font-serif text-lg tracking-wide">
         Cuarto Camino
       </Link>
+      <HeaderAccount />
     </header>
   );
 }

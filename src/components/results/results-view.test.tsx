@@ -5,6 +5,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { buildTypeBundle, makeProps } from "./fixtures";
 import { ResultsView } from "./results-view";
 
+const useSession = vi.fn(() => ({ data: null, isPending: false }));
+vi.mock("@/lib/auth/auth-client", () => ({ authClient: { useSession: () => useSession() } }));
+
 const fetchMock = vi.fn();
 beforeEach(() => {
   fetchMock.mockReset();
@@ -51,12 +54,22 @@ describe("header", () => {
     }
   });
 
-  it("offers no dead account/PDF/review buttons, only a note about accounts", () => {
+  it("offers a real account link (visitors only) and no dead PDF/review buttons", () => {
     render(<ResultsView {...makeProps()} />);
+    expect(screen.getByRole("link", { name: /crear cuenta para conservar tu resultado/i })).toHaveAttribute(
+      "href",
+      "/cuenta/registro?next=/resultado",
+    );
     expect(screen.queryByRole("button", { name: /crear cuenta/i })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /descargar/i })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /revisar mis respuestas/i })).not.toBeInTheDocument();
-    expect(screen.getByText(/cuentas aún no están disponibles/i)).toBeInTheDocument();
+    expect(screen.queryByText(/cuentas aún no están disponibles/i)).not.toBeInTheDocument();
+  });
+
+  it("hides the account call to action when signed in", () => {
+    useSession.mockReturnValueOnce({ data: { user: { name: "Ana" } } as never, isPending: false } as never);
+    render(<ResultsView {...makeProps()} />);
+    expect(screen.queryByRole("link", { name: /crear cuenta/i })).not.toBeInTheDocument();
   });
 });
 

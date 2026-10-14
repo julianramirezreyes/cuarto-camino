@@ -1,5 +1,6 @@
 import { Compass, RotateCcw } from "lucide-react";
 import type { AssessmentReport } from "@/domain/adaptive-engine";
+import { CreateAccountCta } from "@/components/account/create-account-cta";
 import { Button } from "@/components/ui/button";
 import { ShareBar } from "./common";
 import type { AlternativeSummary, TypeBundle } from "./types";
@@ -64,15 +65,7 @@ export function ResultHeader({
           Reiniciar evaluación
         </Button>
       </div>
-      {/*
-        EXTENSION POINT (accounts): the account UI does not exist yet, so there is deliberately no
-        "Crear cuenta" button here (a dead control is worse than none). When it ships, render the call
-        to action in this slot; the claim API (POST /api/assessments/claim) already moves the guest's
-        results to the account.
-      */}
-      <p className="text-sm text-muted-foreground">
-        Las cuentas aún no están disponibles: por ahora tu resultado queda asociado a este navegador.
-      </p>
+      <CreateAccountCta />
     </header>
   );
 }

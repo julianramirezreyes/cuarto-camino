@@ -17,3 +17,19 @@ export function resolveAuthSecret(
   }
   return secret;
 }
+
+/** Pure: the set of origins allowed to call the auth endpoints (BETTER_AUTH_URL and APP_URL). */
+export function resolveTrustedOrigins(
+  env: Record<string, string | undefined> = process.env,
+): string[] {
+  const origins = new Set<string>();
+  for (const raw of [env.BETTER_AUTH_URL, env.APP_URL]) {
+    if (!raw) continue;
+    try {
+      origins.add(new URL(raw).origin);
+    } catch {
+      /* ignore malformed values */
+    }
+  }
+  return [...origins];
+}
