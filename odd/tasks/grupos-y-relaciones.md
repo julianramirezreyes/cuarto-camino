@@ -10,7 +10,7 @@ delegated read-only research, delegated writers for content.
 - [x] T1 Groups on the diagram: centers as arcs (contiguous), Hornevian/harmonic as markers, legend, switcher, a11y labels, tokens
 - [x] T2 Research: relationship frameworks in the enneagram tradition + empirical evidence (read-only agent)
 - [x] T3 Domain: pure pair-dynamics derived from structure (shared/different groups, arrows, wings) + tests
-- [ ] T4 Content: per-type relationship profiles (friendship, work/society, family, partner), draft, sourced
+- [x] T4 Content: per-type relationship profiles (friendship, work/society, family, partner), draft, sourced
 - [ ] T5 UI: "Relaciones" tab in results + library section; pair explorer via the diagram
 - [ ] T6 E2E + docs + README
 
