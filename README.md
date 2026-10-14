@@ -58,11 +58,14 @@ presentado como lo que es: una **interpretación provisional**, no un diagnósti
 1. **Evaluación adaptativa.** No todas las personas reciben las mismas preguntas: el motor elige la siguiente según las respuestas
    anteriores, hasta que el resultado es estable o llega al máximo. Una pregunta por pantalla, con pausa, retroceso y guardado
    automático.
-2. **Mapa personal interactivo (12 secciones).** Tipo probable y alternativas, ala, instintos, nivel de funcionamiento reciente,
-   patrones automáticos, fortalezas, dificultades, conexiones (flechas, centros y grupos), dirección de crecimiento, cómo se
-   obtuvo el resultado y bibliografía. Se puede explorar **cualquiera de los nueve tipos**.
+2. **Mapa personal interactivo (13 secciones).** Tipo probable y alternativas, ala, instintos, nivel de funcionamiento reciente,
+   patrones automáticos, fortalezas, dificultades, conexiones (flechas, centros y grupos), **relaciones**, dirección de crecimiento,
+   cómo se obtuvo el resultado y bibliografía. Se puede explorar **cualquiera de los nueve tipos**.
 3. **Biblioteca pública.** Historia del símbolo y de cada escuela (Gurdjieff, Ichazo, Naranjo, Riso-Hudson, Chestnut, Palmer), los
    nueve tipos, las 18 alas, los **27 subtipos** instintivos y los **81 niveles** (9 por tipo).
+   **Relaciones** (también en `/biblioteca/relaciones`): cómo suele vivir cada tipo la amistad, la pareja, la familia y el trabajo, y
+   una lectura descriptiva de dos tipos a partir de los grupos del símbolo. Sin puntajes, rankings ni «parejas ideales»; ver
+   [`docs/relaciones.md`](docs/relaciones.md).
 4. **Sin cuenta obligatoria.** Sesión de invitado con cookie segura; opcionalmente crear cuenta y **vincular** el resultado.
 5. **Honestidad por diseño.** Los porcentajes son «compatibilidad relativa», nunca precisión; si hay ambigüedad o poca evidencia lo
    dice; nunca infiere salud mental ni asigna una pila instintiva completa.
@@ -211,6 +214,7 @@ Pensado para Vercel + Neon. Guía paso a paso, lista de variables y verificació
 | --- | --- |
 | [`motor-evaluacion.md`](docs/motor-evaluacion.md) | Algoritmo, fórmulas, parámetros y límites del motor |
 | [`validacion-psicometrica.md`](docs/validacion-psicometrica.md) | Plan para validar el cuestionario |
+| [`relaciones.md`](docs/relaciones.md) | Sección de relaciones: qué es y qué no es, evidencia, decisiones de diseño y cómo ampliarla |
 | [`api.md`](docs/api.md) | Contrato HTTP, errores y seguridad de la API |
 | [`base-de-datos.md`](docs/base-de-datos.md) | Esquema, decisiones y retención |
 | [`cuentas.md`](docs/cuentas.md) · [`correo.md`](docs/correo.md) | Cuentas, vinculación de invitados y correo |

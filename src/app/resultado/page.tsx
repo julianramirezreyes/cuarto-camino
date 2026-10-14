@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { connection } from "next/server";
 import { Suspense } from "react";
 import { buildAlternativeSummaries, buildTypeBundle } from "@/app/api/content/type-bundle";
+import { RELATIONSHIP_LENSES, RELATIONSHIP_PROFILES } from "@/content/relationships";
 import { SiteHeader } from "@/components/layout/site-header";
 import { ResultEmpty } from "@/components/results/result-empty";
 import { ResultsView } from "@/components/results/results-view";
@@ -28,7 +29,14 @@ async function ResultContent() {
       loaded.report.alternatives.slice(1, 3).map((a) => a.type),
     );
     content = (
-      <ResultsView assessmentId={loaded.assessmentId} report={loaded.report} meta={loaded.meta} primary={primary} alternatives={alternatives} />
+      <ResultsView
+        assessmentId={loaded.assessmentId}
+        report={loaded.report}
+        meta={loaded.meta}
+        primary={primary}
+        alternatives={alternatives}
+        relationships={{ profile: RELATIONSHIP_PROFILES[loaded.report.primaryType], lenses: RELATIONSHIP_LENSES }}
+      />
     );
   } else {
     content = <ResultEmpty reason={loaded.status === "insufficient" ? "insufficient" : "empty"} />;

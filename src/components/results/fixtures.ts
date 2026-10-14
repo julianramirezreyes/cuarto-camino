@@ -2,6 +2,7 @@
 import { buildAlternativeSummaries, buildTypeBundle } from "@/app/api/content/type-bundle";
 import type { AssessmentReport } from "@/domain/adaptive-engine";
 import type { Compatibility } from "@/domain/assessment/types";
+import { RELATIONSHIP_LENSES, RELATIONSHIP_PROFILES } from "@/content/relationships";
 import { ENNEAGRAM_TYPES, type EnneagramType } from "@/domain/enneagram/structure";
 import type { ResultMeta } from "./types";
 
@@ -49,7 +50,8 @@ export function makeProps(over: Partial<AssessmentReport> = {}, order?: Enneagra
     primary.profile,
     report.alternatives.slice(1, 3).map((a) => a.type),
   );
-  return { assessmentId: "11111111-1111-4111-8111-111111111111", report, meta: META, primary, alternatives };
+  const relationships = { profile: RELATIONSHIP_PROFILES[primary.type], lenses: RELATIONSHIP_LENSES };
+  return { assessmentId: "11111111-1111-4111-8111-111111111111", report, meta: META, primary, alternatives, relationships };
 }
 
 export { ENNEAGRAM_TYPES, buildTypeBundle };

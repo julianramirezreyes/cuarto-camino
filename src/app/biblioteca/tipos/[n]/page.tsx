@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { LibraryShell } from "@/components/library/library-shell";
 import { TypeNav } from "@/components/library/type-nav";
 import { TypeProfileView } from "@/components/library/type-profile-view";
@@ -30,6 +31,12 @@ export default async function TypePage({ params }: TypeParams) {
       ]}
     >
       <TypeSubnav type={type} current="" />
+      <p>
+        <Link href={`/biblioteca/relaciones/${type}`} className="underline underline-offset-4">
+          Cómo se relaciona este tipo
+        </Link>{" "}
+        <span className="text-sm text-muted-foreground">· amistad, pareja, familia y trabajo</span>
+      </p>
       <TypeProfileView type={type} />
       <TypeNav type={type} section="" />
     </LibraryShell>

@@ -13,11 +13,12 @@ import { InstinctSection } from "./sections/instinct-section";
 import { PersonalitySection } from "./sections/personality-section";
 import { DifficultiesSection, GrowthSection, PatternsSection, StrengthsSection } from "./sections/simple-sections";
 import { WingSection } from "./sections/wing-section";
-import type { AlternativeSummary, ResultMeta, TypeBundle } from "./types";
+import type { AlternativeSummary, RelationshipsBundle, ResultMeta, TypeBundle } from "./types";
 
 // Heavier sections are loaded only when their tab is opened.
 const LevelsSection = lazy(() => import("./sections/levels-section").then((m) => ({ default: m.LevelsSection })));
 const ConnectionsSection = lazy(() => import("./sections/connections-section").then((m) => ({ default: m.ConnectionsSection })));
+const RelationshipsSection = lazy(() => import("./sections/relationships-section").then((m) => ({ default: m.RelationshipsSection })));
 const HowSection = lazy(() => import("./sections/how-section").then((m) => ({ default: m.HowSection })));
 const BibliographySection = lazy(() => import("./sections/bibliography-section").then((m) => ({ default: m.BibliographySection })));
 
@@ -29,6 +30,8 @@ export interface ResultsViewProps {
   primary: TypeBundle;
   /** The two closest alternatives (positions 2 and 3 of the ranking). */
   alternatives: AlternativeSummary[];
+  /** Relationship guide of the probable type and the structural lenses, pre-sliced on the server. */
+  relationships: RelationshipsBundle;
 }
 
 const ALL_TABS: (TabDef & { ownOnly?: boolean })[] = [
@@ -41,6 +44,7 @@ const ALL_TABS: (TabDef & { ownOnly?: boolean })[] = [
   { id: "strengths", label: "Fortalezas" },
   { id: "difficulties", label: "Dificultades" },
   { id: "connections", label: "Conexiones" },
+  { id: "relationships", label: "Relaciones" },
   { id: "growth", label: "Dirección de crecimiento" },
   { id: "how", label: "Cómo se obtuvo", ownOnly: true },
   { id: "bibliography", label: "Bibliografía" },
@@ -51,7 +55,7 @@ type Reset = "idle" | "confirm" | "deleting" | "done";
 
 const Loading = () => <p className="text-muted-foreground">Cargando…</p>;
 
-export function ResultsView({ assessmentId, report, meta, primary, alternatives }: ResultsViewProps) {
+export function ResultsView({ assessmentId, report, meta, primary, alternatives, relationships }: ResultsViewProps) {
   const [active, setActive] = useState("personality");
   const [viewed, setViewed] = useState<EnneagramType>(primary.type);
   const [bundles, setBundles] = useState<Partial<Record<EnneagramType, TypeBundle>>>({ [primary.type]: primary });
@@ -147,6 +151,12 @@ export function ResultsView({ assessmentId, report, meta, primary, alternatives 
         return (
           <Suspense fallback={<Loading />}>
             <ConnectionsSection bundle={bundle} onSelectType={selectType} />
+          </Suspense>
+        );
+      case "relationships":
+        return (
+          <Suspense fallback={<Loading />}>
+            <RelationshipsSection type={bundle.type} mainProfile={relationships.profile} lenses={relationships.lenses} />
           </Suspense>
         );
       case "growth":

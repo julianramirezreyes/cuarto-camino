@@ -17,7 +17,7 @@ async function pulsado(boton: Locator, valor: boolean) {
 test.describe("evaluación completa de extremo a extremo", () => {
   test.setTimeout(300_000);
 
-  test("se completa por la UI y el resultado es provisional, con 12 secciones exploradas", async ({ page }) => {
+  test("se completa por la UI y el resultado es provisional, con 13 secciones exploradas", async ({ page }) => {
     const { id, answers } = await completeAssessment(page, "cycle");
     expect(answers).toBeGreaterThan(0);
     expect(answers).toBeLessThanOrEqual(120);
@@ -35,8 +35,8 @@ test.describe("evaluación completa de extremo a extremo", () => {
     await expect(cabecera).not.toContainText(/precisi[oó]n/i);
     await expect(cabecera.getByRole("meter").first()).toBeVisible();
 
-    // Doce pestañas.
-    await expect(page.getByRole("tab")).toHaveCount(12);
+    // Trece pestañas.
+    await expect(page.getByRole("tab")).toHaveCount(13);
     await expect(pestana(page, "Tu personalidad")).toHaveAttribute("aria-selected", "true");
 
     // Navegación por teclado entre pestañas (flechas, Fin, Inicio).
@@ -108,11 +108,11 @@ test.describe("evaluación completa de extremo a extremo", () => {
     const aviso = page.getByRole("status", { name: "Explorando otro eneatipo" });
     await expect(aviso).toContainText(`Estás explorando el tipo ${otro}`);
     await expect(aviso).toContainText("Esto no es tu resultado");
-    await expect(page.getByRole("tab")).toHaveCount(10); // sin "Tus alternativas" ni "Cómo se obtuvo"
+    await expect(page.getByRole("tab")).toHaveCount(11); // sin "Tus alternativas" ni "Cómo se obtuvo"
     await expect(pestana(page, "Tus alternativas")).toHaveCount(0);
     await aviso.getByRole("button", { name: "Volver a mi resultado" }).click();
     await expect(aviso).toBeHidden();
-    await expect(page.getByRole("tab")).toHaveCount(12);
+    await expect(page.getByRole("tab")).toHaveCount(13);
 
     // Cómo se obtuvo y bibliografía existen y no hablan de precisión del test.
     await abrir(page, "Cómo se obtuvo");

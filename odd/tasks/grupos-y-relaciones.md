@@ -11,8 +11,8 @@ delegated read-only research, delegated writers for content.
 - [x] T2 Research: relationship frameworks in the enneagram tradition + empirical evidence (read-only agent)
 - [x] T3 Domain: pure pair-dynamics derived from structure (shared/different groups, arrows, wings) + tests
 - [x] T4 Content: per-type relationship profiles (friendship, work/society, family, partner), draft, sourced
-- [ ] T5 UI: "Relaciones" tab in results + library section; pair explorer via the diagram
-- [ ] T6 E2E + docs + README
+- [x] T5 UI: "Relaciones" tab in results + library section; pair explorer via the diagram
+- [x] T6 E2E + docs + README
 
 ## Notes
 - The three groupings: centers (8,9,1 / 2,3,4 / 5,6,7), Hornevian (3,7,8 / 1,2,6 / 4,5,9), harmonic (1,3,5 / 2,7,9 / 4,6,8).

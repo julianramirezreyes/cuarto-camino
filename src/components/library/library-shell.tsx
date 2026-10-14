@@ -9,6 +9,7 @@ const SECTIONS = [
   ["Subtipos", "/biblioteca/subtipos"],
   ["Niveles", "/biblioteca/niveles"],
   ["Clasificaciones", "/biblioteca/clasificaciones"],
+  ["Relaciones", "/biblioteca/relaciones"],
   ["Bibliografía", "/biblioteca/bibliografia"],
 ] as const;
 

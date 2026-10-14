@@ -2,6 +2,8 @@
 import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { RELATIONSHIP_PROFILES } from "@/content/relationships";
+import { findForbidden } from "@/tests/forbidden-words";
 import { buildTypeBundle, makeProps } from "./fixtures";
 import { ResultsView } from "./results-view";
 
@@ -78,7 +80,7 @@ describe("tabs", () => {
     render(<ResultsView {...makeProps()} />);
     const list = screen.getByRole("tablist");
     const tabs = within(list).getAllByRole("tab");
-    expect(tabs).toHaveLength(12);
+    expect(tabs).toHaveLength(13);
     expect(tabs.filter((t) => t.getAttribute("aria-selected") === "true")).toHaveLength(1);
     expect(tabs[0]).toHaveAttribute("tabindex", "0");
     expect(tabs[1]).toHaveAttribute("tabindex", "-1");
@@ -93,19 +95,53 @@ describe("tabs", () => {
     expect(tabs[1]).toHaveFocus();
     expect(tabs[1]).toHaveAttribute("aria-selected", "true");
     await userEvent.keyboard("{End}");
-    expect(tabs[11]).toHaveFocus();
+    expect(tabs[12]).toHaveFocus();
     await userEvent.keyboard("{ArrowRight}");
     expect(tabs[0]).toHaveFocus();
     await userEvent.keyboard("{ArrowLeft}");
-    expect(tabs[11]).toHaveFocus();
+    expect(tabs[12]).toHaveFocus();
     await userEvent.keyboard("{Home}");
     expect(tabs[0]).toHaveAttribute("aria-selected", "true");
+  });
+
+  it("has a «Relaciones» tab right after «Conexiones»", () => {
+    render(<ResultsView {...makeProps()} />);
+    const names = screen.getAllByRole("tab").map((t) => t.textContent);
+    expect(names.indexOf("Relaciones")).toBe(names.indexOf("Conexiones") + 1);
   });
 
   it("lazy sections load when their tab is opened", async () => {
     render(<ResultsView {...makeProps()} />);
     await userEvent.click(screen.getByRole("tab", { name: /Tu estado actual/ }));
     expect(await screen.findByRole("group", { name: /nueve niveles/i })).toBeInTheDocument();
+  });
+});
+
+describe("Relaciones tab", () => {
+  it("shows the disclaimers, the user's type guide and the explorer, with no network and no forbidden words", async () => {
+    const props = makeProps();
+    render(<ResultsView {...props} />);
+    await userEvent.click(screen.getByRole("tab", { name: "Relaciones" }));
+    const panel = await screen.findByRole("tabpanel", { name: "Relaciones" });
+    expect(await within(panel).findByRole("heading", { name: "Antes de leer esto" })).toBeInTheDocument();
+    expect(within(panel).getByRole("heading", { name: new RegExp(`Cómo se relaciona el tipo ${props.primary.type}\\b`) })).toBeInTheDocument();
+    expect(within(panel).getByRole("group", { name: /Símbolo del eneagrama/ })).toBeInTheDocument();
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(findForbidden(panel.textContent ?? "")).toBeNull();
+  });
+
+  it("uses the explored type as the perspective while exploring", async () => {
+    fetchMock.mockImplementation(async (url: string) => {
+      if (url === "/api/content/type/8") return json(buildTypeBundle(8));
+      return json({ profile: RELATIONSHIP_PROFILES[Number(url.split("/").pop()) as 8] });
+    });
+    render(<ResultsView {...makeProps()} />);
+    await userEvent.click(screen.getByRole("button", { name: "Explorar otros eneatipos" }));
+    await userEvent.click(await screen.findByRole("button", { name: /^Eneatipo 8\b/ }));
+    await screen.findByRole("status", { name: /explorando/i });
+    await userEvent.click(screen.getByRole("tab", { name: "Relaciones" }));
+    expect(await screen.findByRole("heading", { name: /Cómo se relaciona el tipo 8/ })).toBeInTheDocument();
+    expect(fetchMock).toHaveBeenCalledWith("/api/content/relationships/8");
   });
 });
 
@@ -131,7 +167,7 @@ describe("actions", () => {
     expect(screen.getByText(buildTypeBundle(8).profile.summary)).toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: "Volver a mi resultado" }));
     expect(screen.queryByRole("status", { name: /explorando/i })).not.toBeInTheDocument();
-    expect(screen.getAllByRole("tab")).toHaveLength(12);
+    expect(screen.getAllByRole("tab")).toHaveLength(13);
   });
 
   it("reuses an already loaded type without fetching again", async () => {

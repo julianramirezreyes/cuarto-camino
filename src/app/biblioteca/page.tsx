@@ -17,6 +17,7 @@ const SECTIONS = [
   ["Subtipos", "/biblioteca/subtipos", "Las tres variantes instintivas de cada tipo y cómo se diferencian."],
   ["Niveles de desarrollo", "/biblioteca/niveles", "Nueve niveles por tipo, de un funcionamiento más flexible a uno más rígido."],
   ["Clasificaciones", "/biblioteca/clasificaciones", "Centros, grupos horneviano y armónico, flechas y una nota sobre tritipos."],
+  ["Relaciones", "/biblioteca/relaciones", "Cómo suele vivir cada tipo la amistad, la pareja, la familia y el trabajo, y qué pistas dan los grupos del símbolo. Descriptivo: sin puntajes ni parejas ideales."],
   ["Bibliografía", "/biblioteca/bibliografia", "Todas las fuentes citadas en la biblioteca."],
 ] as const;
 

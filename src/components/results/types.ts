@@ -1,4 +1,4 @@
-import type { LevelProfile, SourceRef, SubtypeProfile, TypeProfile, WingProfile } from "@/content/schema";
+import type { LevelProfile, RelationshipLenses, RelationshipProfile, SourceRef, SubtypeProfile, TypeProfile, WingProfile } from "@/content/schema";
 import type { EnneagramType } from "@/domain/enneagram/structure";
 
 /**
@@ -35,4 +35,10 @@ export interface ResultMeta {
   bankVersion: string;
   /** ISO string. */
   completedAt: string;
+}
+
+/** What the Relaciones tab needs from the server: ONLY the main type's guide plus the shared lenses. */
+export interface RelationshipsBundle {
+  profile: RelationshipProfile;
+  lenses: RelationshipLenses;
 }
