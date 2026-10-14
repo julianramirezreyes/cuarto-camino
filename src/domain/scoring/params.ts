@@ -18,6 +18,13 @@ export const SMOOTHING = 0.5;
 /** Wing: minimum |upper - lower| / (upper + lower) to name a likely wing. */
 export const WING_MARGIN = 0.2;
 
+/**
+ * Wing confidence shrinkage: confidence = margin * n / (n + WING_EVIDENCE_PRIOR), where n is the
+ * number of wing answers that carried evidence. A unanimous result from few answers therefore
+ * reports a modest confidence instead of 1. It is a heuristic, not a calibrated probability.
+ */
+export const WING_EVIDENCE_PRIOR = 3;
+
 /** Instinct: minimum (top - second) share gap to name a dominant instinct. */
 export const INSTINCT_MARGIN = 0.1;
 

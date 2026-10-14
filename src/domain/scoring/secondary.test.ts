@@ -18,7 +18,8 @@ describe("computeWing", () => {
   it("picks the dominant neighbour", () => {
     const w = computeWing(MINI_BANK, [pick("q-wing-2-1", "hi"), pick("q-wing-2-2", "hi")], 2);
     expect(w.likelyWing).toBe(3);
-    expect(w.confidence).toBeGreaterThan(0.9);
+    // margin 1 shrunk by n/(n+3) with n = 2 answers
+    expect(w.confidence).toBeCloseTo(0.4, 6);
   });
 
   it("returns null when neighbours are balanced", () => {

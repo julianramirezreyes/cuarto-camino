@@ -1,6 +1,6 @@
 import type { Answer, Question } from "@/domain/assessment/types";
 import { wingsOf, type EnneagramType } from "@/domain/enneagram/structure";
-import { WING_MARGIN, round9 } from "./params";
+import { WING_EVIDENCE_PRIOR, WING_MARGIN, round9 } from "./params";
 import { resolveAnswers, type ResolvedAnswer } from "./resolve";
 
 export interface WingResult {
@@ -11,7 +11,10 @@ export interface WingResult {
   scores: [number, number];
   /** Relative shares of the two neighbours (0.5/0.5 without evidence). */
   shares: [number, number];
-  /** |upper - lower| / (upper + lower), 0 without evidence. */
+  /**
+   * |upper - lower| / (upper + lower), shrunk by the amount of evidence: margin * n / (n + prior).
+   * 0 without evidence. Heuristic, not a calibrated probability.
+   */
   confidence: number;
   /** Winning neighbour, or null when evidence is absent or too balanced. */
   likelyWing: EnneagramType | null;
@@ -57,8 +60,10 @@ export function wingFromResolved(resolved: readonly ResolvedAnswer[], main: Enne
   sLo = round9(sLo);
   sHi = round9(sHi);
   const total = sLo + sHi;
-  const confidence = total > 0 ? Math.abs(sHi - sLo) / total : 0;
+  const margin = total > 0 ? Math.abs(sHi - sLo) / total : 0;
+  const confidence = margin * (evidenceCount / (evidenceCount + WING_EVIDENCE_PRIOR));
   const shares: [number, number] = total > 0 ? [sLo / total, sHi / total] : [0.5, 0.5];
-  const likelyWing = total > 0 && confidence >= WING_MARGIN ? (sHi > sLo ? hi : lo) : null;
+  // Naming a wing depends on the raw margin; `confidence` only tells how much to trust it.
+  const likelyWing = total > 0 && margin >= WING_MARGIN ? (sHi > sLo ? hi : lo) : null;
   return { main, wings: [lo, hi], scores: [sLo, sHi], shares, confidence, likelyWing, evidenceCount };
 }

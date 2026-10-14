@@ -46,9 +46,12 @@ share_t   = (shifted_t + k) / (Σ shifted + 9·k),   k = 0.5 (suavizado)
 Dado un tipo principal, se comparan sus dos vecinos (`wingsOf`, con envoltura 9↔1). Una pregunta del módulo `wing` sirve a un tipo principal si sus opciones puntúan **ambos** vecinos; así preguntas pensadas para otro tipo no contaminan.
 
 ```
-confianza = |sup − inf| / (sup + inf)
-ala probable = vecino ganador si confianza ≥ 0.20, si no null
+margen = |sup − inf| / (sup + inf)
+ala probable = vecino ganador si margen ≥ 0.20, si no null
+confianza = margen × n / (n + 3)   (n = respuestas de ala con evidencia)
 ```
+
+La `confianza` se encoge según la cantidad de evidencia: con pocas respuestas, aunque todas coincidan, no llega a 1 (con n = 3 vale 0.5). Es una heurística, no una probabilidad calibrada. El margen decide si se nombra un ala; la confianza solo indica cuánto fiarse.
 
 El tipo principal es el primero del ranking. Sin evidencia de tipo no se informa ala.
 
