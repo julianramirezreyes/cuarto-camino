@@ -233,7 +233,7 @@ describe("assessment flow over HTTP", () => {
     const body = await res.json();
     expect(body.report.primaryType).toBe(5);
     expect(body.engineVersion).toBe("1.0.0");
-    expect(body.bankVersion).toBe("1.0.0-draft");
+    expect(body.bankVersion).toBe("1.1.0-draft");
     expect(new Date(body.completedAt).toString()).not.toBe("Invalid Date");
   });
 

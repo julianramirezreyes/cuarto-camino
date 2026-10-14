@@ -24,7 +24,7 @@ describe("question bank: structure", () => {
 
   it("meets module quantity targets", () => {
     expect(byModule("type").length).toBeGreaterThanOrEqual(60);
-    expect(byModule("wing").length).toBeGreaterThanOrEqual(24);
+    expect(byModule("wing").length).toBe(54);
     expect(byModule("instinct").length).toBeGreaterThanOrEqual(24);
     expect(byModule("functioning").length).toBeGreaterThanOrEqual(20);
   });
@@ -256,11 +256,100 @@ describe("question bank: wing module", () => {
     }
   });
 
-  it("has at least 3 questions per main type separating its two neighbours", () => {
+  it("has exactly 6 questions per main type separating its two neighbours", () => {
+    expect(wingQs).toHaveLength(54);
     for (const t of ENNEAGRAM_TYPES) {
       const n = wingQs.filter((q) => q.relatedTypes[0] === t).length;
-      expect(n, `main type ${t}`).toBeGreaterThanOrEqual(3);
+      expect(n, `main type ${t}`).toBe(6);
     }
+  });
+
+  it("numbers wing ids q-wing-001..054 without gaps", () => {
+    expect(wingQs.map((q) => q.id)).toEqual(
+      Array.from(
+        { length: 54 },
+        (_, i) => `q-wing-${String(i + 1).padStart(3, "0")}`,
+      ),
+    );
+  });
+
+  it("never names a wing or a main type in wing question text", () => {
+    const wingWords = /\bala\s*[1-9]\b|\b[1-9]\s*w\s*[1-9]\b|eneagrama|\bnueve\b|\buno\b/i;
+    for (const q of wingQs) {
+      expect(q.text, q.id).not.toMatch(wingWords);
+      for (const o of q.options)
+        expect(o.text, `${q.id}/${o.id}`).not.toMatch(wingWords);
+    }
+  });
+
+  it("mixes kinds within each main type (scenario, motivation/forced, likert/frequency)", () => {
+    for (const t of ENNEAGRAM_TYPES) {
+      const kinds = new Set(
+        wingQs.filter((q) => q.relatedTypes[0] === t).map((q) => q.kind),
+      );
+      expect(kinds.has("scenario-choice"), `main ${t} scenario`).toBe(true);
+      expect(
+        kinds.has("motivation-comparison") || kinds.has("forced-choice"),
+        `main ${t} motivation`,
+      ).toBe(true);
+      expect(
+        kinds.has("likert") || kinds.has("frequency"),
+        `main ${t} scale`,
+      ).toBe(true);
+    }
+  });
+
+  it("keeps lower and upper wing evidence balanced per main type", () => {
+    for (const t of ENNEAGRAM_TYPES) {
+      const [lo, hi] = wingsOf(t);
+      let sLo = 0;
+      let sHi = 0;
+      let maxLo = 0;
+      let maxHi = 0;
+      for (const q of wingQs.filter((x) => x.relatedTypes[0] === t)) {
+        for (const o of q.options) {
+          sLo += o.scores.types?.[lo] ?? 0;
+          sHi += o.scores.types?.[hi] ?? 0;
+        }
+        maxLo += Math.max(...q.options.map((o) => o.scores.types?.[lo] ?? 0));
+        maxHi += Math.max(...q.options.map((o) => o.scores.types?.[hi] ?? 0));
+      }
+      console.info(
+        `wing balance main ${t}: lower(${lo})=${sLo.toFixed(2)} upper(${hi})=${sHi.toFixed(2)} max ${maxLo.toFixed(2)}/${maxHi.toFixed(2)}`,
+      );
+      expect(Math.abs(sLo - sHi) / (sLo + sHi), `main ${t} totals`).toBeLessThanOrEqual(0.05);
+      expect(Math.abs(maxLo - maxHi) / (maxLo + maxHi), `main ${t} max`).toBeLessThanOrEqual(0.05);
+    }
+  });
+
+  it("does not always put the same wing first in the choice questions of a main type", () => {
+    for (const t of ENNEAGRAM_TYPES) {
+      const [lo, hi] = wingsOf(t);
+      const firsts = wingQs
+        .filter(
+          (q) =>
+            q.relatedTypes[0] === t &&
+            (q.kind === "scenario-choice" ||
+              q.kind === "motivation-comparison" ||
+              q.kind === "forced-choice"),
+        )
+        .map((q) => {
+          const s = q.options[0]?.scores.types ?? {};
+          return (s[lo] ?? 0) > (s[hi] ?? 0) ? "lower" : "upper";
+        });
+      expect(firsts.filter((f) => f === "lower").length, `main ${t}`).toBe(
+        firsts.filter((f) => f === "upper").length,
+      );
+    }
+  });
+
+  it("does not repeat option texts inside the wing module", () => {
+    const texts = wingQs.flatMap((q) =>
+      q.kind === "likert" || q.kind === "frequency"
+        ? []
+        : q.options.map((o) => o.text),
+    );
+    expect(new Set(texts).size).toBe(texts.length);
   });
 });
 

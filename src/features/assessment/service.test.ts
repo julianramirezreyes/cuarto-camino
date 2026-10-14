@@ -81,7 +81,7 @@ describe("full flow with the real bank", () => {
     const res = await h.service.getResult(p, id);
     expect(res.report.primaryType).toBe(5);
     expect(res.engineVersion).toBe(ENGINE_VERSION);
-    expect(res.bankVersion).toBe("1.0.0-draft");
+    expect(res.bankVersion).toBe("1.1.0-draft");
     expect(res.completedAt).toBeInstanceOf(Date);
     expect(h.repo.assessments.get(id)?.status).toBe("completed");
     await rejectsWith(h.service.getCurrent(p), "not_found");
@@ -169,6 +169,31 @@ describe("answer validation", () => {
     const s = await h.service.startOrResume(p, consent);
     h.repo.assessments.get(s.assessment.id)!.bankVersion = "0.9.0";
     await rejectsWith(h.service.submitAnswer(p, s.assessment.id, s.question!.id, s.question!.options[0].id), "version_mismatch");
+  });
+});
+
+describe("assessments left open by an older bank version", () => {
+  it("do not break the entry screen: there is simply no current evaluation, and a fresh one can start", async () => {
+    const h = makeHarness();
+    const p = user("u1");
+    const old = await h.service.startOrResume(p, consent);
+    const stale = h.repo.assessments.get(old.assessment.id)!;
+    stale.bankVersion = "0.9.0";
+    stale.startedAt = new Date("2020-01-01T00:00:00Z"); // it was started long before the bank changed
+    await rejectsWith(h.service.getCurrent(p), "not_found");
+    const fresh = await h.service.startOrResume(p, consent);
+    expect(fresh.assessment.id).not.toBe(old.assessment.id);
+    expect(fresh.resumed).toBe(false);
+    // and the new one is what the user now continues
+    expect((await h.service.getCurrent(p)).assessment.id).toBe(fresh.assessment.id);
+  });
+
+  it("still refuses to answer or go back inside the old assessment (answers are never reinterpreted)", async () => {
+    const h = makeHarness();
+    const p = user("u1");
+    const old = await h.service.startOrResume(p, consent);
+    h.repo.assessments.get(old.assessment.id)!.engineVersion = "0.0.1";
+    await rejectsWith(h.service.submitAnswer(p, old.assessment.id, old.question!.id, old.question!.options[0].id), "version_mismatch");
   });
 });
 

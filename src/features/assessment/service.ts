@@ -131,7 +131,9 @@ export function createAssessmentService(deps: AssessmentServiceDeps) {
       const open = await repo.findOpenByOwner(ownerOf(principal));
       if (!open) throw new AssessmentError("not_found");
       const record = await loadOwned(principal, open.id);
-      assertInterpretable(record);
+      // Left open by an older bank/engine: not resumable (its answers must never be reinterpreted), but that must not
+      // break the entry screen. To the user there is simply no current evaluation, so a fresh one starts.
+      if (record.bankVersion !== bankVersion || record.engineVersion !== config.engineVersion) throw new AssessmentError("not_found");
       const walk = await loadWalk(record);
       if (!walk.next) {
         await complete(record, walk);

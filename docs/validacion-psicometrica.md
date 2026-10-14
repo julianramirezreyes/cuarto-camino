@@ -1,6 +1,6 @@
 # Plan de validación del cuestionario
 
-Que la app funcione técnicamente **no** significa que el cuestionario sea válido. Hoy el banco de 150 preguntas, sus puntajes y los
+Que la app funcione técnicamente **no** significa que el cuestionario sea válido. Hoy el banco de 177 preguntas (versión `1.1.0-draft`), sus puntajes y los
 criterios de parada son **hipótesis de diseño**. Las pruebas automáticas con respondientes simulados (`src/tests/engine-real-bank.test.ts`)
 comprueban que el motor converge y que el cableado funciona; **no son evidencia de precisión psicológica**.
 

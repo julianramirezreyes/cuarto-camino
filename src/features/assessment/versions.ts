@@ -5,6 +5,10 @@ import { DEFAULT_ENGINE_CONFIG } from "@/domain/adaptive-engine";
  * assessment (assessments.bank_version) so old answers are never reinterpreted against
  * a different bank. BUMP IT whenever a question, option, score or weight changes.
  */
-export const BANK_VERSION = "1.0.0-draft";
+/**
+ * History: 1.0.0-draft (150 questions) -> 1.1.0-draft (177: 3 more wing questions per main type, 6 each).
+ * Assessments left open under an older version are not resumable (see service.getCurrent): they start fresh.
+ */
+export const BANK_VERSION = "1.1.0-draft";
 
 export const ENGINE_VERSION = DEFAULT_ENGINE_CONFIG.engineVersion;
