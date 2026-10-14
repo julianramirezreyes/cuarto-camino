@@ -217,6 +217,7 @@ Pensado para Vercel + Neon. Guía paso a paso, lista de variables y verificació
 | [`seguridad-y-pwa.md`](docs/seguridad-y-pwa.md) | Cabeceras, caché, instalabilidad y lista de lanzamiento |
 | [`retencion-y-limites.md`](docs/retencion-y-limites.md) | Retención de datos y límite de tasa |
 | [`pruebas-e2e.md`](docs/pruebas-e2e.md) | Cómo correr y ampliar Playwright |
+| [`lighthouse.md`](docs/lighthouse.md) | Mediciones de rendimiento, accesibilidad, buenas prácticas y SEO en producción |
 | [`despliegue.md`](docs/despliegue.md) | Publicar en Vercel |
 
 ## Limitaciones conocidas y hoja de ruta
@@ -229,7 +230,7 @@ Pensado para Vercel + Neon. Guía paso a paso, lista de variables y verificació
 - Política de privacidad y datos del responsable del tratamiento (Ley 1581 de 2012), hoy marcados como pendientes.
 - Dominio propio y proveedor de correo para activar verificación y recuperación de contraseña.
 - Pendientes menores: descarga del resumen en PDF, «revisar mis respuestas», analítica anónima de producto, CSP con nonces en lugar de
-  `'unsafe-inline'`, Lighthouse y pruebas en dispositivos reales, navegadores distintos de Chrome.
+  `'unsafe-inline'`, pruebas en dispositivos reales y navegadores distintos de Chrome (Lighthouse ya medido: ver `docs/lighthouse.md`).
 
 **Visión futura (no incluida)**: caminos de crecimiento inspirados en el Cuarto Camino, ejercicios de autoobservación y recuerdo de sí,
 diarios, seguimiento longitudinal y comunidades. La arquitectura está preparada para incorporarlos, pero **no hay módulos vacíos**
