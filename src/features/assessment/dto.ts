@@ -12,8 +12,10 @@ export interface QuestionDTO {
 }
 
 export interface Progress {
-  /** Questions answered on the current path. */
+  /** Questions answered on the current path. Stays stable while going back. */
   answered: number;
+  /** 1-based position of the shown question on the path (the path length once finished). */
+  position: number;
   /** Module of the shown question (the last module when finished). */
   module: AssessmentModule;
   /** Zero-based position of the shown question inside its module. */
@@ -48,6 +50,7 @@ export function progressFor(
   const { min, max } = config.limits[mod];
   return {
     answered: trail.length,
+    position: question ? before.length + 1 : trail.length,
     module: mod,
     moduleIndex: before.filter((e) => e.question.module === mod).length,
     moduleMin: min,

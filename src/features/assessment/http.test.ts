@@ -53,7 +53,7 @@ describe("POST /api/assessments", () => {
     expect(body.resumed).toBe(false);
     expect(Object.keys(body.question).sort()).toEqual(["id", "kind", "module", "options", "text"]);
     expect(Object.keys(body.question.options[0]).sort()).toEqual(["id", "text"]);
-    expect(body.progress).toEqual({ answered: 0, module: "type", moduleIndex: 0, moduleMin: 18, moduleMax: 28 });
+    expect(body.progress).toEqual({ answered: 0, position: 1, module: "type", moduleIndex: 0, moduleMin: 18, moduleMax: 28 });
     const c = cookieOf(res);
     expect(c).toMatch(/^cc_guest=[A-Za-z0-9_-]{43};/);
     expect(c).toContain("HttpOnly");

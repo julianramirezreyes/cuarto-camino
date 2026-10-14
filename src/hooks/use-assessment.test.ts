@@ -17,7 +17,7 @@ const q1: QuestionDTO = {
   ],
 };
 const q2: QuestionDTO = { ...q1, id: "q2", text: "Pregunta dos" };
-const progress: Progress = { answered: 0, module: "type", moduleIndex: 0, moduleMin: 5, moduleMax: 10 };
+const progress: Progress = { answered: 0, position: 1, module: "type", moduleIndex: 0, moduleMin: 5, moduleMax: 10 };
 const assessment = { id: "as1", status: "in_progress" };
 
 function inQuestion(): AssessmentState {

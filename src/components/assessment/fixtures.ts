@@ -24,4 +24,4 @@ export const likert: QuestionDTO = {
   ],
 };
 
-export const progress: Progress = { answered: 3, module: "type", moduleIndex: 3, moduleMin: 5, moduleMax: 10 };
+export const progress: Progress = { answered: 3, position: 4, module: "type", moduleIndex: 3, moduleMin: 5, moduleMax: 10 };

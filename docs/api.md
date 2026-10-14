@@ -10,9 +10,9 @@ Los errores son siempre JSON `{ "error": "<codigo>" }`.
 `QuestionDTO = { id, text, kind, module, options: [{ id, text }], selectedOptionId? }`.
 Nunca se envían puntajes, pesos, discriminación, justificación ni referencias.
 
-`progress = { answered, module, moduleIndex, moduleMin, moduleMax }`:
+`progress = { answered, position, module, moduleIndex, moduleMin, moduleMax }`:
 `answered` = respuestas del camino actual; `module` = módulo de la pregunta mostrada (el último al terminar);
-`moduleIndex` = posición base 0 de la pregunta dentro de su módulo; `moduleMin/Max` = límites del motor.
+`position` = posición base 1 de la pregunta mostrada en el camino (no baja ni sube al retroceder más que la pregunta; `answered` se mantiene estable). `moduleIndex` = posición base 0 de la pregunta dentro de su módulo; `moduleMin/Max` = límites del motor.
 
 | Método y ruta | Cuerpo | Éxito | Errores |
 |---|---|---|---|

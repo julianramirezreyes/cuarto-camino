@@ -25,4 +25,10 @@ describe("ProgressHeader", () => {
     render(<ProgressHeader progress={{ ...progress, module: "functioning", moduleIndex: 0 }} />);
     expect(screen.getByText("Momento actual")).toBeInTheDocument();
   });
+
+  it("labels the shown question by its position, not by how many answers are stored (going back)", () => {
+    render(<ProgressHeader progress={{ ...progress, answered: 3, position: 2 }} />);
+    expect(screen.getByText("Pregunta 2")).toBeInTheDocument();
+    expect(screen.queryByText("Pregunta 4")).not.toBeInTheDocument();
+  });
 });

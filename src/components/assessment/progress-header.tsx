@@ -16,7 +16,7 @@ export function ProgressHeader({ progress }: { progress: Progress }) {
     <div className="space-y-3">
       <div aria-live="polite" className="flex items-baseline justify-between text-sm">
         <span className="font-medium">{MODULE_LABELS[progress.module]}</span>
-        <span className="text-muted-foreground">Pregunta {progress.answered + 1}</span>
+        <span className="text-muted-foreground">Pregunta {progress.position}</span>
       </div>
       <div
         role="progressbar"

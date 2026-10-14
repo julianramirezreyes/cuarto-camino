@@ -27,6 +27,8 @@ export interface QuestionDTO {
 
 export interface Progress {
   answered: number;
+  /** 1-based position of the shown question on the path. */
+  position: number;
   module: AssessmentModule;
   moduleIndex: number;
   moduleMin: number;
