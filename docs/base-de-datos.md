@@ -71,15 +71,17 @@ con sal en `account.password`. Ese campo no se lee ni escribe desde código prop
   `UPDATE guest_sessions SET claimed_by_user_id = $u, claimed_at = now() WHERE id = $g AND claimed_by_user_id IS NULL`
   (si afecta 0 filas, perdió una carrera), y luego mover `assessments` y `consent_records` poniendo `user_id` y anulando
   `guest_session_id` en el mismo `UPDATE` (así el CHECK de dueño único se cumple siempre).
-  La función de decisión es pura y está probada; **la transacción de reclamación aún no está implementada ni probada contra Postgres**.
+  La función de decisión es pura y está probada, y la transacción de reclamación está implementada (`drizzle-repository.ts`) y verificada de punta a punta contra Neon (invitado → registro → reclamación → lectura con sesión).
 
 ## Retención y derecho de borrado
 
-- `assessments.deleted_at`: borrado lógico inmediato (la API deja de devolverlo); `scripts/purge-expired.ts` lo elimina
-  físicamente tras 7 días de gracia (ver `src/lib/db/retention.ts`).
-- `assessments.expires_at`: límite duro de retención; también se purga.
-- Sesiones de invitado expiradas y sus evaluaciones/consentimientos se eliminan en una sola transacción.
-- Programar el script a diario (cron de Vercel hacia una ruta protegida, o GitHub Action).
+Política vigente (propuesta, pendiente de revisión legal) y su justificación: `docs/retencion-y-limites.md`. Resumen:
+
+- `assessments.deleted_at`: borrado lógico inmediato (la API deja de devolverlo); se elimina físicamente tras 7 días de gracia.
+- Sesiones de invitado inactivas más de 30 días se eliminan; sus evaluaciones y consentimientos caen por `ON DELETE CASCADE`.
+- Las evaluaciones de usuarios con cuenta no se purgan: viven hasta que el usuario las elimine (borrar la cuenta las borra).
+- `assessments.expires_at` ya no se usa para purgar; la columna se conserva.
+- La purga corre a diario en Vercel Cron (`/api/cron/purge`, protegida con `CRON_SECRET`; `vercel.json`).
 
 ## Drivers
 

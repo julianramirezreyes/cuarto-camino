@@ -69,10 +69,10 @@ hallar una pregunta sin respuesta (la actual) o hasta que el motor termine. Cons
   `APP_URL`); sin `Origin` se acepta solo con `Sec-Fetch-Site: same-origin`. Si no, `403 forbidden_origin`. Además la cookie
   es `SameSite=Lax`.
 - **Validación.** Esquemas Zod estrictos (`schemas.ts`), ids con patrón restringido, cuerpo máximo 2 KB.
-- **Límite de tasa.** Ventana fija en memoria (`rate-limit.ts`): inicio 10/min, resto de mutaciones 120/min por IP
-  (`X-Forwarded-For`). **En serverless cada instancia tiene su propia memoria**, así que es solo un freno por instancia, no un
-  límite global; para uso real hay que inyectar una implementación de `RateLimiter` sobre un almacén compartido (Upstash/Redis/KV).
-  Sin cabecera de IP todos comparten el cubo `unknown`.
+- **Límite de tasa.** Compartido entre instancias, guardado en Postgres (`rate_limits`, un `INSERT ... ON CONFLICT` atómico;
+  ver `rate-limit-shared.ts`): inicio 10/min, resto de mutaciones 120/min por IP (primer salto de `X-Forwarded-For`). La clave
+  guarda un hash de la IP, nunca la IP en claro. Si la base falla, cae a un limitador en memoria por instancia y registra solo
+  un código genérico. Sin cabecera de IP todos comparten el cubo `unknown`. Detalle en `docs/retencion-y-limites.md`.
 - **Logs.** Los errores inesperados registran solo el nombre del error (los mensajes de drivers/ORM pueden incluir parámetros,
   es decir, respuestas) y responden `500 internal_error` sin detalle. Nunca se registran cuerpos.
 - **Sin fuga de contenido sensible.** `QuestionDTO` copia solo campos públicos; el informe se entrega solo a su dueño.
