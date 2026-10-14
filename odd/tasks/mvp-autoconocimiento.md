@@ -12,8 +12,8 @@ Strict TDD: enabled (runner: vitest). Delivery strategy: ask-on-risk. Route: del
 - [x] T6 Assessment UX (landing, intro, questionnaire, persistence)
 - [x] T7 Interactive SVG enneagram + results report
 - [x] T8 Editorial content: 9 types, 27 subtypes, 18 wings, 81 levels (delegated writers)
-- [ ] T9 PWA, security, a11y, Playwright E2E
-- [x] T10 README, docs, pilot validation plan
+- [~] T9 PWA + security headers + account done; a11y partial (contrast fixed, no Lighthouse/screen reader); Playwright E2E NOT done
+- [ ] T10 README, env docs, deployment guide, pilot validation plan (NOT done: README is still the create-next-app default; wrongly checked earlier by an over-broad sed)
 
 ## Notes
 - Neon Auth (@neondatabase/auth 0.6.0-beta) is beta; using Better Auth + Drizzle adapter.
