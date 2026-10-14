@@ -9,8 +9,8 @@ Strict TDD: enabled (runner: vitest). Delivery strategy: ask-on-risk. Route: del
 - [x] T3 Scoring + adaptive engine (TDD, pure TS, versioned)
 - [x] T4 Question bank (typed, versioned, reviewed-flag)
 - [~] T5 DB schema/migrations/seeds/guest/auth factory DONE; claim transaction + Neon verification PENDING
-- [ ] T6 Assessment UX (landing, intro, questionnaire, persistence)
-- [ ] T7 Interactive SVG enneagram + results report
+- [x] T6 Assessment UX (landing, intro, questionnaire, persistence)
+- [x] T7 Interactive SVG enneagram + results report
 - [x] T8 Editorial content: 9 types, 27 subtypes, 18 wings, 81 levels (delegated writers)
 - [ ] T9 PWA, security, a11y, Playwright E2E
 - [x] T10 README, docs, pilot validation plan
