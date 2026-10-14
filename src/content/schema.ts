@@ -121,3 +121,55 @@ export interface LevelProfile {
   sources: string[];
   status: EditorialStatus;
 }
+
+/** Where two people relate. "work" covers work and society (teams, community, shared institutions). */
+export type RelationshipContext = "friendship" | "partner" | "family" | "work";
+
+export interface RelationshipContextGuide {
+  /** What a person of this type tends to bring to this kind of bond. */
+  brings: string[];
+  /** What they often need from the other person. */
+  needs: string[];
+  /** Frictions that may appear (framed as tendencies, never as predictions). */
+  frictions: string[];
+  /** Concrete, kind suggestions for communicating or caring for the bond. */
+  tips: string[];
+}
+
+/**
+ * How one type tends to relate to others. DESCRIPTIVE ONLY: no ranking of "best/worst partners", no scores,
+ * no predictions. Health level, wing, instinctual subtype and each person's story matter more than type.
+ */
+export interface RelationshipProfile {
+  type: EnneagramType;
+  summary: string;
+  contexts: Record<RelationshipContext, RelationshipContextGuide>;
+  /** What it helps other people to know when relating to this type. */
+  forOthers: string[];
+  /** Open questions for self-reflection or for a conversation between two people. */
+  reflectionQuestions: string[];
+  /** Note for two people who share this type. */
+  sameTypeNote: string;
+  /** Type-specific reminder about what matters more than the type (health, wing, subtype, history). */
+  caveats: string;
+  sources: string[];
+  status: EditorialStatus;
+}
+
+export type GroupSystemKey = "centers" | "hornevian" | "harmonic";
+
+/**
+ * Texts that explain what a structural fact between two people can mean. `shared[system][group]` is used when both
+ * belong to that group; `different[system][pairKey]` when they belong to two different groups (pairKey from
+ * `groupPairKey`, groups ordered as in the system). Every text is framed as a tendency, never as a verdict.
+ */
+export interface RelationshipLenses {
+  shared: Record<GroupSystemKey, Record<string, string>>;
+  different: Record<GroupSystemKey, Record<string, string>>;
+  arrows: { integration: string; stress: string };
+  adjacent: string;
+  sameType: string;
+  /** Honest framing shown with the feature (no evidence that the pair of types predicts satisfaction, etc.). */
+  disclaimers: string[];
+  status: EditorialStatus;
+}
