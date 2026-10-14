@@ -1,6 +1,17 @@
 {
   "version": "0.0.1",
   "configurations": [
-    { "name": "cuarto-camino-dev", "runtimeExecutable": "npm", "runtimeArgs": ["run", "dev", "--", "-p", "3000"], "port": 3000 }
+    {
+      "name": "cuarto-camino-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--", "-p", "3000"],
+      "port": 3000
+    },
+    {
+      "name": "cuarto-camino-prod",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": ["-c", "npm run build && npm run start -- -p 3000"],
+      "port": 3000
+    }
   ]
 }
