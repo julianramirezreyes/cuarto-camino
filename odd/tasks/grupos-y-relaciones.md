@@ -1,0 +1,20 @@
+# Grupos en el diagrama y sección de relaciones
+
+Objective: (1) show the three-triad groupings subtly on every enneagram diagram; (2) research whether the enneagram has
+relationship/"compatibility" frameworks and, if sound, add an honest "Relaciones" section (friendship, society/work, family,
+partner) to the results and library.
+Strict TDD: enabled (vitest). Delivery: direct commits to main (user's standing preference). Route: inline for the diagram,
+delegated read-only research, delegated writers for content.
+
+## Tasks
+- [ ] T1 Groups on the diagram: centers as arcs (contiguous), Hornevian/harmonic as markers, legend, switcher, a11y labels, tokens
+- [ ] T2 Research: relationship frameworks in the enneagram tradition + empirical evidence (read-only agent)
+- [ ] T3 Domain: pure pair-dynamics derived from structure (shared/different groups, arrows, wings) + tests
+- [ ] T4 Content: per-type relationship profiles (friendship, work/society, family, partner), draft, sourced
+- [ ] T5 UI: "Relaciones" tab in results + library section; pair explorer via the diagram
+- [ ] T6 E2E + docs + README
+
+## Notes
+- The three groupings: centers (8,9,1 / 2,3,4 / 5,6,7), Hornevian (3,7,8 / 1,2,6 / 4,5,9), harmonic (1,3,5 / 2,7,9 / 4,6,8).
+- Only centers are contiguous on the circle (arcs); the other two need per-node markers. Never rely on color alone.
+- No ranking of "most compatible" types; no deterministic claims; present as conversation starters.
