@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { shrunkWingShares } from "@/domain/scoring/wing";
 import type { WingProfile } from "@/content/schema";
 import type { ReportWing } from "@/domain/adaptive-engine";
 import type { EnneagramType } from "@/domain/enneagram/structure";
@@ -47,6 +48,8 @@ export function WingSection({ bundle, wing, title = "Tu ala" }: { bundle: TypeBu
   const [choice, setChoice] = useState<Choice>(wing?.likelyWing ?? "open");
   const selected = choice === "open" ? null : wings.find((w) => w.wing === choice) ?? null;
   const showShares = wing !== undefined && wing.evidenceCount > 0 && wing.wings !== null;
+  // The raw split ignores how few answers produced it; show it pulled toward 50/50 (see shrunkWingShares).
+  const shown = wing ? shrunkWingShares(wing.shares, wing.evidenceCount) : ([0.5, 0.5] as const);
 
   return (
     <SectionShell
@@ -55,12 +58,14 @@ export function WingSection({ bundle, wing, title = "Tu ala" }: { bundle: TypeBu
     >
       {showShares && wing.wings ? (
         <Card title="Compatibilidad relativa entre las dos alas">
-          <ShareBar label={`ala ${wing.wings[0]}`} share={wing.shares[0]} />
-          <ShareBar label={`ala ${wing.wings[1]}`} share={wing.shares[1]} />
+          <ShareBar label={`ala ${wing.wings[0]}`} share={shown[0]} />
+          <ShareBar label={`ala ${wing.wings[1]}`} share={shown[1]} />
           <p className="text-sm text-muted-foreground">
             {wing.likelyWing === null
               ? "Con tus respuestas no hay una ala claramente más compatible."
-              : `Tus respuestas se inclinan hacia el ala ${wing.likelyWing}, sin certeza.`}
+              : `Tus respuestas se inclinan hacia el ala ${wing.likelyWing}, sin certeza.`}{" "}
+            Se calcula con solo {wing.evidenceCount} {wing.evidenceCount === 1 ? "respuesta" : "respuestas"} sobre el ala: con tan
+            pocas, la diferencia es una pista débil y las proporciones se acercan a un reparto parejo a propósito.
           </p>
         </Card>
       ) : null}

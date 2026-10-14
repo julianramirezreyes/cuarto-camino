@@ -47,6 +47,16 @@ describe("AlternativesSection", () => {
 });
 
 describe("WingSection", () => {
+  it("shows the wing split pulled toward 50/50 and says how many answers it rests on (3 answers must not look like 90/10)", () => {
+    const wing = { ...report.wing, shares: [0.1, 0.9] as [number, number], evidenceCount: 3, likelyWing: report.wing.wings ? report.wing.wings[1] : null };
+    render(<WingSection bundle={bundle} wing={wing} />);
+    const text = document.body.textContent ?? "";
+    expect(text).toMatch(/30%/);
+    expect(text).toMatch(/70%/);
+    expect(text).not.toMatch(/90%/);
+    expect(text).toMatch(/3 respuestas/);
+  });
+
   it("preselects the likely wing and lets the user switch", async () => {
     render(<WingSection bundle={bundle} wing={report.wing} />);
     const [w3, w5] = bundle.wings.slice().sort((a, b) => a.wing - b.wing);

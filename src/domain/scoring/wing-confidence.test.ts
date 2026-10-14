@@ -42,3 +42,33 @@ describe("wing confidence shrinks with the amount of evidence", () => {
     expect(computeWing([], [], 2).confidence).toBe(0);
   });
 });
+
+import { shrunkWingShares } from "./wing";
+
+describe("shrunkWingShares (what the screen shows)", () => {
+  it("is an even split without evidence", () => {
+    expect(shrunkWingShares([0.9, 0.1], 0)).toEqual([0.5, 0.5]);
+  });
+
+  it("pulls a lopsided split toward 50/50 when there are few answers", () => {
+    const [a, b] = shrunkWingShares([0.1, 0.9], 3); // 3 answers: 0.5 + (0.9 - 0.5) * 3/6 = 0.7
+    expect(a).toBeCloseTo(0.3, 2);
+    expect(b).toBeCloseTo(0.7, 2);
+  });
+
+  it("approaches the raw split as evidence grows, never beyond it", () => {
+    const few = shrunkWingShares([0.1, 0.9], 3)[1];
+    const many = shrunkWingShares([0.1, 0.9], 30)[1];
+    expect(many).toBeGreaterThan(few);
+    expect(many).toBeLessThan(0.9);
+  });
+
+  it("keeps the order, sums to exactly 1 and uses whole percentages", () => {
+    for (const n of [1, 2, 3, 6, 12]) {
+      const [a, b] = shrunkWingShares([0.25, 0.75], n);
+      expect(a).toBeLessThan(b);
+      expect(a + b).toBeCloseTo(1, 10);
+      expect(Math.round(a * 100)).toBeCloseTo(a * 100, 6);
+    }
+  });
+});

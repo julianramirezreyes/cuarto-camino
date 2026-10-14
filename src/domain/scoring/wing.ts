@@ -67,3 +67,14 @@ export function wingFromResolved(resolved: readonly ResolvedAnswer[], main: Enne
   const likelyWing = total > 0 && margin >= WING_MARGIN ? (sHi > sLo ? hi : lo) : null;
   return { main, wings: [lo, hi], scores: [sLo, sHi], shares, confidence, likelyWing, evidenceCount };
 }
+
+/**
+ * Shares to SHOW for the two wings. The raw split ignores how many answers produced it (three unanimous answers
+ * give 90/10), so it is pulled toward 50/50 with the same prior used for `confidence`, and rounded to whole
+ * percentages that add up to 100. Works on already stored reports, which only carry `shares` and `evidenceCount`.
+ */
+export function shrunkWingShares(shares: readonly [number, number], evidenceCount: number): [number, number] {
+  const factor = evidenceCount / (evidenceCount + WING_EVIDENCE_PRIOR);
+  const second = Math.round((0.5 + (shares[1] - 0.5) * factor) * 100) / 100;
+  return [Math.round((1 - second) * 100) / 100, second];
+}
