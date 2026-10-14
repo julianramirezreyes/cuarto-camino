@@ -67,6 +67,8 @@ export interface AssessmentRepository {
   findById(id: string): Promise<AssessmentRecord | null>;
   /** Most recent in_progress/paused, non-deleted assessment of the owner. */
   findOpenByOwner(owner: Owner): Promise<AssessmentRecord | null>;
+  /** Most recently completed, non-deleted assessment of the owner. */
+  findLatestCompletedByOwner(owner: Owner): Promise<AssessmentRecord | null>;
   /** Inserts the assessment AND its consent record atomically. */
   create(input: CreateAssessmentInput): Promise<AssessmentRecord>;
   listAnswers(assessmentId: string): Promise<StoredAnswer[]>;

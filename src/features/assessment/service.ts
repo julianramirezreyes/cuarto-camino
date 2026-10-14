@@ -205,6 +205,11 @@ export function createAssessmentService(deps: AssessmentServiceDeps) {
       return { status: "paused" };
     },
 
+    /** Id of the principal's own latest completed assessment, or null. Ownership is by construction. */
+    async findLatestCompletedId(principal: Principal): Promise<string | null> {
+      return (await repo.findLatestCompletedByOwner(principal))?.id ?? null;
+    },
+
     async getResult(principal: Principal, id: string): Promise<ResultView> {
       const record = await loadOwned(principal, id);
       if (record.status !== "completed" || !record.completedAt) throw new AssessmentError("not_complete");

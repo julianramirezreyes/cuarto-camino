@@ -63,6 +63,16 @@ export function createDrizzleAssessmentRepository({ db, transaction }: DrizzleRe
       return row ? toAssessment(row) : null;
     },
 
+    async findLatestCompletedByOwner(owner) {
+      const [row] = await db
+        .select()
+        .from(assessments)
+        .where(and(ownerCondition(owner), eq(assessments.status, "completed"), isNull(assessments.deletedAt)))
+        .orderBy(desc(assessments.completedAt))
+        .limit(1);
+      return row ? toAssessment(row) : null;
+    },
+
     async create({ owner, engineVersion, bankVersion, policyVersion, now }) {
       const userId = owner.kind === "user" ? owner.userId : null;
       const guestSessionId = owner.kind === "guest" ? owner.guestSessionId : null;

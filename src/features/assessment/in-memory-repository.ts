@@ -42,6 +42,19 @@ export class InMemoryAssessmentRepository implements AssessmentRepository {
     return open[0] ? { ...open[0] } : null;
   }
 
+  async findLatestCompletedByOwner(owner: Owner) {
+    const done = [...this.assessments.values()]
+      .filter(
+        (a) =>
+          a.deletedAt === null &&
+          a.status === "completed" &&
+          a.completedAt !== null &&
+          (owner.kind === "user" ? a.userId === owner.userId : a.guestSessionId === owner.guestSessionId),
+      )
+      .sort((x, y) => (y.completedAt?.getTime() ?? 0) - (x.completedAt?.getTime() ?? 0));
+    return done[0] ? { ...done[0] } : null;
+  }
+
   async create(input: CreateAssessmentInput) {
     const userId = input.owner.kind === "user" ? input.owner.userId : null;
     const guestSessionId = input.owner.kind === "guest" ? input.owner.guestSessionId : null;
