@@ -124,7 +124,7 @@ describe("AssessmentFlow", () => {
     expect(screen.getByRole("button", { name: /anterior/i })).toBeDisabled();
   });
 
-  it("pauses through the dialog and offers a link to resume", async () => {
+  async function pauseFromFirstQuestion() {
     withCurrent();
     routes["POST /api/assessments/as1/pause"] = () => json({ status: "paused" });
     render(<AssessmentFlow />);
@@ -132,8 +132,27 @@ describe("AssessmentFlow", () => {
     await userEvent.click(screen.getByRole("button", { name: /^pausar$/i }));
     await userEvent.click(screen.getByRole("button", { name: "Pausar y guardar" }));
     expect(await screen.findByRole("heading", { name: /pausa guardada/i })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /continuar más tarde/i })).toHaveAttribute("href", "/evaluacion");
+  }
+
+  it("pauses through the dialog and saves the pause on the server", async () => {
+    await pauseFromFirstQuestion();
     expect(calls.some((c) => c.key === "POST /api/assessments/as1/pause")).toBe(true);
+  });
+
+  it("'Seguir ahora' returns to the same question right away, without asking the server again", async () => {
+    await pauseFromFirstQuestion();
+    const currentCallsBefore = calls.filter((c) => c.key === "GET /api/assessments/current").length;
+    await userEvent.click(screen.getByRole("button", { name: "Seguir ahora" }));
+    expect(screen.getByRole("button", { name: /Me anticipo/ })).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: /pausa guardada/i })).not.toBeInTheDocument();
+    expect(calls.filter((c) => c.key === "GET /api/assessments/current")).toHaveLength(currentCallsBefore);
+  });
+
+  it("the way out of the pause leads to a DIFFERENT page (a link to the page you are already on does nothing)", async () => {
+    await pauseFromFirstQuestion();
+    const exit = screen.getByRole("link", { name: /salir y seguir más tarde/i });
+    expect(exit).toHaveAttribute("href", "/");
+    expect(screen.queryByRole("link", { name: /continuar más tarde/i })).not.toBeInTheDocument();
   });
 
   it("opens the pause dialog with Escape", async () => {

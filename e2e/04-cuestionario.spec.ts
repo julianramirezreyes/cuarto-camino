@@ -1,3 +1,4 @@
+import type { Page } from "@playwright/test";
 import { answerCurrent, currentQuestionId, QUESTION, startAssessment, waitForNext } from "./helpers";
 import { expect, test } from "./fixtures";
 
@@ -82,6 +83,38 @@ test.describe("cuestionario", () => {
     await page.getByRole("button", { name: "Continuar donde lo dejaste" }).click();
     await expect(page.locator(QUESTION)).toBeVisible();
     expect(await currentQuestionId(page)).toBe(pendiente);
+    await expect(posicion(page)).toHaveText("Pregunta 3");
+  });
+
+  async function pausarEnLaPregunta3(page: Page) {
+    await startAssessment(page);
+    await answerCurrent(page, 0);
+    await answerCurrent(page, 0);
+    await expect(posicion(page)).toHaveText("Pregunta 3");
+    await page.getByRole("button", { name: "Pausar" }).click();
+    await page.getByRole("dialog", { name: "¿Quieres pausar?" }).getByRole("button", { name: "Pausar y guardar" }).click();
+    await expect(page.getByRole("heading", { name: "Pausa guardada" })).toBeVisible();
+  }
+
+  // Regresión: el botón de la pausa antes era un enlace a /evaluacion (la misma página) y no hacía nada.
+  test("en la pausa, «Seguir ahora» vuelve de inmediato a la misma pregunta y se puede seguir respondiendo", async ({ page }) => {
+    await pausarEnLaPregunta3(page);
+    await page.getByRole("button", { name: "Seguir ahora" }).click();
+    await expect(page.locator(QUESTION)).toBeVisible();
+    await expect(posicion(page)).toHaveText("Pregunta 3");
+    await answerCurrent(page, 0);
+    await expect(posicion(page)).toHaveText("Pregunta 4");
+  });
+
+  test("en la pausa, «Salir y seguir más tarde» lleva al inicio y al volver se ofrece continuar", async ({ page }) => {
+    await pausarEnLaPregunta3(page);
+    await page.getByRole("link", { name: "Salir y seguir más tarde" }).click();
+    await expect(page).toHaveURL(/\/$/);
+    // Volver por navegación normal (sin recargar): inicio → introducción → evaluación.
+    await page.getByRole("link", { name: "Comenzar mi descubrimiento" }).click();
+    await page.getByRole("link", { name: "Entiendo, continuar" }).click();
+    await expect(page.getByRole("heading", { name: "Tienes una evaluación en curso" })).toBeVisible({ timeout: 30_000 });
+    await page.getByRole("button", { name: "Continuar donde lo dejaste" }).click();
     await expect(posicion(page)).toHaveText("Pregunta 3");
   });
 

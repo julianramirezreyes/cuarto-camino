@@ -56,14 +56,18 @@ export function AssessmentFlow() {
       <div className="space-y-6">
         <h1 className="font-serif text-3xl md:text-4xl">Pausa guardada</h1>
         <p className="text-muted-foreground">
-          Tu avance está a salvo. Tómate el tiempo que necesites: cuando quieras seguir, estará esperándote.
+          Tu avance está a salvo. Tómate el tiempo que necesites: puedes seguir ahora mismo o salir y volver cuando
+          quieras; al regresar a la evaluación te preguntaremos si continúas donde lo dejaste.
         </p>
-        <Link
-          href="/evaluacion"
-          className="inline-flex min-h-12 items-center justify-center rounded-full bg-primary px-6 text-base font-medium text-primary-foreground hover:opacity-90"
-        >
-          Continuar más tarde
-        </Link>
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <Button onClick={continueExisting}>Seguir ahora</Button>
+          <Link
+            href="/"
+            className="inline-flex min-h-12 items-center justify-center rounded-full border border-control bg-card px-6 text-base font-medium text-foreground hover:bg-muted"
+          >
+            Salir y seguir más tarde
+          </Link>
+        </div>
       </div>
     );
   } else if (status === "done") {
