@@ -2,13 +2,13 @@
 
 Motor puro y determinista en TypeScript (sin React, Next ni base de datos).
 
-- `src/domain/scoring/`: cálculo de compatibilidad, ala, instinto, funcionamiento e inconsistencias.
+- `src/domain/scoring/`: cálculo de afinidad por tipo (en el código sigue llamándose `compatibility`), ala, instinto, funcionamiento e inconsistencias.
 - `src/domain/adaptive-engine/`: selección de la siguiente pregunta, criterios de parada, informe y driver de sesión.
 - Contrato de datos: `src/domain/assessment/types.ts`.
 
 ## Advertencia principal
 
-Todo `share` que produce el motor es una **compatibilidad relativa** entre alternativas. **No es una probabilidad calibrada**: no significa "tienes un 45 % de probabilidad de ser tipo 4". Los parámetros (pesos, discriminación, márgenes) son hipótesis de diseño, no valores estimados con datos reales.
+Todo `share` que produce el motor es una **afinidad relativa** entre alternativas. **No es una probabilidad calibrada**: no significa "tienes un 45 % de probabilidad de ser tipo 4". Los parámetros (pesos, discriminación, márgenes) son hipótesis de diseño, no valores estimados con datos reales.
 
 ## 1. Normalización de respuestas
 
@@ -19,7 +19,7 @@ Antes de puntuar, las respuestas se normalizan (`resolveAnswers`):
 3. Si una pregunta se respondió varias veces, **la última reemplaza a las anteriores**.
 4. Se ordenan por posición en el banco, por lo que el resultado **no depende del orden** en que llegaron las respuestas (los redondeos de punto flotante son idénticos).
 
-## 2. Compatibilidad por tipo
+## 2. Afinidad por tipo
 
 Solo usa preguntas del módulo `type`.
 
@@ -114,7 +114,7 @@ Wing, instinct y functioning paran con `stable` cuando su resultado está decidi
 
 ## 9. Informe (`buildReport`)
 
-Incluye: `engineVersion`, `primaryType` (null sin evidencia), `ranking` (9 tipos), `alternatives` (top 3), `ambiguous` (brecha entre 1.º y 2.º < `ambiguityMargin`, o sin evidencia), `inconsistencies`, `moduleCounts`, `wing`, `instinct`, `functioning`, `stop` y `explanation` (frases en español que describen cómo se derivó el resultado e incluyen la aclaración de compatibilidad relativa).
+Incluye: `engineVersion`, `primaryType` (null sin evidencia), `ranking` (9 tipos), `alternatives` (top 3), `ambiguous` (brecha entre 1.º y 2.º < `ambiguityMargin`, o sin evidencia), `inconsistencies`, `moduleCounts`, `wing`, `instinct`, `functioning`, `stop` y `explanation` (frases en español que describen cómo se derivó el resultado e incluyen la aclaración de afinidad relativa).
 
 ## 10. Parámetros por defecto (`DEFAULT_ENGINE_CONFIG`)
 
@@ -144,3 +144,11 @@ El motor no guarda estado: la siguiente pregunta es función pura de `(banco, re
 - Los pesos, la discriminación y los márgenes no están calibrados con datos reales. Hace falta un estudio empírico (muestras, análisis de ítems, estabilidad test-retest) antes de afirmar precisión.
 - El Eneagrama no tiene validación científica sólida como taxonomía de la personalidad; el resultado es una herramienta de autoconocimiento y reflexión, no un diagnóstico.
 - Las flechas de integración/estrés y la banda de funcionamiento son modelos interpretativos y varían según la escuela.
+
+## Nota de terminología
+
+Hasta octubre de 2026 la interfaz y las frases del informe decían «compatibilidad relativa». Se cambió a **«afinidad relativa»** para
+reservar la palabra «compatibilidad» (que sugiere una predicción sobre parejas) y no mezclarla con la sección de Relaciones, que la
+evita a propósito (ver `docs/relaciones.md`). El cambio es solo de redacción: **no cambia ningún cálculo**, por eso `engineVersion` sigue
+siendo `1.0.0`. Los identificadores internos (`computeCompatibility`, `Compatibility`) conservan el nombre antiguo. Los informes ya
+guardados son inmutables y conservan las frases con la redacción de cuando se generaron.

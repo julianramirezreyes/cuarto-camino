@@ -29,11 +29,29 @@ test.describe("evaluación completa de extremo a extremo", () => {
     const tipo = Number((await titulo.innerText()).match(/^Tipo (\d)/)![1]);
 
     const cabecera = page.locator("header", { hasText: "Interpretación provisional" });
-    await expect(cabecera.getByRole("heading", { name: "Compatibilidad relativa" })).toBeVisible();
-    await expect(cabecera).toContainText("compatibilidad relativa");
+    await expect(cabecera.getByRole("heading", { name: "Afinidad relativa" })).toBeVisible();
+    await expect(cabecera).toContainText("afinidad relativa");
     await expect(cabecera).toContainText(/No es una probabilidad ni un diagnóstico/);
     await expect(cabecera).not.toContainText(/precisi[oó]n/i);
     await expect(cabecera.getByRole("meter").first()).toBeVisible();
+
+    // Selector de tus tipos más cercanos: tocar una alternativa abre todo sobre ese tipo; tocar el tuyo vuelve.
+    const cercanos = cabecera.getByRole("group", { name: "Tus tipos más cercanos" });
+    const botones = cercanos.getByRole("button");
+    await expect(botones).toHaveCount(3);
+    await expect(botones.first()).toHaveAttribute("aria-pressed", "true");
+    const alternativa = botones.nth(1);
+    const etiqueta = (await alternativa.innerText()).replace(/\s*›\s*$/, "").trim(); // «Tipo N · Nombre»
+    const tipoAlt = Number(etiqueta.match(/^Tipo (\d)/)![1]);
+    await alternativa.click();
+    const avisoExplorando = page.getByRole("status", { name: "Explorando otro eneatipo" });
+    await expect(avisoExplorando).toContainText(`tipo ${tipoAlt}`);
+    await expect(alternativa).toHaveAttribute("aria-pressed", "true");
+    await expect(page.getByRole("tabpanel").first()).toContainText(`Personalidad del tipo ${tipoAlt}`);
+    await expect(titulo).toHaveText(new RegExp(`^Tipo ${tipo} · `)); // tu resultado no cambia
+    await botones.first().click();
+    await expect(avisoExplorando).toHaveCount(0);
+    await expect(botones.first()).toHaveAttribute("aria-pressed", "true");
 
     // Trece pestañas.
     await expect(page.getByRole("tab")).toHaveCount(13);

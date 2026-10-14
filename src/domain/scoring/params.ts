@@ -1,7 +1,7 @@
 /**
  * Tunable constants of the scoring layer.
  *
- * IMPORTANT: every "share" produced by this engine is a RELATIVE COMPATIBILITY
+ * IMPORTANT: every "share" produced by this engine is a RELATIVE AFFINITY
  * index (how the evidence is distributed among the alternatives). It is NOT a
  * calibrated probability and must never be presented as "X% chance of being
  * type N".

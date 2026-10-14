@@ -33,8 +33,14 @@ describe("header", () => {
     expect(screen.getAllByText(props.primary.profile.coreMotivation).length).toBeGreaterThan(0);
     expect(screen.getByText("Interpretación provisional")).toBeInTheDocument();
     for (const a of props.alternatives) expect(screen.getAllByText(new RegExp(`Tipo ${a.type}`)).length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/compatibilidad relativa/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/afinidad relativa/i).length).toBeGreaterThan(0);
     expect(screen.getByText(/no es una probabilidad/i)).toBeInTheDocument();
+  });
+
+  it("never uses the word «compatibilidad» anywhere in the report (it is «afinidad relativa» to leave that word to relationships)", () => {
+    render(<ResultsView {...makeProps()} />);
+    expect(document.body.textContent).not.toMatch(/compatib/i);
+    expect(document.body.textContent).toMatch(/más afín/i);
   });
 
   it("shows the ambiguity notice only when the report is ambiguous", () => {
@@ -168,6 +174,52 @@ describe("actions", () => {
     await userEvent.click(screen.getByRole("button", { name: "Volver a mi resultado" }));
     expect(screen.queryByRole("status", { name: /explorando/i })).not.toBeInTheDocument();
     expect(screen.getAllByRole("tab")).toHaveLength(13);
+  });
+
+  describe("choosing among your closest types", () => {
+    it("shows your type and each alternative as a selector, with your own marked as the one being viewed", () => {
+      const props = makeProps();
+      render(<ResultsView {...props} />);
+      const group = screen.getByRole("group", { name: /tus tipos más cercanos/i });
+      const own = within(group).getByRole("button", { name: new RegExp(`Tipo ${props.primary.type} ·`) });
+      expect(own).toHaveAttribute("aria-pressed", "true");
+      for (const a of props.alternatives) {
+        const btn = within(group).getByRole("button", { name: new RegExp(`Tipo ${a.type} · ${a.name}`) });
+        expect(btn).toHaveAttribute("aria-pressed", "false");
+      }
+      expect(screen.getByText(/toca un tipo para ver todo sobre él/i)).toBeInTheDocument();
+    });
+
+    it("tapping an alternative opens everything about that type and says you are exploring it; tapping yours goes back", async () => {
+      const props = makeProps();
+      const alt = props.alternatives[0];
+      fetchMock.mockResolvedValue(json(buildTypeBundle(alt.type)));
+      render(<ResultsView {...props} />);
+      const group = screen.getByRole("group", { name: /tus tipos más cercanos/i });
+      await userEvent.click(within(group).getByRole("button", { name: new RegExp(`Tipo ${alt.type} · ${alt.name}`) }));
+
+      expect(fetchMock).toHaveBeenCalledWith(`/api/content/type/${alt.type}`);
+      const banner = await screen.findByRole("status", { name: /explorando/i });
+      expect(banner).toHaveTextContent(new RegExp(`tipo ${alt.type}`, "i"));
+      expect(within(group).getByRole("button", { name: new RegExp(`Tipo ${alt.type} · ${alt.name}`) })).toHaveAttribute("aria-pressed", "true");
+      // its profile is what the panel shows now
+      expect(screen.getByRole("tab", { name: /Tu personalidad/ })).toHaveAttribute("aria-selected", "true");
+      expect(screen.getByText(buildTypeBundle(alt.type).profile.summary)).toBeInTheDocument();
+
+      await userEvent.click(within(group).getByRole("button", { name: new RegExp(`Tipo ${props.primary.type} ·`) }));
+      await waitFor(() => expect(screen.queryByRole("status", { name: /explorando/i })).not.toBeInTheDocument());
+      expect(within(group).getByRole("button", { name: new RegExp(`Tipo ${props.primary.type} ·`) })).toHaveAttribute("aria-pressed", "true");
+    });
+
+    it("the 'Tus alternativas' tab also offers 'Ver todo sobre el tipo N' for each alternative", async () => {
+      const props = makeProps();
+      const alt = props.alternatives[1];
+      fetchMock.mockResolvedValue(json(buildTypeBundle(alt.type)));
+      render(<ResultsView {...props} />);
+      await userEvent.click(screen.getByRole("tab", { name: /Tus alternativas/ }));
+      await userEvent.click(screen.getByRole("button", { name: new RegExp(`Ver todo sobre el tipo ${alt.type}`) }));
+      expect(await screen.findByRole("status", { name: /explorando/i })).toHaveTextContent(new RegExp(`tipo ${alt.type}`, "i"));
+    });
   });
 
   it("reuses an already loaded type without fetching again", async () => {

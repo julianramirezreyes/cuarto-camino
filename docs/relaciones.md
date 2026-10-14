@@ -12,6 +12,8 @@ del símbolo cuando dos personas se encuentran.
 | Una lectura de dos tipos juntos: grupos compartidos, dónde difieren, flechas y alas, siempre como tendencias. | Un puntaje, un porcentaje, un ranking ni una cuadrícula verde/roja de «combinaciones». |
 | Preguntas abiertas para conversar. | Una razón para empezar o terminar una relación. |
 
+En el resto de la aplicación las proporciones se llaman «afinidad relativa» (antes «compatibilidad relativa») justamente para reservar esa palabra: aquí no aparece en ningún lado.
+
 La interfaz **nunca** muestra puntajes, porcentajes, «mejor/peor pareja», corazones, ni las palabras compatibilidad, compatible,
 incompatible, alma gemela o media naranja. Una prueba recorre el texto de todos los componentes y páginas nuevos y falla si aparecen
 (`src/tests/forbidden-words.ts`, usada por `forbidden-words.test.tsx`, `pair-panel.test.tsx`, la sección de resultados, las páginas de la

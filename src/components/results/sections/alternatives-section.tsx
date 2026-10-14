@@ -1,4 +1,5 @@
 import type { AssessmentReport } from "@/domain/adaptive-engine";
+import { Button } from "@/components/ui/button";
 import { Card, SectionShell, ShareBar } from "../common";
 import type { AlternativeSummary, TypeBundle } from "../types";
 
@@ -7,10 +8,13 @@ export function AlternativesSection({
   bundle,
   report,
   alternatives,
+  onExplore,
 }: {
   bundle: TypeBundle;
   report: AssessmentReport;
   alternatives: AlternativeSummary[];
+  /** Opens everything about that alternative (the same explorer view as the symbol). */
+  onExplore?: (type: AlternativeSummary["type"]) => void;
 }) {
   const shareOf = (type: number) => report.ranking.find((r) => r.type === type)?.share ?? 0;
   return (
@@ -19,7 +23,7 @@ export function AlternativesSection({
       intro="Los tipos más cercanos a tus respuestas. Leer sus diferencias ayuda a comprobar cuál te reconoce mejor."
     >
       <div className="grid gap-4 md:grid-cols-3">
-        <Card title="Tu tipo más compatible" className="border-primary">
+        <Card title="Tu tipo más afín" className="border-primary">
           <h3 className="font-serif text-xl">
             Tipo {bundle.type} · {bundle.profile.name}
           </h3>
@@ -39,6 +43,11 @@ export function AlternativesSection({
                 <p className="text-sm font-semibold">Cómo se diferencia del tipo {bundle.type}</p>
                 <p>{a.difference}</p>
               </div>
+            ) : null}
+            {onExplore ? (
+              <Button variant="secondary" onClick={() => onExplore(a.type)}>
+                Ver todo sobre el tipo {a.type}
+              </Button>
             ) : null}
           </Card>
         ))}

@@ -46,18 +46,46 @@ export function BulletList({ items, label }: { items: readonly string[]; label?:
   );
 }
 
-/** Relative-compatibility bar. `role="meter"`: it is a static measure, not a task progress. */
-export function ShareBar({ label, share, strong }: { label: string; share: number; strong?: boolean }) {
+/** Relative-affinity bar. `role="meter"`: it is a static measure, not a task progress. */
+export function ShareBar({
+  label,
+  share,
+  strong,
+  onSelect,
+  selected,
+}: {
+  label: string;
+  share: number;
+  strong?: boolean;
+  /** When given, the label becomes a button (selector); `selected` marks the one being viewed. */
+  onSelect?: () => void;
+  selected?: boolean;
+}) {
   const value = Math.round(share * 100);
   return (
     <div className="space-y-1">
       <div className="flex items-baseline justify-between gap-3 text-sm">
-        <span>{label}</span>
+        {onSelect ? (
+          <button
+            type="button"
+            aria-pressed={selected === true}
+            onClick={onSelect}
+            className={cn(
+              "min-h-11 rounded-lg px-2 py-1 text-left font-medium underline underline-offset-4 transition-colors hover:bg-muted",
+              selected ? "bg-muted" : "",
+            )}
+          >
+            {label}
+            <span aria-hidden="true"> ›</span>
+          </button>
+        ) : (
+          <span>{label}</span>
+        )}
         <span className="font-semibold tabular-nums">{pct(share)}</span>
       </div>
       <div
         role="meter"
-        aria-label={`Compatibilidad relativa de ${label}: ${value}%`}
+        aria-label={`Afinidad relativa de ${label}: ${value}%`}
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={value}

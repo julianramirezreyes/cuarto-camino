@@ -20,7 +20,7 @@ export default function Home() {
             interactivo para explorar tu tipo, tu ala, tus instintos y tu momento actual.
           </p>
           <ul className="space-y-2 text-muted-foreground">
-            <li>• Tipos compatibles y por qué aparecen</li>
+            <li>• Tipos afines y por qué aparecen</li>
             <li>• Alas, instintos y niveles de funcionamiento</li>
             <li>• Conexiones, tríadas y preguntas de autoobservación</li>
           </ul>

@@ -21,7 +21,7 @@ export type ReportWing = Omit<WingResult, "main" | "wings"> & {
 };
 
 /**
- * Result of an assessment. Every `share` is a RELATIVE COMPATIBILITY index
+ * Result of an assessment. Every `share` is a RELATIVE AFFINITY index (internal identifiers keep the older name `Compatibility`)
  * among alternatives, NOT a calibrated probability.
  */
 export interface AssessmentReport {
@@ -30,7 +30,7 @@ export interface AssessmentReport {
   primaryType: EnneagramType | null;
   /** All nine types, ranked (share desc, ties by lower type number). */
   ranking: Compatibility[];
-  /** The three most compatible types (positions 1-3 of the ranking). */
+  /** The three closest types (positions 1-3 of the ranking). */
   alternatives: Compatibility[];
   /** True when the gap between first and second is < ambiguityMargin (or no evidence). */
   ambiguous: boolean;
@@ -69,14 +69,14 @@ export function buildReport(bank: readonly Question[], answers: readonly Answer[
   const total = counts.type + counts.wing + counts.instinct + counts.functioning;
   explanation.push(
     `Se registraron ${total} respuestas válidas (tipo: ${counts.type}, ala: ${counts.wing}, instinto: ${counts.instinct}, funcionamiento: ${counts.functioning}).`,
-    "Los porcentajes son compatibilidad relativa entre los nueve tipos según tus respuestas; no son una probabilidad calibrada ni un diagnóstico.",
+    "Los porcentajes son afinidad relativa entre los nueve tipos según tus respuestas; no son una probabilidad calibrada ni un diagnóstico.",
   );
   if (primaryType === null) {
     explanation.push("Todavía no hay evidencia suficiente para ordenar los tipos.");
   } else {
     const [a, b, c] = ranking;
     explanation.push(
-      `El tipo con mayor compatibilidad relativa es el ${a.type} (${pct(a.share)}), seguido por el ${b.type} (${pct(b.share)}) y el ${c.type} (${pct(c.share)}).`,
+      `El tipo con mayor afinidad relativa es el ${a.type} (${pct(a.share)}), seguido por el ${b.type} (${pct(b.share)}) y el ${c.type} (${pct(c.share)}).`,
     );
     explanation.push(
       ambiguous

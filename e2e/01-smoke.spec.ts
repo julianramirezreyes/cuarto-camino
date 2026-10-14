@@ -14,6 +14,9 @@ test.describe("humo", () => {
     await page.goto("/");
     await expect(page).toHaveTitle(/Cuarto Camino/);
     await expect(page.getByRole("heading", { level: 1 })).toContainText("Descubre tus patrones");
+    // «Compatibilidad» se reserva (y evita) en la función de relaciones: aquí se habla de tipos afines.
+    await expect(page.getByText("Tipos afines y por qué aparecen")).toBeVisible();
+    await expect(page.locator("main")).not.toContainText(/compatib/i);
 
     await page.getByRole("link", { name: "Comenzar mi descubrimiento" }).click();
     await expect(page).toHaveURL(/\/introduccion$/);

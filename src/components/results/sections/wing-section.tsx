@@ -57,12 +57,12 @@ export function WingSection({ bundle, wing, title = "Tu ala" }: { bundle: TypeBu
       intro="El ala es la influencia de uno de los dos tipos vecinos. Compara ambas y elige la que te resuene, o déjala abierta."
     >
       {showShares && wing.wings ? (
-        <Card title="Compatibilidad relativa entre las dos alas">
+        <Card title="Afinidad relativa entre las dos alas">
           <ShareBar label={`ala ${wing.wings[0]}`} share={shown[0]} />
           <ShareBar label={`ala ${wing.wings[1]}`} share={shown[1]} />
           <p className="text-sm text-muted-foreground">
             {wing.likelyWing === null
-              ? "Con tus respuestas no hay una ala claramente más compatible."
+              ? "Con tus respuestas no hay un ala claramente más afín."
               : `Tus respuestas se inclinan hacia el ala ${wing.likelyWing}, sin certeza.`}{" "}
             Se calcula con solo {wing.evidenceCount} {wing.evidenceCount === 1 ? "respuesta" : "respuestas"} sobre el ala: con tan
             pocas, la diferencia es una pista débil y las proporciones se acercan a un reparto parejo a propósito.

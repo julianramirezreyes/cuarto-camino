@@ -30,7 +30,7 @@ export function LevelsSection({ bundle, functioning, title = "Tu estado actual" 
       {functioning && functioning.band && hasFunctioningSignal(functioning) ? (
         <div className="space-y-1 rounded-xl border border-border bg-muted p-4">
           <p>
-            Banda más compatible (últimas 4 semanas): <strong>{BAND_LABEL[functioning.band]}</strong>.
+            Banda más afín (últimas 4 semanas): <strong>{BAND_LABEL[functioning.band]}</strong>.
           </p>
           <p className="text-sm text-muted-foreground">
             Incertidumbre: {pct(functioning.uncertainty)}.{" "}

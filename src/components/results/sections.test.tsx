@@ -32,7 +32,7 @@ describe("PersonalitySection", () => {
 });
 
 describe("AlternativesSection", () => {
-  it("compares the two closest types with differences and relative-compatibility bars", () => {
+  it("compares the two closest types with differences and relative-affinity bars", () => {
     const props = makeProps();
     render(<AlternativesSection bundle={props.primary} report={props.report} alternatives={props.alternatives} />);
     for (const a of props.alternatives) {
@@ -41,7 +41,7 @@ describe("AlternativesSection", () => {
     }
     const meters = screen.getAllByRole("meter");
     expect(meters).toHaveLength(3);
-    expect(meters[0]).toHaveAccessibleName(/compatibilidad relativa/i);
+    expect(meters[0]).toHaveAccessibleName(/afinidad relativa/i);
     expect(screen.getByText("34%")).toBeInTheDocument();
   });
 });
@@ -117,7 +117,7 @@ describe("LevelsSection", () => {
     expect(buttons).toHaveLength(9);
     // decided intermediate band -> only level 5 is plausible and preselected
     expect(buttons[4]).toHaveAttribute("aria-pressed", "true");
-    expect(screen.getByText(/Banda más compatible/)).toHaveTextContent(/intermedio/);
+    expect(screen.getByText(/Banda más afín/)).toHaveTextContent(/intermedio/);
     expect(screen.getByText(/42%/)).toBeInTheDocument();
     await userEvent.click(buttons[0]);
     const l1 = bundle.levels[0];
@@ -134,7 +134,7 @@ describe("LevelsSection", () => {
   it("with almost no signal (uncertainty >= 0.95) it suggests no band and no plausible level", () => {
     render(<LevelsSection bundle={bundle} functioning={{ ...report.functioning, uncertainty: 0.99, decided: false }} />);
     expect(screen.getByText(/no hay evidencia suficiente/i)).toBeInTheDocument();
-    expect(screen.queryByText(/Banda más compatible/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Banda más afín/)).not.toBeInTheDocument();
     expect(screen.queryByText(/Niveles plausibles/)).not.toBeInTheDocument();
     for (const b of within(screen.getByRole("group", { name: /nueve niveles/i })).getAllByRole("button")) {
       expect(b).toHaveAttribute("aria-pressed", "false");
@@ -212,11 +212,25 @@ describe("HowSection", () => {
   it("renders explanation, counts, inconsistencies, limitations and the not-a-probability statement", () => {
     const r = makeReport({ inconsistencies: [{ groupId: "g1", questionIds: ["a", "b"], note: "Respuestas casi opuestas en un mismo tema." }] });
     render(<HowSection report={r} meta={{ engineVersion: "e1", bankVersion: "b1", completedAt: "2026-01-02T10:00:00.000Z" }} />);
-    for (const line of r.explanation) expect(screen.getByText(line)).toBeInTheDocument();
+    for (const line of r.explanation) expect(screen.getByText(line.replace(/compatibilidad relativa/g, "afinidad relativa"))).toBeInTheDocument();
+    // Reports saved with the older wording are shown with the current term (the stored report is not modified).
+    expect(document.body.textContent).not.toMatch(/compatib/i);
     expect(screen.getByText(/Respuestas casi opuestas/)).toBeInTheDocument();
     expect(screen.getByText(/no son probabilidades calibradas/i)).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: /limitaciones/i })).toBeInTheDocument();
     expect(screen.getByText("12")).toBeInTheDocument();
+  });
+});
+
+describe("HowSection with a report saved under the older wording", () => {
+  it("displays the current term without changing the stored report", () => {
+    const r = makeReport({ explanation: ["Los porcentajes son compatibilidad relativa entre los nueve tipos.", "El tipo con mayor compatibilidad relativa es el 3 (34%)."] });
+    const before = JSON.stringify(r);
+    render(<HowSection report={r} meta={{ engineVersion: "e1", bankVersion: "b1", completedAt: "2026-01-02T10:00:00.000Z" }} />);
+    expect(screen.getByText("Los porcentajes son afinidad relativa entre los nueve tipos.")).toBeInTheDocument();
+    expect(screen.getByText(/mayor afinidad relativa es el 3/)).toBeInTheDocument();
+    expect(document.body.textContent).not.toMatch(/compatib/i);
+    expect(JSON.stringify(r)).toBe(before);
   });
 });
 

@@ -36,7 +36,7 @@ export function makeReport(over: Partial<AssessmentReport> = {}, order: Enneagra
       evidenceCount: 4,
     },
     stop: { stop: true, reason: "stable" },
-    explanation: ["Se registraron 22 respuestas válidas.", "Los porcentajes son compatibilidad relativa entre los nueve tipos."],
+    explanation: ["Se registraron 22 respuestas válidas.", "Los porcentajes son afinidad relativa entre los nueve tipos."],
     ...over,
   };
 }

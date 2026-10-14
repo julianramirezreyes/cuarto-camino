@@ -48,7 +48,7 @@ JSON de axe adjuntos). Ambos están en `.gitignore`.
 | `11-relaciones.spec.ts` | Relaciones: índice con los nueve tipos y el marco honesto siempre visible, guía del tipo 4 con cambio de vínculo, lectura de pares con el diagrama (incluido el mismo tipo y solo con teclado), pestaña «Relaciones» del resultado sin afirmar ningún tipo, ausencia de palabras prohibidas (compatibilidad, puntajes, porcentajes), axe y sin desbordamiento horizontal en móvil. |
 
 Las pruebas **no** afirman un tipo concreto de eneagrama: el cuestionario no está validado. Solo comprueban estructura
-y redacción honesta («provisional», «compatibilidad relativa», sin prometer «precisión» del test). La palabra
+y redacción honesta («provisional», «afinidad relativa», sin prometer «precisión» del test). La palabra
 «precisión» sí aparece en el contenido descriptivo de algunos tipos (p. ej. tipo 1), por eso solo se prohíbe en la
 cabecera y en frases que atribuyan precisión al test.
 

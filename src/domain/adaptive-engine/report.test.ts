@@ -96,7 +96,8 @@ describe("buildReport", () => {
   it("explanation is Spanish and states that shares are relative, not probabilities", () => {
     const { answers } = run();
     const text = buildReport(MINI_BANK, answers, DEFAULT_ENGINE_CONFIG).explanation.join("\n");
-    expect(text).toMatch(/relativa/i);
+    expect(text).toMatch(/afinidad relativa/i);
+    expect(text).not.toMatch(/compatib/i);
     expect(text).toMatch(/no (es|son) (una )?probabilidad/i);
     expect(text).toMatch(/instinto/i);
   });

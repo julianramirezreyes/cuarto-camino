@@ -1,6 +1,7 @@
 import type { AssessmentReport } from "@/domain/adaptive-engine";
 import { BulletList, Card, SectionShell } from "../common";
 import type { ResultMeta } from "../types";
+import { modernizeLegacyWording } from "../legacy-wording";
 
 const MODULE_ES = { type: "Tipo", wing: "Ala", instinct: "Instinto", functioning: "Funcionamiento" } as const;
 
@@ -18,9 +19,10 @@ export function HowSection({ report, meta }: { report: AssessmentReport; meta: R
     <SectionShell title="Cómo se obtuvo tu resultado" intro="Transparencia sobre el proceso y sus límites.">
       <Card title="Resumen del proceso">
         <ul className="space-y-1.5">
-          {report.explanation.map((line) => (
-            <li key={line}>{line}</li>
-          ))}
+          {report.explanation.map((rawLine) => {
+            const line = modernizeLegacyWording(rawLine);
+            return <li key={line}>{line}</li>;
+          })}
         </ul>
       </Card>
       <Card title="Respuestas por módulo">

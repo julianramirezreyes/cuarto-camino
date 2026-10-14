@@ -77,7 +77,7 @@ export interface EngineConfig {
 export interface Compatibility {
   type: EnneagramType;
   raw: number;
-  /** Relative compatibility share (0..1) among the nine types. NOT a calibrated probability. */
+  /** Relative affinity share (the interface keeps its older internal name) (0..1) among the nine types. NOT a calibrated probability. */
   share: number;
   evidenceCount: number;
 }

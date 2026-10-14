@@ -67,7 +67,7 @@ presentado como lo que es: una **interpretación provisional**, no un diagnósti
    una lectura descriptiva de dos tipos a partir de los grupos del símbolo. Sin puntajes, rankings ni «parejas ideales»; ver
    [`docs/relaciones.md`](docs/relaciones.md).
 4. **Sin cuenta obligatoria.** Sesión de invitado con cookie segura; opcionalmente crear cuenta y **vincular** el resultado.
-5. **Honestidad por diseño.** Los porcentajes son «compatibilidad relativa», nunca precisión; si hay ambigüedad o poca evidencia lo
+5. **Honestidad por diseño.** Los porcentajes son «afinidad relativa», nunca precisión; si hay ambigüedad o poca evidencia lo
    dice; nunca infiere salud mental ni asigna una pila instintiva completa.
 6. **PWA instalable**, modo oscuro y claro, `prefers-reduced-motion`, y accesibilidad WCAG 2.2 AA verificada con axe.
 
@@ -78,7 +78,7 @@ El motor es TypeScript puro y determinista, **independiente de React** (reutiliz
 
 ```mermaid
 flowchart LR
-  A[Respuestas] --> B[Compatibilidad<br/>de los 9 tipos]
+  A[Respuestas] --> B[Afinidad<br/>con los 9 tipos]
   B --> C{¿Estable?<br/>margen + evidencia<br/>+ robusto a 1 respuesta}
   C -- no --> D[Elegir la pregunta que mejor<br/>separa a los candidatos]
   D --> A
@@ -89,7 +89,7 @@ flowchart LR
 - Módulos: tipo → ala → instinto → funcionamiento (últimas 4 semanas), cada uno con mínimo y máximo configurables.
 - No se detiene por una sola respuesta decisiva, evita formulaciones equivalentes y detecta inconsistencias.
 - Cada resultado guarda la versión del motor y del banco: **cambiar el algoritmo no reescribe el pasado**.
-- Las puntuaciones son compatibilidad relativa **sin calibrar**; las pruebas sintéticas verifican el cableado, no la validez.
+- Las puntuaciones son afinidad relativa **sin calibrar**; las pruebas sintéticas verifican el cableado, no la validez.
 
 ## Arquitectura
 
@@ -229,8 +229,8 @@ Pensado para Vercel + Neon. Guía paso a paso, lista de variables y verificació
 **Antes de un lanzamiento público**
 
 - Revisión editorial por especialistas de todo el contenido y verificación de fuentes (contratipos de 1, 3 y 9 sin resolver).
-- Estudio piloto y calibración del cuestionario ([plan](docs/validacion-psicometrica.md)); el módulo de ala tiene solo 3 preguntas por
-  tipo (objetivo: 4 a 6).
+- Estudio piloto y calibración del cuestionario ([plan](docs/validacion-psicometrica.md)); el módulo de ala tiene 6 preguntas por tipo
+  (54 en total, recién ampliadas) y su base sigue siendo corta para una estimación firme.
 - Política de privacidad y datos del responsable del tratamiento (Ley 1581 de 2012), hoy marcados como pendientes.
 - Dominio propio y proveedor de correo para activar verificación y recuperación de contraseña.
 - Pendientes menores: descarga del resumen en PDF, «revisar mis respuestas», analítica anónima de producto, CSP con nonces en lugar de

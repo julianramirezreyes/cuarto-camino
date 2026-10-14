@@ -90,6 +90,17 @@ export function ResultsView({ assessmentId, report, meta, primary, alternatives,
     [bundles],
   );
 
+  /** From the header or the alternatives tab: show everything about that type, starting at its personality. */
+  const exploreType = useCallback(
+    (type: EnneagramType) => {
+      setActive("personality");
+      void selectType(type).then(() => {
+        document.getElementById("secciones-del-resultado")?.scrollIntoView({ block: "start" });
+      });
+    },
+    [selectType],
+  );
+
   const cancelReset = useCallback(() => {
     setReset("idle");
     setResetError(null);
@@ -130,7 +141,7 @@ export function ResultsView({ assessmentId, report, meta, primary, alternatives,
       case "personality":
         return <PersonalitySection bundle={bundle} title={exploring ? `Personalidad del tipo ${bundle.type}` : "Tu personalidad"} />;
       case "alternatives":
-        return <AlternativesSection bundle={primary} report={report} alternatives={alternatives} />;
+        return <AlternativesSection bundle={primary} report={report} alternatives={alternatives} onExplore={exploreType} />;
       case "wing":
         return <WingSection key={bundle.type} bundle={bundle} wing={exploring ? undefined : report.wing} title={title("Tu ala")} />;
       case "instincts":
@@ -184,6 +195,8 @@ export function ResultsView({ assessmentId, report, meta, primary, alternatives,
         report={report}
         bundle={primary}
         alternatives={alternatives}
+        viewed={viewed}
+        onSelectType={exploreType}
         onExplore={() => setActive("connections")}
         onReset={() => setReset("confirm")}
       />
@@ -214,7 +227,9 @@ export function ResultsView({ assessmentId, report, meta, primary, alternatives,
           </Button>
         </div>
       ) : null}
-      <SectionTabs tabs={tabs} active={activeId} onChange={setActive} renderPanel={renderPanel} />
+      <div id="secciones-del-resultado" className="scroll-mt-4">
+        <SectionTabs tabs={tabs} active={activeId} onChange={setActive} renderPanel={renderPanel} />
+      </div>
       <ResetDialog
         open={reset === "confirm" || reset === "deleting"}
         busy={reset === "deleting"}
