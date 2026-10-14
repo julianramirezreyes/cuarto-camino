@@ -61,3 +61,10 @@ puede retirarse más adelante.
 
 1. Definir `CRON_SECRET` (cadena aleatoria larga) en Vercel; opcional `RATE_LIMIT_SALT`.
 2. Aplicar la migración `0001_tricky_swarm` (`npm run db:migrate`).
+
+## Nota de privacidad: IP en el límite de Better Auth
+
+Nuestro limitador de la API guarda solo un hash de la IP. El limitador **propio de Better Auth** (tabla `auth_rate_limit`,
+rutas `/api/auth/*`) guarda la IP **en claro** dentro de `key` (por ejemplo `203.0.113.77|/sign-in/email`); es un comportamiento
+de la librería. Las filas se eliminan en la purga diaria cuando tienen más de 24 horas. Tratar la IP como dato personal en la
+política de privacidad (Ley 1581 de 2012) y decidir con asesoría legal si basta con ese plazo.
