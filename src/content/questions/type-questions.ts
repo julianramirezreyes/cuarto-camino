@@ -1,5 +1,5 @@
 /**
- * Type module (module "type"): 72 questions.
+ * Type module (module "type"): 81 questions.
  *
  * Structure
  * - 36 choice questions (14 scenario-choice, 12 motivation-comparison, 10 forced-choice).
@@ -25,6 +25,7 @@ import {
   finish,
   opts,
   round2,
+  SCALE_CURVE,
   scaleOptions,
   type DraftBase,
   type TypeScores,
@@ -39,6 +40,8 @@ interface ScaleDraft extends DraftBase {
   main: EnneagramType;
   side: EnneagramType;
   factor: number;
+  /** Agreement means LESS of the main type (option scoring is reversed). */
+  reverse?: boolean;
 }
 type Draft = ChoiceDraft | ScaleDraft;
 
@@ -87,6 +90,24 @@ function s(
   };
   if (group) base.group = group;
   return base;
+}
+
+/** Reverse-keyed likert: no equivalence group, scoring reversed in the builder. */
+function r(
+  code: string,
+  text: string,
+  main: EnneagramType,
+  side: EnneagramType,
+  factor: number,
+  dims: string[],
+  d: number,
+  why: string,
+  refs: string[],
+): ScaleDraft {
+  return {
+    ...s(code, "likert", text, main, side, factor, dims, d, why, refs),
+    reverse: true,
+  };
 }
 
 const sc = "scenario-choice" as const;
@@ -1086,13 +1107,13 @@ const CHOICE_AND_SCALE: Draft[] = [
   s(
     "TYPE_LIKERT_ANTICIPATE_NEEDS",
     "likert",
-    "Suelo darme cuenta de lo que otros necesitan antes de que lo pidan, y me cuesta dejar de atenderlo.",
+    "Me cuesta dejar de atender lo que otros necesitan, aunque no me lo pidan.",
     2,
-    7,
+    3,
     0.3,
     ["atención al otro", "necesidad de ser útil"],
     0.7,
-    "Ítem sobre la anticipación de necesidades ajenas y la dificultad para soltar esa atención.",
+    "Ítem sobre la dificultad para soltar la atención a las necesidades ajenas, formulado como costo y con una sola idea.",
     REF_NARRATIVE,
     "EQ_TYPE_2_ANTICIPATE",
   ),
@@ -1127,7 +1148,7 @@ const CHOICE_AND_SCALE: Draft[] = [
     "likert",
     "Necesito tiempo a solas para ordenar mis ideas antes de poder participar con energía en algo social.",
     5,
-    4,
+    9,
     0.3,
     ["conservación de energía", "retraimiento"],
     0.6,
@@ -1153,7 +1174,7 @@ const CHOICE_AND_SCALE: Draft[] = [
     "likert",
     "Si un plan me aburre o me pesa, enseguida pienso en otras opciones más atractivas.",
     7,
-    8,
+    5,
     0.3,
     ["búsqueda de estímulo", "evitación de lo pesado"],
     0.65,
@@ -1218,7 +1239,7 @@ const CHOICE_AND_SCALE: Draft[] = [
     "frequency",
     "¿Con qué frecuencia ajustas tu forma de presentarte según lo que convenga para quedar bien en cada contexto?",
     3,
-    2,
+    4,
     0.4,
     ["adaptación de imagen", "sensibilidad al contexto"],
     0.6,
@@ -1278,7 +1299,7 @@ const CHOICE_AND_SCALE: Draft[] = [
     "frequency",
     "¿Con qué frecuencia tomas el mando cuando notas que nadie más lo hace?",
     8,
-    3,
+    7,
     0.4,
     ["liderazgo", "control"],
     0.6,
@@ -1290,7 +1311,7 @@ const CHOICE_AND_SCALE: Draft[] = [
     "frequency",
     "¿Con qué frecuencia te das cuenta de que has postergado algo importante y te has entretenido con tareas cómodas?",
     9,
-    4,
+    3,
     0.2,
     ["postergación", "narcotización"],
     0.55,
@@ -1338,37 +1359,37 @@ const CHOICE_AND_SCALE: Draft[] = [
   s(
     "TYPE_INT_AUTHENTIC_OWN_STAMP",
     "intensity",
-    "¿Qué tan importante es para ti que lo que haces sea auténtico y tenga tu sello personal?",
+    "¿Qué tanto te incomoda hacer algo que se parece demasiado a lo que ya hizo otra persona?",
     4,
     1,
     0.3,
     ["autenticidad", "singularidad"],
     0.6,
-    "Intensidad de la importancia dada a la autenticidad y el sello propio.",
+    "Intensidad de la incomodidad ante lo que se percibe como poco propio u original; una sola idea y sin la carga positiva de «ser auténtico».",
     REF_MOTIV,
   ),
   s(
     "TYPE_INT_DRAINED_BY_AVAILABILITY",
     "intensity",
-    "¿Qué tanto te agota que te pidan estar disponible o dar respuestas inmediatas?",
+    "¿Qué tanto te agota que te pidan una respuesta inmediata, sin darte tiempo de pensar?",
     5,
-    4,
+    6,
     0.3,
     ["energía limitada", "demanda externa"],
     0.65,
-    "Intensidad del agotamiento por exigencias de disponibilidad.",
+    "Intensidad del desgaste ante la presión de responder de inmediato; se retiró la mención a la disponibilidad para tener una sola idea.",
     REF_HORNEY,
   ),
   s(
     "TYPE_INT_NEED_BACKING",
     "intensity",
-    "¿Qué tanto necesitas sentir que cuentas con respaldo (personas, reglas o planes) para avanzar tranquilo/a?",
+    "¿Qué tanto te cuesta empezar algo nuevo si no tienes claro con qué apoyo contarás si sale mal?",
     6,
     9,
     0.3,
     ["necesidad de seguridad", "apoyo"],
     0.7,
-    "Intensidad de la necesidad de respaldo antes de actuar.",
+    "Intensidad de la necesidad de respaldo previo para actuar, planteada como dificultad y con una sola idea.",
     REF_MOTIV,
   ),
   s(
@@ -1376,7 +1397,7 @@ const CHOICE_AND_SCALE: Draft[] = [
     "intensity",
     "¿Qué tanto evitas quedarte con sensaciones incómodas, distrayéndote con algo agradable?",
     7,
-    4,
+    9,
     0.4,
     ["evitación del malestar", "distracción"],
     0.6,
@@ -1427,7 +1448,7 @@ const CHOICE_AND_SCALE: Draft[] = [
     "likert",
     "Antes de pensar en lo que yo necesito, suelo pensar en cómo estará la gente que me rodea.",
     2,
-    7,
+    3,
     0.3,
     ["atención al otro", "necesidad de ser útil"],
     0.7,
@@ -1466,7 +1487,7 @@ const CHOICE_AND_SCALE: Draft[] = [
     "likert",
     "Después de socializar mucho, necesito quedarme solo/a un buen rato para recuperar energía.",
     5,
-    4,
+    9,
     0.3,
     ["conservación de energía", "retraimiento"],
     0.6,
@@ -1492,7 +1513,7 @@ const CHOICE_AND_SCALE: Draft[] = [
     "likert",
     "Cuando algo se vuelve pesado o monótono, mi mente salta a otra cosa más estimulante.",
     7,
-    8,
+    5,
     0.3,
     ["búsqueda de estímulo", "evitación de lo pesado"],
     0.65,
@@ -1503,13 +1524,13 @@ const CHOICE_AND_SCALE: Draft[] = [
   s(
     "TYPE_LIKERT_INTERVENE_AGAINST_ABUSE",
     "likert",
-    "Si veo que alguien abusa de otro, siento el impulso de intervenir aunque tenga un costo.",
+    "Cuando veo una injusticia, me cuesta no reaccionar, aunque después me arrepienta de cómo lo hice.",
     8,
     1,
     0.3,
     ["confrontación", "sentido de justicia"],
     0.65,
-    "Reformulación de TYPE_LIKERT_UNFAIR_FACE_IT para contrastar consistencia.",
+    "Ítem sobre la reacción impulsiva ante la injusticia, redactado de modo que describa un costo y no solo una virtud, para reducir la deseabilidad social.",
     REF_HORNEY,
     "EQ_TYPE_8_FACE",
   ),
@@ -1526,6 +1547,106 @@ const CHOICE_AND_SCALE: Draft[] = [
     REF_NARRATIVE,
     "EQ_TYPE_9_DOWNPLAY",
   ),
+  // ---------- Reverse-keyed likert (agreement = less of the type; offsets acquiescence) ----------
+  r(
+    "TYPE_LIKERT_REV_GOOD_ENOUGH",
+    "Puedo dar un trabajo por terminado cuando está suficientemente bien, aunque sepa que podría quedar mejor.",
+    1,
+    7,
+    0.2,
+    ["perfeccionismo", "estándar interno"],
+    0.6,
+    "Ítem invertido: estar de acuerdo indica menos presión por pulir; contrarresta el sesgo de asentimiento.",
+    REF_STYLE,
+  ),
+  r(
+    "TYPE_LIKERT_REV_NOT_OFFER_HELP",
+    "Me resulta fácil no ofrecer ayuda cuando nadie me la ha pedido.",
+    2,
+    4,
+    0.3,
+    ["atención al otro", "necesidad de ser útil"],
+    0.6,
+    "Ítem invertido: estar de acuerdo indica menos impulso de ayudar sin que se lo pidan; contrarresta el sesgo de asentimiento.",
+    REF_NARRATIVE,
+  ),
+  r(
+    "TYPE_LIKERT_REV_VALUE_WITHOUT_RESULTS",
+    "Me siento valioso/a aunque en este momento no tenga nada que mostrar de lo que hago.",
+    3,
+    4,
+    0.3,
+    ["valor propio", "imagen y logro"],
+    0.6,
+    "Ítem invertido: estar de acuerdo indica un valor propio menos ligado a los logros visibles; contrarresta el sesgo de asentimiento.",
+    REF_STYLE,
+  ),
+  r(
+    "TYPE_LIKERT_REV_FIT_IN",
+    "Casi siempre siento que encajo con las personas que me rodean.",
+    4,
+    2,
+    0.3,
+    ["pertenencia", "sentirse diferente"],
+    0.6,
+    "Ítem invertido: estar de acuerdo indica menos sensación de ser distinto; contrarresta el sesgo de asentimiento.",
+    REF_NARRATIVE,
+  ),
+  r(
+    "TYPE_LIKERT_REV_ENERGY_AMONG_PEOPLE",
+    "Aunque haya mucha gente alrededor, me mantengo con energía sin necesitar un rato a solas.",
+    5,
+    4,
+    0.3,
+    ["energía social", "retirada para recuperar"],
+    0.6,
+    "Ítem invertido: estar de acuerdo indica menos necesidad de retirarse para recuperar energía; contrarresta el sesgo de asentimiento.",
+    REF_STYLE,
+  ),
+  r(
+    "TYPE_LIKERT_REV_TRUST_NO_BACKUP",
+    "Cuando tengo que decidir, confío en que las cosas saldrán bien sin necesidad de preparar planes de respaldo.",
+    6,
+    7,
+    0.3,
+    ["anticipación del riesgo", "seguridad"],
+    0.6,
+    "Ítem invertido: estar de acuerdo indica menos anticipación de lo que podría fallar; contrarresta el sesgo de asentimiento.",
+    REF_HORNEY,
+  ),
+  r(
+    "TYPE_LIKERT_REV_STAY_WITH_ONE",
+    "Puedo quedarme con una sola actividad hasta el final aunque se vuelva monótona.",
+    7,
+    8,
+    0.3,
+    ["variedad y novedad", "tolerancia al aburrimiento"],
+    0.6,
+    "Ítem invertido: estar de acuerdo indica menos salto hacia opciones nuevas; contrarresta el sesgo de asentimiento.",
+    REF_MOTIV,
+  ),
+  r(
+    "TYPE_LIKERT_REV_LET_INJUSTICE_PASS",
+    "Cuando algo me parece injusto, puedo dejarlo pasar sin sentir la necesidad de enfrentarlo.",
+    8,
+    7,
+    0.2,
+    ["respuesta ante la injusticia", "asertividad"],
+    0.6,
+    "Ítem invertido: estar de acuerdo indica menos impulso de confrontar; contrarresta el sesgo de asentimiento.",
+    REF_HORNEY,
+  ),
+  r(
+    "TYPE_LIKERT_REV_SAY_WANTS",
+    "Digo con facilidad lo que quiero, aunque eso pueda generar un desacuerdo.",
+    9,
+    8,
+    0.2,
+    ["asertividad", "evitación del desacuerdo"],
+    0.6,
+    "Ítem invertido: estar de acuerdo indica menos evitación del desacuerdo; contrarresta el sesgo de asentimiento.",
+    REF_NARRATIVE,
+  ),
 ];
 
 function isScale(d: Draft): d is ScaleDraft {
@@ -1541,12 +1662,17 @@ function relatedFrom(options: Question["options"]): EnneagramType[] {
 export const TYPE_QUESTIONS: Question[] = CHOICE_AND_SCALE.map(
   (draft, index) => {
     const options = isScale(draft)
-      ? scaleOptions(draft.kind, (_i, v) => ({
-          types: {
-            [draft.main]: round2(v),
-            [draft.side]: round2(v * draft.factor),
-          },
-        }))
+      ? scaleOptions(draft.kind, (i, curve) => {
+          const v = draft.reverse
+            ? (SCALE_CURVE[SCALE_CURVE.length - 1 - i] as number)
+            : curve;
+          return {
+            types: {
+              [draft.main]: round2(v),
+              [draft.side]: round2(v * draft.factor),
+            },
+          };
+        })
       : opts(draft.items.map(([text, types]) => [text, { types }] as const));
     return finish("type", index, draft, {
       options,

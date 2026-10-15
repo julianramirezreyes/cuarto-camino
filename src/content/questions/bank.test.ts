@@ -207,6 +207,55 @@ describe("question bank: type module", () => {
   });
 });
 
+describe("question bank: type scales acquiescence", () => {
+  const SCALE_KINDS = ["likert", "frequency", "intensity"];
+  const scaleQs = byModule("type").filter((q) => SCALE_KINDS.includes(q.kind));
+  const mainOf = (q: Question): EnneagramType =>
+    ENNEAGRAM_TYPES.reduce((best, t) =>
+      Math.max(...q.options.map((o) => o.scores.types?.[t] ?? 0)) >
+      Math.max(...q.options.map((o) => o.scores.types?.[best] ?? 0))
+        ? t
+        : best,
+    );
+  const isReverse = (q: Question): boolean => {
+    const main = mainOf(q);
+    return (
+      (q.options[0]?.scores.types?.[main] ?? 0) >
+      (q.options[q.options.length - 1]?.scores.types?.[main] ?? 0)
+    );
+  };
+
+  it("has a reverse-keyed scale item for at least 6 types", () => {
+    const reversed = new Set(scaleQs.filter(isReverse).map(mainOf));
+    expect(reversed.size).toBeGreaterThanOrEqual(6);
+  });
+
+  it("keeps reverse-keyed items monotone decreasing and out of equivalence groups", () => {
+    for (const q of scaleQs.filter(isReverse)) {
+      const main = mainOf(q);
+      const vals = q.options.map((o) => o.scores.types?.[main] ?? 0);
+      for (let i = 1; i < vals.length; i++)
+        expect(vals[i], q.id).toBeLessThanOrEqual(vals[i - 1] as number);
+      expect(q.equivalenceGroup, q.id).toBeUndefined();
+    }
+  });
+
+  it("balances the all-top-answer (acquiescent) total per type within +-10% of the mean", () => {
+    const totals = Object.fromEntries(
+      ENNEAGRAM_TYPES.map((t) => [t, 0]),
+    ) as Record<EnneagramType, number>;
+    for (const q of scaleQs) {
+      const top = q.options[q.options.length - 1];
+      for (const t of ENNEAGRAM_TYPES) totals[t] += top?.scores.types?.[t] ?? 0;
+    }
+    const mean =
+      ENNEAGRAM_TYPES.reduce((a, t) => a + totals[t], 0) / ENNEAGRAM_TYPES.length;
+    console.info("acquiescent totals:", JSON.stringify(totals), "mean", mean.toFixed(2));
+    for (const t of ENNEAGRAM_TYPES)
+      expect(Math.abs(totals[t] - mean) / mean, `type ${t}`).toBeLessThanOrEqual(0.1);
+  });
+});
+
 function scoreTotals(qs: Question[]): Record<EnneagramType, number> {
   const totals = Object.fromEntries(
     ENNEAGRAM_TYPES.map((t) => [t, 0]),
