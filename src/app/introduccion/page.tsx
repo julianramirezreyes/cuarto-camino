@@ -11,6 +11,7 @@ const points = [
   ["Cómo responder", "Elige lo más espontáneo, lo que haces con más frecuencia y no lo que te gustaría hacer. No hay respuestas buenas ni malas."],
   ["Puedes pausar", "Tu avance se guarda y puedes continuar después. Puedes cambiar respuestas antes de terminar."],
   ["Resultados ambiguos", "Puede que dos o más tipos queden cerca. Te lo diremos y te mostraremos cómo explorarlos."],
+  ["Sobre el nombre", "«Cuarto Camino» alude a la tradición de Gurdjieff y Ouspensky, donde apareció el símbolo del eneagrama. Esta aplicación no está afiliada a esa escuela ni la representa, y los nueve tipos no son de Gurdjieff: vienen de autores posteriores."],
   ["Sobre los niveles", "Los niveles de desarrollo describen un funcionamiento más flexible o más rígido en las últimas semanas. No son una evaluación clínica."],
 ] as const;
 

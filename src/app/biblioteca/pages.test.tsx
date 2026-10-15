@@ -76,6 +76,14 @@ describe("static pages", () => {
     expect(screen.getByText(/varían entre escuelas/i)).toBeInTheDocument();
   });
 
+  it("classifications keep the enneagram centers apart from Gurdjieff's theory of centers", () => {
+    render(<ClassificationsPage />);
+    const note = screen.getByText(/no es la teoría de centros de Gurdjieff/i);
+    expect(note).toHaveTextContent(/intelectual/i);
+    expect(note).toHaveTextContent(/motriz/i);
+    expect(note).toHaveTextContent(/cada persona/i);
+  });
+
   it("history page renders every section and the not-Gurdjieff statement", () => {
     render(<HistoryPage />);
     expect(screen.getAllByRole("heading", { level: 2 }).length).toBeGreaterThanOrEqual(8);

@@ -16,3 +16,4 @@ Add choice questions that separate commonly confused types by MOTIVE (not behavi
 ## Progress / evidence
 (created 2026-10-14)
 - A1-A3 done (delegated writer). Coverage 7/8 0->3, 5/6 3->6, 5/9 3->6, 2/3 3->5. Bank 1.3.0-draft (200). Synthetic wing recovery 268/270 (vs 267/270 before). Replaced brittle 3-seed wing assert by rate test (>=95% recovered, <=2% opposite). vitest 1440, E2E 124 pass.
+- Block C (inline, small text edits): intro "Sobre el nombre" (no affiliation with the Gurdjieff school, types not from Gurdjieff) and a note in /biblioteca/clasificaciones separating enneagram "centros" from Gurdjieff's theory of centers. RED seen first; vitest 1442, eslint/typecheck clean, E2E smoke+responsive+a11y 54 pass.

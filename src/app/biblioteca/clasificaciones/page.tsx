@@ -65,6 +65,11 @@ export default function ClassificationsPage() {
         <section key={t.id} aria-labelledby={t.id} className="space-y-3">
           <h2 id={t.id} className="font-serif text-2xl">{t.title}</h2>
           <p className="text-muted-foreground">{t.question}</p>
+          {t.id === "centros" ? (
+            <p className="text-sm text-muted-foreground">
+              Esto no es la teoría de centros de Gurdjieff, que describe partes de cada persona (intelectual, emocional, motriz e instintiva) y no agrupa tipos. Aquí «centros» solo reparte los nueve tipos en tres grupos.
+            </p>
+          ) : null}
           <ul className="space-y-1.5">
             {t.rows.map(([label, types]) => (
               <li key={label}>
