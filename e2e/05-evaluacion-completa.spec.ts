@@ -51,11 +51,15 @@ test.describe("evaluación completa de extremo a extremo", () => {
     const alternativa = botones.nth(1);
     const etiqueta = (await alternativa.innerText()).replace(/\s*›\s*$/, "").trim(); // «Tipo N · Nombre»
     const tipoAlt = Number(etiqueta.match(/^Tipo (\d)/)![1]);
+    await alternativa.scrollIntoViewIfNeeded(); // Playwright ya lo haría al hacer clic; se mide después de eso.
+    const scrollAntes = await page.evaluate(() => window.scrollY);
     await alternativa.click();
     const avisoExplorando = page.getByRole("status", { name: "Explorando otro eneatipo" });
     await expect(avisoExplorando).toContainText(`tipo ${tipoAlt}`);
     await expect(alternativa).toHaveAttribute("aria-pressed", "true");
     await expect(page.getByRole("tabpanel").first()).toContainText(`Personalidad del tipo ${tipoAlt}`);
+    // Elegir un tipo en la cabecera no mueve la página: la persona se queda donde hizo clic.
+    expect(Math.abs((await page.evaluate(() => window.scrollY)) - scrollAntes)).toBeLessThan(8);
     await expect(titulo).toHaveText(new RegExp(`^Tipo ${tipo} · `)); // tu resultado no cambia
     // Al leer otro tipo siguen visibles los datos que son de la persona (instinto y estado), no solo los del tipo.
     await pestana(page, "Tus instintos").click();

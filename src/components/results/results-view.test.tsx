@@ -300,6 +300,27 @@ describe("actions", () => {
     });
   });
 
+  it("does not move the page when a type is chosen from the header (the user stays where they clicked)", async () => {
+    const props = makeProps();
+    const alt = props.alternatives[0];
+    fetchMock.mockResolvedValue(json(buildTypeBundle(alt.type)));
+    const scrolled: string[] = [];
+    const original = Element.prototype.scrollIntoView;
+    Element.prototype.scrollIntoView = function (this: Element) {
+      scrolled.push(this.id || this.tagName);
+    };
+    try {
+      render(<ResultsView {...props} />);
+      scrolled.length = 0;
+      const group = screen.getByRole("group", { name: /tus tipos más cercanos/i });
+      await userEvent.click(within(group).getByRole("button", { name: new RegExp(`Tipo ${alt.type} ·`) }));
+      await screen.findByRole("status", { name: /explorando/i });
+      expect(scrolled).toEqual([]);
+    } finally {
+      Element.prototype.scrollIntoView = original;
+    }
+  });
+
   it("reuses an already loaded type without fetching again", async () => {
     fetchMock.mockResolvedValue(json(buildTypeBundle(8)));
     render(<ResultsView {...makeProps()} />);

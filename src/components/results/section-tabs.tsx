@@ -27,9 +27,13 @@ export function SectionTabs({
 }) {
   const refs = useRef<Record<string, HTMLButtonElement | null>>({});
 
-  // Keep the active tab visible in the horizontally scrollable bar (block: nearest => no page jump).
+  // Keep the active tab centred in the horizontally scrollable bar. scrollIntoView is avoided on purpose:
+  // it can also scroll the page vertically, so only the bar's own scrollLeft is touched.
   useEffect(() => {
-    refs.current[active]?.scrollIntoView({ block: "nearest", inline: "center" });
+    const tab = refs.current[active];
+    const bar = tab?.parentElement?.parentElement;
+    if (!tab || !bar) return;
+    bar.scrollLeft = tab.offsetLeft - (bar.clientWidth - tab.offsetWidth) / 2;
   }, [active]);
 
   function go(index: number) {

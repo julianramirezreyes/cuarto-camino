@@ -90,13 +90,11 @@ export function ResultsView({ assessmentId, report, meta, primary, alternatives,
     [bundles],
   );
 
-  /** From the header or the alternatives tab: show everything about that type, starting at its personality. */
+  /** From the header or the alternatives tab: show everything about that type, starting at its personality. The page does not scroll: the header already marks the type being read. */
   const exploreType = useCallback(
     (type: EnneagramType) => {
       setActive("personality");
-      void selectType(type).then(() => {
-        document.getElementById("secciones-del-resultado")?.scrollIntoView({ block: "start" });
-      });
+      void selectType(type);
     },
     [selectType],
   );
@@ -237,9 +235,7 @@ export function ResultsView({ assessmentId, report, meta, primary, alternatives,
           </Button>
         </div>
       ) : null}
-      <div id="secciones-del-resultado" className="scroll-mt-4">
-        <SectionTabs tabs={tabs} active={activeId} onChange={setActive} renderPanel={renderPanel} />
-      </div>
+      <SectionTabs tabs={tabs} active={activeId} onChange={setActive} renderPanel={renderPanel} />
       <ResetDialog
         open={reset === "confirm" || reset === "deleting"}
         busy={reset === "deleting"}
