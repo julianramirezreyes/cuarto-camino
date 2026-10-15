@@ -1,8 +1,9 @@
 /**
- * Type module (module "type"): 81 questions.
+ * Type module (module "type"): 93 questions.
  *
  * Structure
- * - 36 choice questions (14 scenario-choice, 12 motivation-comparison, 10 forced-choice).
+ * - 48 choice questions (21 scenario-choice, 17 motivation-comparison, 10 forced-choice);
+ *   the last 12 (audit A) separate commonly confused types by motive.
  *   Each has 4 options; every option carries a main type (~1.5-2.5) plus smaller
  *   spillover evidence on 1-2 other types (0.2-0.7), so no option = one obvious type.
  *   Main types rotate through four shuffled cycles, so each type is the main
@@ -1646,6 +1647,331 @@ const CHOICE_AND_SCALE: Draft[] = [
     0.6,
     "Ítem invertido: estar de acuerdo indica menos evitación del desacuerdo; contrarresta el sesgo de asentimiento.",
     REF_NARRATIVE,
+  ),
+  // ---------- Audit A: motive behind similar behaviour (confusable pairs) ----------
+  c(
+    "TYPE_SCENARIO_IMPOSED_LIMIT",
+    sc,
+    "Alguien te impone un límite que tú no pediste. ¿Qué es lo que más te molesta?",
+    ["control", "búsqueda de opciones", "respuesta ante la imposición"],
+    0.8,
+    "Separa quien reacciona a la pérdida de control o a una regla arbitraria de quien reacciona a la sensación de quedarse sin salidas; la conducta (resistirse) es parecida, el motivo no.",
+    REF_MOTIV,
+    [
+      [
+        "Que sea una regla arbitraria, sin un criterio justo detrás.",
+        { 1: 2.1, 8: 0.5, 6: 0.3 },
+      ],
+      [
+        "Que me quiten el control sobre algo que me toca decidir a mí.",
+        { 8: 2.4, 7: 0.4, 1: 0.3 },
+      ],
+      [
+        "En realidad no me molesta demasiado; prefiero no darle vueltas y seguir.",
+        { 9: 2.0, 2: 0.4, 7: 0.4 },
+      ],
+      [
+        "Sentirme encerrado/a, sin otra salida ni otras opciones a la vista.",
+        { 7: 2.4, 8: 0.5, 4: 0.3 },
+      ],
+    ],
+  ),
+  c(
+    "TYPE_MOTIV_ALONE_WEEKEND",
+    mc,
+    "Pasas un fin de semana entero en casa sin ver a nadie y sin haberlo planeado mucho. ¿Qué suele haber detrás?",
+    ["motivo del retiro", "energía", "confianza", "pertenencia"],
+    0.8,
+    "El mismo retiro puede venir de proteger la propia energía, de no sentirse comprendido/a, de desconfiar de la gente o de que nada concreto atraiga; la pregunta pide el motivo, no la conducta.",
+    REF_MOTIV,
+    [
+      [
+        "Prefiero no exponerme a gente de la que no estoy del todo seguro/a.",
+        { 6: 2.1, 5: 0.5, 4: 0.3 },
+      ],
+      [
+        "Siento que nadie me entendería y prefiero estar aparte.",
+        { 4: 2.1, 5: 0.4, 9: 0.3 },
+      ],
+      [
+        "Necesito recuperar energía y proteger mi tiempo para pensar tranquilo/a.",
+        { 5: 2.2, 4: 0.4, 9: 0.3 },
+      ],
+      [
+        "Nada concreto me llamó la atención y las horas se me fueron pasando.",
+        { 9: 2.0, 5: 0.4, 4: 0.3 },
+      ],
+    ],
+  ),
+  c(
+    "TYPE_MOTIV_UNCOMFORTABLE_RULE",
+    mc,
+    "Cumples una norma que te resulta incómoda. ¿Por qué lo haces, normalmente?",
+    ["motivo del cumplimiento", "miedo a las consecuencias", "imagen", "convicción"],
+    0.8,
+    "Seguir una norma puede nacer de la convicción propia, del temor a las consecuencias, del interés por la imagen o de evitar discusiones; separa motivos detrás de una conducta idéntica.",
+    REF_HORNEY,
+    [
+      [
+        "Para no entrar en discusiones ni complicarme la vida.",
+        { 9: 2.0, 2: 0.5, 4: 0.3 },
+      ],
+      [
+        "Porque me conviene que me vean como alguien que cumple.",
+        { 3: 2.1, 1: 0.4, 7: 0.3 },
+      ],
+      [
+        "Porque temo lo que podría pasar si no la cumplo.",
+        { 6: 2.2, 1: 0.4, 9: 0.3 },
+      ],
+      [
+        "Porque no hacerlo iría contra lo que yo creo que está bien.",
+        { 1: 2.2, 8: 0.4, 3: 0.3 },
+      ],
+    ],
+  ),
+  c(
+    "TYPE_SCENARIO_PUBLIC_FAILURE",
+    sc,
+    "Un proyecto tuyo fracasa delante de otras personas. ¿Qué haces primero?",
+    ["reacción al fracaso público", "imagen", "reencuadre", "retirada"],
+    0.8,
+    "Ante un fracaso visible, unos cuidan la imagen, otros lo reencuadran y pasan a lo siguiente, otros se hunden en lo que les falta y otros se apartan a analizar; la reacción inmediata revela el motivo.",
+    REF_NARRATIVE,
+    [
+      [
+        "Me hundo un rato y repaso todo lo que me falta.",
+        { 4: 2.2, 5: 0.4, 3: 0.3 },
+      ],
+      [
+        "Lo veo como un aprendizaje y paso rápido al siguiente plan.",
+        { 7: 2.4, 3: 0.5, 8: 0.3 },
+      ],
+      [
+        "Pienso en cómo me ven y busco reconstruir mi imagen cuanto antes.",
+        { 3: 2.1, 7: 0.4, 8: 0.4 },
+      ],
+      [
+        "Me aparto a analizar qué falló y no hablo con nadie hasta tenerlo claro.",
+        { 5: 2.1, 4: 0.4, 1: 0.4 },
+      ],
+    ],
+  ),
+  c(
+    "TYPE_MOTIV_HELPED_COLLEAGUE",
+    mc,
+    "Ayudaste a un compañero o compañera y su proyecto sale muy bien. ¿Qué te importa más?",
+    ["reconocimiento", "vínculo", "estándar", "autonomía"],
+    0.8,
+    "Tras ayudar, importa distinto según el motivo: que el otro valore el vínculo, que se vea el resultado y la propia parte, que esté bien hecho o conservar el propio espacio.",
+    REF_MOTIV,
+    [
+      [
+        "Que no me pidan más ayuda por un tiempo y poder volver a mi espacio.",
+        { 5: 2.0, 1: 0.4, 9: 0.4 },
+      ],
+      [
+        "Que haya quedado como debe: bien hecho de principio a fin.",
+        { 1: 2.1, 3: 0.4, 5: 0.3 },
+      ],
+      [
+        "Que sepa cuánto me importó ayudarle y que sigamos cerca.",
+        { 2: 2.2, 3: 0.4, 4: 0.3 },
+      ],
+      [
+        "Que se note el resultado y que se vea cuál fue mi parte.",
+        { 3: 2.1, 2: 0.4, 1: 0.3 },
+      ],
+    ],
+  ),
+  c(
+    "TYPE_SCENARIO_INTIMIDATED",
+    sc,
+    "Alguien con poder sobre ti te intimida. ¿Qué hay detrás de tu reacción?",
+    ["respuesta ante la intimidación", "miedo", "dominio", "evitación"],
+    0.8,
+    "Confrontar o ceder puede nacer de no tolerar el dominio ajeno, de adelantarse al golpe por miedo, de apaciguar para conservar el vínculo o de retirarse para evitar el choque.",
+    REF_HORNEY,
+    [
+      [
+        "Intento caerle bien y suavizar el ambiente para que no empeore.",
+        { 2: 2.0, 9: 0.5, 4: 0.4 },
+      ],
+      [
+        "Me adelanto con un reclamo antes de que ataque, aunque por dentro me tiemble todo.",
+        { 6: 2.2, 8: 0.5, 1: 0.3 },
+      ],
+      [
+        "No acepto que nadie me domine, así que le hago frente de inmediato.",
+        { 8: 2.4, 6: 0.4, 3: 0.3 },
+      ],
+      [
+        "Me retiro y evito el choque; ya pasará.",
+        { 9: 2.0, 2: 0.4, 7: 0.3 },
+      ],
+    ],
+  ),
+  c(
+    "TYPE_MOTIV_YIELD_GROUP",
+    mc,
+    "Cedes en una decisión de grupo. ¿Qué pasa por dentro?",
+    ["motivo de ceder", "preferencia propia", "vínculo", "incomprensión"],
+    0.8,
+    "Ceder ante el grupo puede significar no tener preferencia, querer seguir siendo apreciado/a, sentirse incomprendido/a o guardar la injusticia como queja; el gesto es el mismo, el motivo no.",
+    REF_MOTIV,
+    [
+      [
+        "Quiero seguir cayendo bien y que me sigan teniendo en cuenta.",
+        { 2: 2.1, 9: 0.5, 4: 0.3 },
+      ],
+      [
+        "Cedo, pero me quedo anotando por dentro lo que me parece injusto.",
+        { 1: 2.0, 4: 0.4, 8: 0.3 },
+      ],
+      [
+        "No tenía una preferencia clara, así que casi me da igual.",
+        { 9: 2.1, 2: 0.4, 5: 0.3 },
+      ],
+      [
+        "Me siento incomprendido/a, pero prefiero guardármelo.",
+        { 4: 2.0, 9: 0.4, 1: 0.3 },
+      ],
+    ],
+  ),
+  c(
+    "TYPE_SCENARIO_IMPERFECT_PRAISE",
+    sc,
+    "Te felicitan por un trabajo que tú sabes imperfecto. ¿Cómo lo vives?",
+    ["estándar interno", "imagen", "duda", "vínculo"],
+    0.8,
+    "Un elogio sobre algo imperfecto separa a quien se incomoda por su propio estándar, a quien disfruta el resultado visible, a quien duda de la sinceridad y a quien valora el aprecio.",
+    REF_STYLE,
+    [
+      [
+        "Me alegra: lo que cuenta es el resultado que los demás ven.",
+        { 3: 2.1, 7: 0.4, 2: 0.3 },
+      ],
+      [
+        "Me conmueve que alguien me aprecie, aunque sepa que no está perfecto.",
+        { 2: 2.0, 3: 0.4, 4: 0.3 },
+      ],
+      [
+        "Me incomoda aunque nadie más lo note: yo sé lo que le falta.",
+        { 1: 2.2, 4: 0.4, 6: 0.3 },
+      ],
+      [
+        "Dudo un poco si me dicen la verdad o solo están siendo amables.",
+        { 6: 2.1, 4: 0.4, 1: 0.3 },
+      ],
+    ],
+  ),
+  c(
+    "TYPE_SCENARIO_PAINFUL_LOSS",
+    sc,
+    "Algo te duele de verdad: una pérdida o una decepción. ¿Qué haces primero?",
+    ["afrontamiento del dolor", "evitación del dolor", "intensidad", "apoyo"],
+    0.8,
+    "Frente al dolor, unos lo enfrentan de golpe y sin mostrarlo, otros se ocupan en planes nuevos para no quedarse en él, otros buscan compañía y otros lo elaboran por dentro.",
+    REF_NARRATIVE,
+    [
+      [
+        "Lo enfrento de frente y no dejo que se note cuánto me afectó.",
+        { 8: 2.4, 1: 0.4, 7: 0.3 },
+      ],
+      [
+        "Busco el lado bueno y me ocupo en planes nuevos para no quedarme en el dolor.",
+        { 7: 2.4, 3: 0.4, 8: 0.3 },
+      ],
+      [
+        "Busco a alguien que me escuche o a quien cuidar para sentirme acompañado/a.",
+        { 2: 2.0, 4: 0.4, 7: 0.3 },
+      ],
+      [
+        "Me quedo con lo que siento y le doy vueltas hasta entenderlo.",
+        { 4: 2.1, 5: 0.4, 2: 0.3 },
+      ],
+    ],
+  ),
+  c(
+    "TYPE_MOTIV_RISKY_CHALLENGE",
+    mc,
+    "Te proponen un reto arriesgado. ¿Qué te empuja a aceptarlo?",
+    ["motivo del riesgo", "novedad", "fuerza", "miedo"],
+    0.8,
+    "Aceptar un riesgo puede responder a la emoción de la experiencia, a querer superar el propio miedo, a medir la propia fuerza o a la posibilidad de un logro visible.",
+    REF_MOTIV,
+    [
+      [
+        "La emoción de vivirlo y no quedarme sin esa experiencia.",
+        { 7: 2.4, 3: 0.4, 8: 0.4 },
+      ],
+      [
+        "Quiero demostrarme que puedo enfrentar el miedo y dejar de darle vueltas.",
+        { 6: 2.0, 8: 0.5, 7: 0.4 },
+      ],
+      [
+        "Que nadie piense que me echo atrás; me gusta medir mi fuerza ante un desafío.",
+        { 8: 2.4, 3: 0.4, 6: 0.3 },
+      ],
+      [
+        "La posibilidad de ganar y de que se vea que lo logré.",
+        { 3: 2.1, 8: 0.4, 7: 0.3 },
+      ],
+    ],
+  ),
+  c(
+    "TYPE_MOTIV_GATHER_INFORMATION",
+    mc,
+    "Antes de decidir algo importante reúnes mucha información. ¿Para qué lo haces?",
+    ["motivo de acumular información", "competencia", "seguridad", "postergación"],
+    0.8,
+    "Reunir datos puede buscar competencia y comprensión, seguridad ante lo imprevisto, la mejor opción posible o simplemente posponer la decisión.",
+    REF_HORNEY,
+    [
+      [
+        "Quiero entender el tema a fondo y sentirme competente antes de actuar.",
+        { 5: 2.2, 1: 0.4, 7: 0.3 },
+      ],
+      [
+        "Mientras reúno datos, puedo ir posponiendo el momento de decidir.",
+        { 9: 2.0, 5: 0.4, 7: 0.3 },
+      ],
+      [
+        "Quiero prever lo que podría salir mal para no quedar desprotegido/a.",
+        { 6: 2.2, 5: 0.4, 1: 0.3 },
+      ],
+      [
+        "Quiero elegir la mejor opción posible y poder defenderla con argumentos.",
+        { 1: 2.1, 6: 0.4, 5: 0.3 },
+      ],
+    ],
+  ),
+  c(
+    "TYPE_SCENARIO_SILENT_OPINION",
+    sc,
+    "En una reunión te piden tu opinión y prefieres no darla. ¿Qué pasa por dentro?",
+    ["motivo del silencio", "preferencia propia", "competencia", "miedo"],
+    0.8,
+    "Callar la opinión puede venir de no tener una postura marcada, de no querer hablar sin dominar el tema, de sentirse distinto/a al grupo o de temer que se use en contra.",
+    REF_NARRATIVE,
+    [
+      [
+        "En realidad no tengo una postura marcada y no me interesa imponerla.",
+        { 9: 2.1, 2: 0.4, 5: 0.3 },
+      ],
+      [
+        "Aún no lo tengo claro y no quiero hablar sin saber lo suficiente.",
+        { 5: 2.2, 6: 0.4, 1: 0.3 },
+      ],
+      [
+        "Me siento distinto/a al resto y prefiero no mostrar lo que pienso.",
+        { 4: 2.0, 5: 0.4, 9: 0.3 },
+      ],
+      [
+        "Me preocupa que se use en mi contra o que me equivoque delante de todos.",
+        { 6: 2.2, 5: 0.4, 1: 0.3 },
+      ],
+    ],
   ),
 ];
 

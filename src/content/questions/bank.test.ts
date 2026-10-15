@@ -207,6 +207,67 @@ describe("question bank: type module", () => {
   });
 });
 
+describe("question bank: confusable pairs coverage (audit A)", () => {
+  const CHOICE_KINDS = ["scenario-choice", "motivation-comparison", "forced-choice"];
+  const choices = byModule("type").filter((q) => CHOICE_KINDS.includes(q.kind));
+  const leader = (scores: Record<string, number> | undefined) =>
+    Object.entries(scores ?? {}).sort((a, b) => b[1] - a[1])[0]?.[0];
+
+  const both = (a: EnneagramType, b: EnneagramType): number =>
+    choices.filter(
+      (q) =>
+        q.options.some((o) => (o.scores.types?.[a] ?? 0) >= 1.5) &&
+        q.options.some((o) => (o.scores.types?.[b] ?? 0) >= 1.5),
+    ).length;
+
+  it("has at least 3 type choice questions separating 7 from 8", () => {
+    expect(both(7, 8)).toBeGreaterThanOrEqual(3);
+  });
+
+  it.each([
+    [5, 6],
+    [5, 9],
+    [2, 3],
+    [4, 5],
+    [1, 6],
+    [3, 7],
+    [2, 9],
+    [1, 3],
+    [6, 8],
+    [4, 9],
+    [2, 4],
+  ] as const)("has at least 4 type choice questions separating %i from %i", (a, b) => {
+    expect(both(a, b)).toBeGreaterThanOrEqual(4);
+  });
+
+  it("keeps each type leading each option position about equally often", () => {
+    const mean = choices.length / 9;
+    for (const position of [0, 1, 2, 3]) {
+      const counts: Record<string, number> = {};
+      for (const q of choices) {
+        const l = leader(q.options[position]?.scores.types) ?? "none";
+        counts[l] = (counts[l] ?? 0) + 1;
+      }
+      for (const t of ENNEAGRAM_TYPES) {
+        const n = counts[String(t)] ?? 0;
+        expect(
+          Math.abs(n - mean),
+          `position ${position + 1}, type ${t}: ${JSON.stringify(counts)}`,
+        ).toBeLessThanOrEqual(1.5);
+      }
+    }
+  });
+
+  it("has unique option texts inside type choice questions", () => {
+    const seen = new Set<string>();
+    for (const q of choices)
+      for (const o of q.options) {
+        expect(seen.has(o.text), `${q.id}/${o.id}`).toBe(false);
+        seen.add(o.text);
+      }
+  });
+});
+
 describe("question bank: type scales acquiescence", () => {
   const SCALE_KINDS = ["likert", "frequency", "intensity"];
   const scaleQs = byModule("type").filter((q) => SCALE_KINDS.includes(q.kind));

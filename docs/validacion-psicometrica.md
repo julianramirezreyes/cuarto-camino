@@ -1,6 +1,6 @@
 # Plan de validación del cuestionario
 
-Que la app funcione técnicamente **no** significa que el cuestionario sea válido. Hoy el banco de 188 preguntas (versión `1.2.0-draft`), sus puntajes y los
+Que la app funcione técnicamente **no** significa que el cuestionario sea válido. Hoy el banco de 200 preguntas (versión `1.3.0-draft`), sus puntajes y los
 criterios de parada son **hipótesis de diseño**. Las pruebas automáticas con respondientes simulados (`src/tests/engine-real-bank.test.ts`)
 comprueban que el motor converge y que el cableado funciona; **no son evidencia de precisión psicológica**.
 
@@ -100,4 +100,6 @@ Cambios aplicados (versión `1.2.0-draft`):
 - **Instinto:** menos extremos en las opciones de social y sexual, sin suponer pareja, dos ítems redundantes reemplazados, ítems inversos y masa de puntaje equilibrada (±5 %).
 - **Funcionamiento:** opciones extremas menos caricaturescas y sin carga moral.
 
-Pendiente: preguntas nuevas para pares poco cubiertos (por ejemplo 7/8, hoy sin ninguna pregunta que los enfrente), y la revisión de un especialista humano.
+Preguntas nuevas (versión `1.3.0-draft`, 12 de elección en el módulo de tipo): preguntan por el *motivo* detrás de conductas parecidas (retirarse, ceder, cumplir normas, reaccionar al fracaso o a la intimidación). Cobertura de preguntas que enfrentan a cada par, antes y después: 7/8 de 0 a 3; 5/6 y 5/9 de 3 a 6; 2/3 de 3 a 5. El motor las usa solo si ayudan a separar los tipos más cercanos de cada persona.
+
+Pendiente: la revisión de un especialista humano, que es lo único que puede validar los puntajes y textos nuevos. Que el motor converja con respondientes sintéticos (la prueba pasa en 268 de 270 corridas para el ala) solo comprueba el cableado, no la validez.

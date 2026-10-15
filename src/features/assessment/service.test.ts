@@ -81,7 +81,7 @@ describe("full flow with the real bank", () => {
     const res = await h.service.getResult(p, id);
     expect(res.report.primaryType).toBe(5);
     expect(res.engineVersion).toBe(ENGINE_VERSION);
-    expect(res.bankVersion).toBe("1.2.0-draft");
+    expect(res.bankVersion).toBe("1.3.0-draft");
     expect(res.completedAt).toBeInstanceOf(Date);
     expect(h.repo.assessments.get(id)?.status).toBe("completed");
     await rejectsWith(h.service.getCurrent(p), "not_found");
