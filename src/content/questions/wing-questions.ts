@@ -118,7 +118,7 @@ const DRAFTS: Draft[] = [
         0,
         1.8,
       ],
-      ["Defino reglas claras y las hago cumplir.", 0.3, 0.3],
+      ["Depende del grupo y del momento; no tengo un estilo fijo para dirigir.", 0.3, 0.3],
     ],
   ),
   mc(
@@ -167,7 +167,7 @@ const DRAFTS: Draft[] = [
         0,
         1.8,
       ],
-      ["Dejo todo y me dedico por completo a mi amigo.", 0.3, 0.3],
+      ["Depende de qué tan grave sea cada cosa; no tengo una regla fija para decidir.", 0.3, 0.3],
     ],
   ),
   mc(
@@ -179,7 +179,7 @@ const DRAFTS: Draft[] = [
     [
       ["Que sea lo correcto y lo útil, sin exagerar ni invadir.", 1.8, 0],
       [
-        "Que sea eficaz, se vea bien y me reconozcan por lo que aporto.",
+        "Que funcione y salga bien, y que la gente sepa que puede contar conmigo.",
         0,
         1.8,
       ],
@@ -188,7 +188,7 @@ const DRAFTS: Draft[] = [
   lk(
     2,
     "WING_2_HELP_WITH_IMAGE",
-    "Me resulta importante que mi ayuda tenga buena imagen y sea reconocida socialmente.",
+    "Me importa que mi ayuda salga bien y que los demás sepan que pueden contar conmigo.",
     "Acuerdo = orientación a imagen y reconocimiento (3); desacuerdo = sobriedad y criterio interno (1).",
     ["criterio moral vs. reconocimiento"],
     "upper",
@@ -212,7 +212,7 @@ const DRAFTS: Draft[] = [
         0,
         1.8,
       ],
-      ["Le sugiero un plan de acción para recuperar el ritmo.", 0.3, 0.3],
+      ["Depende de la persona: con algunos me sale escuchar y con otros proponer, sin una fórmula.", 0.3, 0.3],
     ],
   ),
   mc(
@@ -257,7 +257,7 @@ const DRAFTS: Draft[] = [
         0,
         1.8,
       ],
-      ["Decido según cómo me sienta ese día.", 0.3, 0.3],
+      ["Depende de quién vaya y del plan; a veces me quedo mucho y a veces poco, sin un patrón claro.", 0.3, 0.3],
     ],
   ),
   mc(
@@ -267,9 +267,9 @@ const DRAFTS: Draft[] = [
     "Contrasta la expresión orientada a alcance y reconocimiento (3) con la orientada a profundidad y privacidad (5).",
     ["alcance vs. profundidad"],
     [
-      ["Que llegue a mucha gente y sea reconocida.", 1.8, 0],
+      ["Que llegue a las personas y recibir respuesta sobre lo que hice.", 1.8, 0],
       [
-        "Que sea algo profundo, que pocos entiendan, y poder mantenerlo en privado.",
+        "Que sea algo profundo y cuidado, y decidir yo cuándo y a quién se lo muestro.",
         0,
         1.8,
       ],
@@ -302,7 +302,7 @@ const DRAFTS: Draft[] = [
         0,
         1.8,
       ],
-      ["Me atrae si puedo trabajar solo/a una parte.", 0.3, 0.3],
+      ["Depende del grupo y del tema; a veces me atrae y a veces me frena, sin un patrón claro.", 0.3, 0.3],
     ],
   ),
   mc(
@@ -323,7 +323,7 @@ const DRAFTS: Draft[] = [
   lk(
     5,
     "WING_5_LOYAL_TO_TRUSTED",
-    "Tiendo a comprometerme con personas o causas en las que confío y a mantenerme fiel a ellas.",
+    "Una vez que me comprometo con personas o una causa, les sigo siendo fiel aunque el resto dude o se aleje.",
     "Acuerdo = lealtad y compromiso con el grupo de confianza (6); desacuerdo = independencia expresiva (4).",
     ["lealtad vs. independencia"],
     "upper",
@@ -347,7 +347,7 @@ const DRAFTS: Draft[] = [
         0,
         1.8,
       ],
-      ["Pido consejo a alguien de confianza antes de hacer nada.", 0.3, 0.3],
+      ["Depende de cuánto me afecte el cambio; a veces lo analizo y a veces lo tomo con humor.", 0.3, 0.3],
     ],
   ),
   mc(
@@ -383,16 +383,16 @@ const DRAFTS: Draft[] = [
     ["cautela vs. asertividad", "apoyo a otros"],
     [
       [
-        "Me preocupo, pienso en las consecuencias y me comprometo a estar disponible para él.",
+        "Me preocupo, pienso en las consecuencias y le propongo que lo veamos juntos con calma.",
         1.8,
         0,
       ],
       [
-        "Le digo que lo enfrente y me ofrezco a ayudarlo a resolverlo de forma directa.",
+        "Me pongo de su lado, lo animo a enfrentarlo y me ofrezco a ayudarlo a resolverlo de forma directa.",
         0,
         1.8,
       ],
-      ["Intento animarlo con humor y buenos planes.", 0.3, 0.3],
+      ["Depende del problema y de lo que él necesite; a veces escucho y a veces actúo.", 0.3, 0.3],
     ],
   ),
   mc(
@@ -417,7 +417,7 @@ const DRAFTS: Draft[] = [
   lk(
     7,
     "WING_7_DISLIKE_BEING_TOLD",
-    "Me desagrada que me digan lo que debo hacer; prefiero ser quien decida.",
+    "Cuando alguien me dice lo que debo hacer, me cuesta aceptarlo aunque tenga razón.",
     "Acuerdo = autonomía asertiva (8); desacuerdo = mayor apertura a la guía de figuras de confianza (6).",
     ["prudencia vs. intensidad"],
     "upper",
@@ -437,7 +437,7 @@ const DRAFTS: Draft[] = [
         0,
         1.8,
       ],
-      ["Trabajo en un proyecto que me apasione.", 0.3, 0.3],
+      ["Depende de la semana; a veces salgo y a veces me quedo, sin un patrón claro.", 0.3, 0.3],
     ],
   ),
   mc(
@@ -458,7 +458,7 @@ const DRAFTS: Draft[] = [
   lk(
     8,
     "WING_8_CALM_STRENGTH",
-    "Soy una persona de pocas palabras que actúa con calma, aunque por dentro tenga mucha fuerza.",
+    "Suelo actuar con calma y pocas palabras, incluso cuando algo me importa mucho.",
     "Acuerdo = serenidad y contención (9); desacuerdo = expresividad enérgica (7).",
     ["expansividad vs. serenidad"],
     "upper",
@@ -472,13 +472,13 @@ const DRAFTS: Draft[] = [
     "Contrasta poner un límite directo y firme (8) con razonar desde lo justo y lo correcto (1).",
     ["firmeza vs. criterio", "defensa de límites"],
     [
-      ["Termino poniéndole un límite claro, aunque me cueste.", 1.8, 0],
+      ["Termino poniéndole un límite claro y directo, aunque me cueste hacerlo.", 1.8, 0],
       [
-        "Reflexiono sobre qué es justo y le planteo, con argumentos, por qué eso no es correcto.",
+        "Pienso qué es justo y le explico, con argumentos, por qué eso no corresponde.",
         0,
         1.8,
       ],
-      ["Lo dejo pasar para no hacer drama.", 0.3, 0.3],
+      ["Depende de cuánto me importe la situación y la persona; no tengo una reacción fija.", 0.3, 0.3],
     ],
   ),
   mc(
@@ -519,7 +519,7 @@ const DRAFTS: Draft[] = [
         1.8,
       ],
       [
-        "Reviso qué pasó y dejo constancia por escrito de lo sucedido.",
+        "Depende de la persona y de la gravedad del error; a veces hablo y a veces espero, sin un patrón claro.",
         0.3,
         0.3,
       ],
@@ -538,12 +538,12 @@ const DRAFTS: Draft[] = [
     ["reconocimiento relacional vs. paz interior"],
     [
       [
-        "Ver que mi esfuerzo ayudó a personas concretas y que lo agradecen.",
+        "Ver que lo que hice le sirvió a personas concretas y que lo valoran.",
         0,
         1.8,
       ],
       [
-        "Sentir que hice lo correcto y quedar tranquilo/a, aunque nadie se entere.",
+        "Sentir que quedó bien hecho y poder descansar, lo note alguien o no.",
         1.8,
         0,
       ],
@@ -552,7 +552,7 @@ const DRAFTS: Draft[] = [
   lk(
     1,
     "WING_1_APART_TO_THINK",
-    "Cuando algo me parece mal hecho, prefiero apartarme un rato a solas para ordenar mis ideas antes de decir algo.",
+    "Cuando algo me parece mal hecho, prefiero apartarme un rato a solas antes de decir algo.",
     "Acuerdo = retirada y crítica contenida (9); desacuerdo = tendencia a intervenir de inmediato con implicación personal (2).",
     ["serenidad vs. calidez"],
     "lower",
@@ -572,7 +572,7 @@ const DRAFTS: Draft[] = [
         1.8,
       ],
       [
-        "Pregunto primero qué necesitan las familias y a partir de eso decido.",
+        "Depende de quiénes participen y de cuánto tiempo haya; no tengo una forma fija de organizar.",
         0.3,
         0.3,
       ],
@@ -620,13 +620,13 @@ const DRAFTS: Draft[] = [
     ["afiliación vs. introspección", "cierre de logros"],
     [
       [
-        "Me tomo un tiempo a solas para repasar qué significó para mí y qué habría querido hacer distinto.",
+        "Me tomo un tiempo a solas para repasar qué significó para mí y qué cambiaría.",
         0,
         1.8,
       ],
-      ["Paso enseguida al siguiente pendiente de mi lista.", 0.3, 0.3],
+      ["Depende del proyecto; a veces celebro y a veces paso al siguiente, sin un patrón claro.", 0.3, 0.3],
       [
-        "Organizo algo para agradecer y celebrar con quienes me ayudaron.",
+        "Organizo algo para agradecer y celebrar con quienes me ayudaron a lograrlo.",
         1.8,
         0,
       ],
@@ -654,7 +654,7 @@ const DRAFTS: Draft[] = [
   lk(
     3,
     "WING_3_CHEERING_OTHERS",
-    "Me resulta natural animar a los demás y hacerlos sentir bien recibidos, incluso cuando yo estoy cansado/a.",
+    "Aun cuando estoy cansado/a, me sale natural animar a quienes me rodean.",
     "Acuerdo = energía afable y de apoyo hacia otros (2); desacuerdo = mayor reserva y foco en el mundo interno (4).",
     ["calidez vs. introspección"],
     "lower",
@@ -673,7 +673,7 @@ const DRAFTS: Draft[] = [
         0,
         1.8,
       ],
-      ["La comento con una persona cercana para ver qué opina.", 0.3, 0.3],
+      ["Depende de la idea; a veces la muestro pronto y a veces la guardo, sin un patrón claro.", 0.3, 0.3],
       [
         "La presento pronto a gente que pueda impulsarla y la ajusto según cómo la reciban.",
         1.8,
@@ -722,7 +722,7 @@ const DRAFTS: Draft[] = [
         0,
         1.8,
       ],
-      ["Ensayo una vez y confío en lo que sé.", 0.3, 0.3],
+      ["Depende del público y del tema; no hay una manera de prepararme que repita siempre.", 0.3, 0.3],
       [
         "Busco una forma personal de contarlo, con ejemplos e imágenes que reflejen cómo lo vivo yo.",
         1.8,
@@ -737,9 +737,9 @@ const DRAFTS: Draft[] = [
     "Contrasta la cautela sobre la fiabilidad e intenciones del otro (6) con el interés por su sensibilidad y mirada del mundo (4).",
     ["confianza vs. afinidad sensible"],
     [
-      ["Si es de fiar y qué intenciones tiene, antes de abrirme.", 0, 1.8],
+      ["Si es de fiar y qué intenciones tiene, antes de abrirme con esa persona.", 0, 1.8],
       [
-        "Si tiene una sensibilidad o una forma de ver el mundo que me resulte interesante.",
+        "Si tiene una forma de sentir o de ver el mundo que me resulte interesante.",
         1.8,
         0,
       ],
@@ -748,7 +748,7 @@ const DRAFTS: Draft[] = [
   lk(
     5,
     "WING_5_ART_OVER_TECHNICAL",
-    "Me atrae más lo artístico o simbólico que lo técnico y bien definido.",
+    "Cuando algo me interesa, me atrae más su lado estético o simbólico que sus detalles técnicos.",
     "Acuerdo = inclinación estética e imaginativa (4); desacuerdo = preferencia por lo analítico y sistemático (6).",
     ["sensibilidad vs. certeza"],
     "lower",
@@ -767,7 +767,7 @@ const DRAFTS: Draft[] = [
         0,
         1.8,
       ],
-      ["Pido más tiempo para decidir.", 0.3, 0.3],
+      ["Depende de lo que esté en juego; a veces consulto y a veces investigo, sin un patrón claro.", 0.3, 0.3],
       [
         "Reúno datos por mi cuenta, comparo posibilidades en silencio y decido cuando entiendo bien el panorama.",
         1.8,
@@ -793,7 +793,7 @@ const DRAFTS: Draft[] = [
   lk(
     6,
     "WING_6_LISTEN_FIRST",
-    "En una reunión prefiero escuchar y observar primero, y hablo cuando ya me hice una idea clara.",
+    "En una reunión prefiero escuchar primero y hablar solo cuando ya tengo clara mi idea.",
     "Acuerdo = perfil bajo y reserva analítica (5); desacuerdo = expresividad social y conversadora (7).",
     ["análisis vs. optimismo"],
     "lower",
@@ -812,7 +812,7 @@ const DRAFTS: Draft[] = [
         0,
         1.8,
       ],
-      ["Propongo que cada quien aporte una idea y vemos cuál queda.", 0.3, 0.3],
+      ["Depende del grupo; a veces propongo yo y a veces espero, sin un patrón claro.", 0.3, 0.3],
       [
         "Pregunto a cada persona qué prefiere y busco un plan con el que todos se sientan cómodos.",
         1.8,
@@ -861,7 +861,7 @@ const DRAFTS: Draft[] = [
         0,
         1.8,
       ],
-      ["Pregunto por los detalles y los números antes de opinar.", 0.3, 0.3],
+      ["Depende de la propuesta y de quién la haga; no tengo una reacción fija.", 0.3, 0.3],
       ["Si me atrae, me lanzo y voy resolviendo sobre la marcha.", 1.8, 0],
     ],
   ),
@@ -906,7 +906,7 @@ const DRAFTS: Draft[] = [
         0,
         1.8,
       ],
-      ["Pregunto qué prefiere cada quien antes de mover nada.", 0.3, 0.3],
+      ["Depende del lugar y de con quién lo comparta; no tengo una manera fija de hacerlo.", 0.3, 0.3],
       [
         "Me pongo manos a la obra con energía, muevo cosas y asigno tareas sin tanto trámite.",
         1.8,

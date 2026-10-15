@@ -392,6 +392,46 @@ describe("question bank: wing module", () => {
     }
   });
 
+  const choiceWingQs = wingQs.filter(
+    (q) => q.kind === "scenario-choice" || q.kind === "motivation-comparison",
+  );
+  const neutralOf = (q: (typeof wingQs)[number]) =>
+    q.options.filter((o) => {
+      const s = o.scores.types ?? {};
+      const v = Object.values(s);
+      return v.length === 2 && v[0] === v[1];
+    });
+
+  it("makes the neutral option of a wing choice a genuine 'depends/neither' answer, never a concrete behaviour", () => {
+    const hedge = /\bdepende\b|\bninguna\b|\ba veces\b|\bambas\b|\bsin un patr[oó]n\b/i;
+    let seen = 0;
+    for (const q of choiceWingQs) {
+      for (const o of neutralOf(q)) {
+        seen++;
+        expect(o.text, `${q.id}/${o.id}`).toMatch(hedge);
+      }
+    }
+    expect(seen).toBeGreaterThan(0);
+  });
+
+  it("gives each wing choice at most one neutral option and always two wing-specific options", () => {
+    for (const q of choiceWingQs) {
+      expect(neutralOf(q).length, q.id).toBeLessThanOrEqual(1);
+      const specific = q.options.filter((o) => !neutralOf(q).includes(o));
+      expect(specific.length, q.id).toBe(2);
+    }
+  });
+
+  it("keeps the two wing-specific options of a choice similar in length (no warm/long vs cold/short pairs)", () => {
+    for (const q of choiceWingQs) {
+      const [a, b] = q.options
+        .filter((o) => !neutralOf(q).includes(o))
+        .map((o) => o.text.length) as [number, number];
+      const ratio = Math.max(a, b) / Math.min(a, b);
+      expect(ratio, q.id).toBeLessThanOrEqual(1.45);
+    }
+  });
+
   it("does not repeat option texts inside the wing module", () => {
     const texts = wingQs.flatMap((q) =>
       q.kind === "likert" || q.kind === "frequency"
