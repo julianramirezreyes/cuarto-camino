@@ -1,6 +1,6 @@
 # Plan de validación del cuestionario
 
-Que la app funcione técnicamente **no** significa que el cuestionario sea válido. Hoy el banco de 177 preguntas (versión `1.1.1-draft`), sus puntajes y los
+Que la app funcione técnicamente **no** significa que el cuestionario sea válido. Hoy el banco de 188 preguntas (versión `1.2.0-draft`), sus puntajes y los
 criterios de parada son **hipótesis de diseño**. Las pruebas automáticas con respondientes simulados (`src/tests/engine-real-bank.test.ts`)
 comprueban que el motor converge y que el cableado funciona; **no son evidencia de precisión psicológica**.
 
@@ -88,3 +88,16 @@ Todos, no solo algunos:
 - Los invitados caducan a los 30 días de inactividad: **exportar o anonimizar antes** los datos que se quieran analizar, con consentimiento
   específico para investigación (hoy el consentimiento cubre solo calcular y mostrar el resultado).
 - No inferir ni mostrar nada de salud mental; el informe lo declara y las fichas de niveles llevan su advertencia.
+
+## Auditoría de sesgos del banco (banco 1.2.0-draft)
+
+En octubre de 2026 se auditó el banco con tres revisiones automáticas (discriminación entre tipos parecidos; ala, instinto y funcionamiento; redacción y estructura). Las hicieron modelos de lenguaje, **no especialistas**: sus hallazgos son hipótesis y los datos numéricos son aritmética sobre la matriz de puntajes, no datos de personas reales.
+
+Cambios aplicados (versión `1.2.0-draft`):
+
+- **Aquiescencia:** las escalas de tipo apuntaban todas en el mismo sentido y el puntaje secundario favorecía a unos tipos. Se añadieron 9 ítems inversos y se igualó el puntaje secundario: quien responde "de acuerdo" a todo suma entre 13 y 13,5 a cada tipo (antes entre 10,75 y 16,25). Hay una prueba que lo exige.
+- **Ala:** la opción neutra ya no repite la conducta típica del tipo principal; es un "depende" real.
+- **Instinto:** menos extremos en las opciones de social y sexual, sin suponer pareja, dos ítems redundantes reemplazados, ítems inversos y masa de puntaje equilibrada (±5 %).
+- **Funcionamiento:** opciones extremas menos caricaturescas y sin carga moral.
+
+Pendiente: preguntas nuevas para pares poco cubiertos (por ejemplo 7/8, hoy sin ninguna pregunta que los enfrente), y la revisión de un especialista humano.
