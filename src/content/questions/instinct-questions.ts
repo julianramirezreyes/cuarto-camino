@@ -1,5 +1,5 @@
 /**
- * Instinct module (module "instinct"): 28 questions about the three instinctual
+ * Instinct module (module "instinct"): 32 questions about the three instinctual
  * domains: self-preservation (sp), social (so) and one-to-one / sexual (sx).
  *
  * - Option scores use `scores.instincts` only. `relatedTypes` is [] because these
@@ -7,7 +7,12 @@
  * - Choice questions give the main instinct ~2 and a small spillover (0.2-0.5) to
  *   one other instinct. Scale questions put the full curve on the main instinct and a
  *   fraction on another. Every question touches all three instincts overall.
- * - Two near-duplicates are paired with equivalenceGroup (EQ_INST_SP_SECURE, EQ_INST_SX_INTENSE).
+ * - Three scales are reverse-keyed (one per instinct): agreement means LESS of that
+ *   instinct. Reverse scales stay out of equivalence groups.
+ * - Balance (audit B5): neutral-respondent and maximum score mass of sp/so/sx are kept
+ *   within 5% of each other (tested in bank.test.ts). sx wording does not presuppose a
+ *   partner, and intimacy/introversion items were reworded so sx measures chemistry and
+ *   all-in intensity rather than a preference for few friends.
  * - Discrimination values are design hypotheses, not calibrated. Wording describes
  *   everyday attention and preferences; it never mentions a type.
  */
@@ -17,6 +22,7 @@ import {
   finish,
   opts,
   round2,
+  SCALE_CURVE,
   scaleOptions,
   type DraftBase,
   type InstinctScores,
@@ -30,6 +36,8 @@ interface ScaleDraft extends DraftBase {
   main: Instinct;
   side: Instinct;
   factor: number;
+  /** Agreement means LESS of the main instinct (option scoring is reversed). */
+  reverse?: boolean;
 }
 type Draft = ChoiceDraft | ScaleDraft;
 
@@ -57,6 +65,7 @@ function s(
   d: number,
   why: string,
   group?: string,
+  reverse?: boolean,
 ): ScaleDraft {
   const base: ScaleDraft = {
     code,
@@ -71,6 +80,7 @@ function s(
     refs: REFS,
   };
   if (group) base.group = group;
+  if (reverse) base.reverse = true;
   return base;
 }
 
@@ -97,7 +107,7 @@ const DRAFTS: Draft[] = [
         { so: 2.2, sx: 0.3 },
       ],
       [
-        "Invertir en un viaje o experiencia intensa con alguien con quien quiero profundizar.",
+        "Invertir en un viaje o una experiencia intensa con una persona con quien quiero compartir algo especial.",
         { sx: 2.2, so: 0.3 },
       ],
     ],
@@ -141,7 +151,7 @@ const DRAFTS: Draft[] = [
         { so: 2.2, sp: 0.3 },
       ],
       [
-        "Escaparme con una persona y vivir algo apasionante.",
+        "Pasar tiempo a fondo con una persona especial para mí: conversar, explorar, compartir algo intenso.",
         { sx: 2.3, sp: 0.2 },
       ],
     ],
@@ -178,11 +188,11 @@ const DRAFTS: Draft[] = [
     [
       ["Estabilidad, buen horario y buenas condiciones.", { sp: 2.2, so: 0.3 }],
       [
-        "Ser parte de un equipo con prestigio y reconocimiento entre colegas.",
+        "Ser parte de un equipo valorado, donde mi trabajo se conozca entre colegas.",
         { so: 2.3, sp: 0.2 },
       ],
       [
-        "Trabajar mano a mano con alguien con quien haya mucha química e intensidad.",
+        "Trabajar codo a codo con alguien con quien haya buena química y una conexión especial.",
         { sx: 2.2, so: 0.3 },
       ],
     ],
@@ -204,7 +214,7 @@ const DRAFTS: Draft[] = [
         { so: 2.2, sp: 0.2 },
       ],
       [
-        "Me quedo con él, conversamos a fondo y absorbo lo que siente.",
+        "Me quedo con él, conversamos a fondo y trato de entender de verdad lo que siente.",
         { sx: 2.3, so: 0.2 },
       ],
     ],
@@ -227,7 +237,7 @@ const DRAFTS: Draft[] = [
         "Tener contacto con mi gente y saber qué pasa en mi entorno.",
         { so: 2.2, sp: 0.2 },
       ],
-      ["Sentir una conexión intensa con alguien.", { sx: 2.3, so: 0.2 }],
+      ["Sentir una conexión especial con alguien, de esas con química.", { sx: 2.3, so: 0.2 }],
     ],
   ),
   c(
@@ -239,10 +249,32 @@ const DRAFTS: Draft[] = [
     "Elección forzada entre tres áreas que cuestan descuidar: la base práctica, la posición social o la intensidad de un vínculo.",
     [
       ["Mi salud, mi casa y mis finanzas.", { sp: 2.3, so: 0.2 }],
-      ["Mi reputación y mis amistades en mis círculos.", { so: 2.3, sx: 0.2 }],
+      ["Mis amistades y mi lugar en los círculos que frecuento.", { so: 2.3, sx: 0.2 }],
       [
-        "La intensidad de mi relación con una persona especial.",
+        "La cercanía con las personas más íntimas de mi vida.",
         { sx: 2.3, so: 0.2 },
+      ],
+    ],
+  ),
+  c(
+    "INST_FORCED_TEND_TO_NEGLECT",
+    fc,
+    "Cuando la vida se acelera, ¿qué sueles descuidar primero?",
+    ["descanso y orden", "amistades", "cercanía íntima"],
+    0.6,
+    "Elección forzada sobre el área que se deja de lado bajo presión. Se lee como punto ciego: la opción elegida resta evidencia a su dominio y reparte una evidencia moderada a los otros dos.",
+    [
+      [
+        "Mi descanso, mi salud o el orden de mi casa.",
+        { sp: 0, so: 1.1, sx: 1.1 },
+      ],
+      [
+        "Mis amistades y estar al tanto de lo que pasa con la gente.",
+        { so: 0, sp: 1.1, sx: 1.1 },
+      ],
+      [
+        "El tiempo de calidad con las personas más cercanas.",
+        { sx: 0, sp: 1.1, so: 1.1 },
       ],
     ],
   ),
@@ -274,15 +306,15 @@ const DRAFTS: Draft[] = [
     "Tres autodescripciones breves, cada una centrada en un dominio instintivo, sin mencionar rasgos de personalidad.",
     [
       [
-        "Me incomoda mucho el frío, el hambre o el desorden; necesito estar bien físicamente.",
+        "Estar bien físicamente y tener mi entorno en orden es lo primero para mí.",
         { sp: 2.3, sx: 0.2 },
       ],
       [
-        "Me importa mucho cómo me ven y qué lugar ocupo dentro de un grupo.",
+        "Me importa saber qué lugar ocupo dentro de los grupos en los que estoy.",
         { so: 2.3, sp: 0.2 },
       ],
       [
-        "Me atrae la gente con la que siento magnetismo; puedo obsesionarme con alguien.",
+        "Me atraen las personas con las que siento una chispa especial y me concentro mucho en ellas.",
         { sx: 2.3, so: 0.2 },
       ],
     ],
@@ -318,9 +350,9 @@ const DRAFTS: Draft[] = [
         "Quedarme sin recursos o sin un lugar propio y seguro.",
         { sp: 2.3, sx: 0.2 },
       ],
-      ["Sentirme excluido/a o ignorado/a por el grupo.", { so: 2.3, sx: 0.2 }],
+      ["Sentirme excluido/a del grupo.", { so: 2.3, sx: 0.2 }],
       [
-        "Sentir que una relación importante se ha vuelto tibia.",
+        "Sentir que se enfría el vínculo con una persona muy cercana.",
         { sx: 2.3, so: 0.2 },
       ],
     ],
@@ -332,7 +364,7 @@ const DRAFTS: Draft[] = [
     "frequency",
     "¿Con qué frecuencia calculas gastos, planificas comidas o cuidas tu descanso para sentirte seguro/a?",
     "sp",
-    "so",
+    "sx",
     0.15,
     ["planificación del bienestar"],
     0.7,
@@ -363,13 +395,13 @@ const DRAFTS: Draft[] = [
   s(
     "INST_INT_PART_OF_GROUP",
     "intensity",
-    "¿Qué tanto te importa ser parte de un grupo o causa y que reconozcan tu aporte?",
+    "¿Qué tanto te importa sentirte parte de un grupo o de una causa?",
     "so",
     "sx",
     0.15,
-    ["pertenencia", "aporte reconocido"],
+    ["pertenencia"],
     0.7,
-    "Intensidad de la importancia dada a la pertenencia y al reconocimiento grupal.",
+    "Intensidad de la importancia dada a la pertenencia; el reconocimiento se separó por ser un extremo poco aceptado.",
   ),
   s(
     "INST_FREQ_INTENSE_ATTRACTION",
@@ -385,13 +417,13 @@ const DRAFTS: Draft[] = [
   s(
     "INST_INT_DEEP_CONVERSATION",
     "intensity",
-    "¿Qué tanto prefieres una conversación a fondo con una persona antes que charlar con muchas?",
+    "¿Qué tanto te atrae sentir una química o chispa especial con alguien, sea en una amistad, en el trabajo o en otro vínculo?",
     "sx",
     "sp",
     0.1,
-    ["profundidad vs. amplitud"],
+    ["química", "atracción por una persona"],
     0.65,
-    "Intensidad de la preferencia por el contacto profundo uno a uno.",
+    "Intensidad de la atracción por la química con una persona; no mide introversión.",
   ),
 
   // ---- Likert ----
@@ -405,18 +437,17 @@ const DRAFTS: Draft[] = [
     ["resguardo"],
     0.7,
     "Acuerdo con la tranquilidad derivada de contar con recursos y espacio propios.",
-    "EQ_INST_SP_SECURE",
   ),
   s(
     "INST_LIKERT_AWARE_OF_COMMUNITY",
     "likert",
-    "Suelo estar al tanto de lo que ocurre en mi comunidad, trabajo o círculo de amigos y me gusta aportar.",
+    "Suelo estar al tanto de lo que ocurre en mi comunidad, mi trabajo o mi círculo de amigos.",
     "so",
     "sp",
     0.1,
     ["conciencia comunitaria"],
     0.65,
-    "Acuerdo con la atención sostenida al entorno social propio y el deseo de aportar.",
+    "Acuerdo con la atención sostenida al entorno social propio (el aporte se mide aparte en INST_LIKERT_INCLUDE_EVERYONE).",
   ),
   s(
     "INST_LIKERT_INTENSITY_WITH_PERSON",
@@ -432,18 +463,18 @@ const DRAFTS: Draft[] = [
   s(
     "INST_LIKERT_COMFORT_OVER_PLANS",
     "likert",
-    "Cuido mi comodidad física incluso cuando eso significa no ir a un plan que otros disfrutan.",
+    "Suelo proteger mi tiempo y mi energía aunque eso me haga perder alguna oportunidad social.",
     "sp",
     "sx",
     0.1,
-    ["comodidad vs. plan social"],
+    ["protección de energía"],
     0.65,
-    "Acuerdo con priorizar la comodidad propia sobre planes sociales.",
+    "Acuerdo con resguardar tiempo y energía propios (faceta no material de la autoconservación).",
   ),
   s(
     "INST_LIKERT_HOW_OTHERS_SEE_ME",
     "likert",
-    "Me importa mucho cómo me perciben los demás y qué lugar tengo entre ellos.",
+    "Me importa cómo me ven las personas de mi entorno y qué lugar tengo entre ellas.",
     "so",
     "sx",
     0.15,
@@ -454,62 +485,89 @@ const DRAFTS: Draft[] = [
   s(
     "INST_LIKERT_FEW_INTENSE_BONDS",
     "likert",
-    "Prefiero pocas relaciones muy intensas que muchas amistades más superficiales.",
+    "Cuando siento una conexión especial con alguien, le doy prioridad aunque otras cosas queden en segundo plano.",
     "sx",
     "sp",
     0.1,
-    ["profundidad vs. amplitud"],
+    ["prioridad a la conexión"],
     0.65,
-    "Acuerdo con una preferencia por pocos vínculos de alta intensidad.",
-    "EQ_INST_SX_INTENSE",
+    "Acuerdo con priorizar una conexión especial por sobre otras cosas; sin presuponer pareja ni medir introversión.",
   ),
 
-  // ---- Near-duplicates ----
+  // ---- More frequency items ----
   s(
-    "INST_LIKERT_HOME_MONEY_HEALTH_SAFE",
-    "likert",
-    "Me tranquiliza saber que tengo mi casa, mi dinero y mi salud bien resguardados.",
+    "INST_FREQ_ALL_IN",
+    "frequency",
+    "¿Con qué frecuencia te entregas con intensidad total a una persona, un proyecto o una experiencia, dejando lo demás de lado?",
+    "sx",
+    "sp",
+    0.1,
+    ["entrega total", "intensidad focalizada"],
+    0.6,
+    "Frecuencia de entregarse con intensidad total a algo o a alguien, sin presuponer una pareja.",
+  ),
+  s(
+    "INST_FREQ_KEEP_ROUTINES",
+    "frequency",
+    "¿Con qué frecuencia mantienes tus rutinas de sueño, comida o descanso aunque haya planes que las alteren?",
     "sp",
     "so",
-    0.15,
-    ["resguardo"],
-    0.7,
-    "Reformulación de INST_LIKERT_SAVINGS_AND_SPACE para contrastar consistencia.",
-    "EQ_INST_SP_SECURE",
-  ),
-  s(
-    "INST_LIKERT_INTENSITY_OVER_QUANTITY",
-    "likert",
-    "Me atrae más la intensidad en la relación con una persona que la cantidad de amistades.",
-    "sx",
-    "sp",
     0.1,
-    ["profundidad vs. amplitud"],
-    0.65,
-    "Reformulación de INST_LIKERT_FEW_INTENSE_BONDS para contrastar consistencia.",
-    "EQ_INST_SX_INTENSE",
-  ),
-  s(
-    "INST_FREQ_SEEK_ONE_ON_ONE",
-    "frequency",
-    "¿Con qué frecuencia prefieres buscar un momento a solas con una persona antes que quedarte en el grupo?",
-    "sx",
-    "sp",
-    0.1,
-    ["profundidad vs. amplitud"],
+    ["rutinas de cuidado"],
     0.6,
-    "Frecuencia de elegir lo uno a uno frente a lo grupal.",
+    "Frecuencia de sostener rutinas de cuidado propio frente a planes que las interrumpen (faceta no material de la autoconservación).",
+  ),
+
+  // ---- Missing facets and reverse-keyed scales ----
+  s(
+    "INST_LIKERT_INCLUDE_EVERYONE",
+    "likert",
+    "Me sale natural cuidar que en un grupo nadie quede afuera.",
+    "so",
+    "sp",
+    0.1,
+    ["inclusión", "cuidado del grupo"],
+    0.6,
+    "Faceta social formulada en positivo: atención a que el grupo incluya a todos.",
   ),
   s(
-    "INST_FREQ_ORGANISE_GATHERINGS",
-    "frequency",
-    "¿Con qué frecuencia organizas o impulsas encuentros que reúnen a distintas personas de tu entorno?",
+    "INST_LIKERT_IMPROVISE_WITH_BASICS",
+    "likert",
+    "Puedo improvisar con mi dinero, mi descanso o mi orden sin que eso me inquiete.",
+    "sp",
+    "sx",
+    0.1,
+    ["tolerancia a la improvisación"],
+    0.6,
+    "Ítem inverso: estar de acuerdo indica menos atención a resguardar lo básico.",
+    undefined,
+    true,
+  ),
+  s(
+    "INST_LIKERT_OUT_OF_LOOP_OK",
+    "likert",
+    "Puedo pasar largos períodos sin saber qué pasa en mi entorno social y sentirme bien.",
     "so",
     "sx",
     0.1,
-    ["iniciativa comunitaria"],
+    ["desinterés por el tejido social"],
     0.6,
-    "Frecuencia de impulsar encuentros que conectan a varias personas.",
+    "Ítem inverso: estar de acuerdo indica menos atención al entorno social.",
+    undefined,
+    true,
+  ),
+  s(
+    "INST_LIKERT_CALM_BONDS_OVER_INTENSE",
+    "likert",
+    "Prefiero vínculos tranquilos y estables a los que se viven con mucha intensidad.",
+    "sx",
+    "sp",
+    0.1,
+    ["calma vs. intensidad"],
+    0.6,
+    "Ítem inverso: estar de acuerdo indica menos búsqueda de intensidad en los vínculos.",
+    undefined,
+    true,
   ),
 ];
 
@@ -543,12 +601,17 @@ export const INSTINCT_QUESTIONS: Question[] = DRAFTS.map((draft, index) => {
   const third = ALL.find(
     (i) => i !== draft.main && i !== draft.side,
   ) as Instinct;
-  const options = scaleOptions(draft.kind, (_i, v) => ({
-    instincts: {
-      [draft.main]: round2(v),
-      [draft.side]: round2(v * draft.factor),
-      [third]: 0,
-    },
-  }));
+  const options = scaleOptions(draft.kind, (i, curve) => {
+    const v = draft.reverse
+      ? (SCALE_CURVE[SCALE_CURVE.length - 1 - i] as number)
+      : curve;
+    return {
+      instincts: {
+        [draft.main]: round2(v),
+        [draft.side]: round2(v * draft.factor),
+        [third]: 0,
+      },
+    };
+  });
   return finish("instinct", index, draft, { options, related: [] });
 });

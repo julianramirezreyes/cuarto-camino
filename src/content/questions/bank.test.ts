@@ -522,3 +522,126 @@ describe("question bank: instinct option order", () => {
     }
   });
 });
+
+describe("question bank: instinct balance (audit B5)", () => {
+  const INSTS = ["sp", "so", "sx"] as const;
+  const SCALE_KINDS = ["likert", "frequency", "intensity"];
+  const instQs = byModule("instinct");
+  const val = (q: Question, i: number, inst: string): number =>
+    q.options[i]?.scores.instincts?.[inst as "sp"] ?? 0;
+  const isScaleQ = (q: Question): boolean => SCALE_KINDS.includes(q.kind);
+  const mainOf = (q: Question): (typeof INSTS)[number] =>
+    INSTS.reduce((best, i) =>
+      Math.max(...q.options.map((o) => o.scores.instincts?.[i] ?? 0)) >
+      Math.max(...q.options.map((o) => o.scores.instincts?.[best] ?? 0))
+        ? i
+        : best,
+    );
+  const isReverse = (q: Question): boolean =>
+    isScaleQ(q) &&
+    val(q, 0, mainOf(q)) > val(q, q.options.length - 1, mainOf(q));
+
+  // Neutral respondent: middle answer on scales, uniform pick on choices.
+  const neutral = (inst: string): number =>
+    instQs.reduce(
+      (a, q) =>
+        a +
+        (isScaleQ(q)
+          ? val(q, 2, inst)
+          : q.options.reduce((s, _o, i) => s + val(q, i, inst), 0) /
+            q.options.length),
+      0,
+    );
+  // Maximum: best-case answer for each instinct on every question.
+  const maximum = (inst: string): number =>
+    instQs.reduce(
+      (a, q) => a + Math.max(...q.options.map((_o, i) => val(q, i, inst))),
+      0,
+    );
+
+  it.each([
+    ["neutral", neutral],
+    ["maximum", maximum],
+  ] as const)("keeps %s score mass of sp/so/sx within 5%% of each other", (name, fn) => {
+    const m = Object.fromEntries(INSTS.map((i) => [i, fn(i)]));
+    const mean = INSTS.reduce((a, i) => a + (m[i] as number), 0) / 3;
+    console.info(name, JSON.stringify(m));
+    const spread = (Math.max(...Object.values(m)) - Math.min(...Object.values(m))) / mean;
+    expect(spread, `${name} spread`).toBeLessThanOrEqual(0.05);
+  });
+
+  it("keeps at least 24 questions and 4 main-instinct scale items per instinct", () => {
+    expect(instQs.length).toBeGreaterThanOrEqual(24);
+    for (const i of INSTS)
+      expect(
+        instQs.filter((q) => isScaleQ(q) && mainOf(q) === i).length,
+        i,
+      ).toBeGreaterThanOrEqual(4);
+  });
+
+  it("has reverse-keyed scales, monotone and ungrouped", () => {
+    const rev = instQs.filter(isReverse);
+    expect(rev.length).toBeGreaterThanOrEqual(2);
+    for (const q of rev) {
+      const main = mainOf(q);
+      const v = q.options.map((_o, i) => val(q, i, main));
+      for (let i = 1; i < v.length; i++)
+        expect(v[i], q.id).toBeLessThanOrEqual(v[i - 1] as number);
+      expect(q.equivalenceGroup, q.id).toBeUndefined();
+    }
+  });
+
+  it("does not presuppose a partner or romantic relationship", () => {
+    const PARTNER = /pareja|novi[oa]|amante|casad|cónyuge|romántic|enamora/i;
+    for (const q of instQs)
+      for (const t of [q.text, ...q.options.map((o) => o.text)])
+        expect(t, q.id).not.toMatch(PARTNER);
+  });
+
+  it("drops the redundant items and adds the missing-facet items", () => {
+    const codes = new Set(instQs.map((q) => q.code));
+    expect(codes.has("INST_LIKERT_INTENSITY_OVER_QUANTITY")).toBe(false);
+    expect(codes.has("INST_LIKERT_HOME_MONEY_HEALTH_SAFE")).toBe(false);
+    expect(codes.has("INST_FREQ_ALL_IN")).toBe(true);
+    expect(codes.has("INST_FORCED_TEND_TO_NEGLECT")).toBe(true);
+  });
+});
+
+describe("question bank: functioning wording (audit B6)", () => {
+  const funcQs = byModule("functioning");
+  const choices = funcQs.filter((q) => q.kind === "scenario-choice");
+  const EXTREME =
+    /por días|por completo|siempre|nunca|a toda costa|hasta el límite|varios días/i;
+
+  it("has no dramatic extreme markers in choice option texts", () => {
+    for (const q of choices)
+      for (const o of q.options)
+        expect(o.text, `${q.code}/${o.id}`).not.toMatch(EXTREME);
+  });
+
+  it("keeps band structure: first option flexible, last maladaptive, middle intermediate", () => {
+    const top = (q: Question, i: number): string =>
+      Object.entries(q.options[i]?.scores.bands ?? {}).sort(
+        (a, b) => b[1] - a[1],
+      )[0]?.[0] ?? "";
+    for (const q of choices) {
+      expect(q.options.length, q.code).toBe(3);
+      expect(top(q, 0), q.code).toBe("flexible");
+      expect(top(q, 1), q.code).toBe("intermediate");
+      expect(top(q, 2), q.code).toBe("maladaptive");
+    }
+  });
+
+  it("keeps a balance of positive and inverse scales and avoids moral wording", () => {
+    const scales = funcQs.filter((q) => q.kind !== "scenario-choice");
+    const inverse = scales.filter(
+      (q) =>
+        (q.options[0]?.scores.bands?.flexible ?? 0) >
+        (q.options[4]?.scores.bands?.flexible ?? 0),
+    );
+    expect(inverse.length).toBeGreaterThanOrEqual(7);
+    expect(scales.length - inverse.length).toBeGreaterThanOrEqual(7);
+    for (const q of scales)
+      expect(q.text, q.code).not.toMatch(/culpable|amabilidad|aunque no fuera lo más cómodo/i);
+  });
+});

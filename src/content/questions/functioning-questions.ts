@@ -139,10 +139,10 @@ const DRAFTS: Draft[] = [
     "FUNC_LIKERT_REST_WITHOUT_GUILT",
     "likert",
     "positive",
-    "me di permiso para descansar sin sentirme culpable.",
+    "pude tomarme pausas de descanso sin que eso me inquietara.",
     ["autocuidado", "flexibilidad"],
     0.6,
-    "Estado reciente de descanso sin culpa; contraste con la sobreexigencia.",
+    "Estado reciente de poder descansar sin inquietud; contraste con la sobreexigencia. Redactado sin carga moral.",
   ),
   sc(
     "FUNC_FREQ_HABITS_TAKE_OVER",
@@ -161,7 +161,7 @@ const DRAFTS: Draft[] = [
     "Respuesta reciente ante un comentario doloroso: aclarar con respeto, tardar pero conversar o sostener la tensión.",
     [
       [
-        "Respiré, entendí mejor qué quiso decir y le respondí con claridad y respeto.",
+        "Me dolió, pero pude contarle cómo me sentí y escuchar su versión.",
         { flexible: 2, intermediate: 0.4, maladaptive: 0 },
       ],
       [
@@ -169,7 +169,7 @@ const DRAFTS: Draft[] = [
         { flexible: 0.4, intermediate: 1.8, maladaptive: 0.3 },
       ],
       [
-        "Me cerré o ataqué, y mantuve la tensión varios días.",
+        "Me quedé con la molestia y preferí no tocar el tema, o respondí más seco de lo que quería.",
         { flexible: 0, intermediate: 0.4, maladaptive: 2 },
       ],
     ],
@@ -196,10 +196,10 @@ const DRAFTS: Draft[] = [
     "FUNC_FREQ_ACT_ON_VALUES",
     "frequency",
     "positive",
-    "¿con qué frecuencia hiciste algo que realmente te importaba aunque no fuera lo más cómodo?",
+    "¿con qué frecuencia dedicaste tiempo a algo que te importaba, aunque requiriera un esfuerzo extra?",
     ["acción orientada a valores"],
     0.6,
-    "Frecuencia reciente de actuar conforme a lo importante pese a la incomodidad.",
+    "Frecuencia reciente de actuar conforme a lo importante pese al esfuerzo que implica.",
   ),
   sc(
     "FUNC_LIKERT_DISPROPORTIONATE_REACTIONS",
@@ -218,7 +218,7 @@ const DRAFTS: Draft[] = [
     "Respuesta reciente a un error propio: asumir y aprender, asumir con demora o minimizar/castigarse.",
     [
       [
-        "Lo reconocí, aprendí algo y seguí adelante.",
+        "Lo reconocí, vi qué podía hacer distinto y seguí adelante.",
         { flexible: 2, intermediate: 0.4, maladaptive: 0 },
       ],
       [
@@ -226,7 +226,7 @@ const DRAFTS: Draft[] = [
         { flexible: 0.4, intermediate: 1.8, maladaptive: 0.3 },
       ],
       [
-        "Lo minimicé, culpé a otros o me castigué por días.",
+        "Tendí a restarle importancia o a explicarlo por las circunstancias, y me costó revisarlo con calma.",
         { flexible: 0, intermediate: 0.4, maladaptive: 2 },
       ],
     ],
@@ -262,7 +262,7 @@ const DRAFTS: Draft[] = [
     "FUNC_LIKERT_KIND_TO_SELF",
     "likert",
     "positive",
-    "me traté con amabilidad cuando las cosas no salieron como quería.",
+    "me hablé con comprensión cuando las cosas no salieron como quería.",
     ["autocompasión"],
     0.65,
     "Estado reciente de trato amable hacia sí mismo ante los contratiempos.",
@@ -284,15 +284,15 @@ const DRAFTS: Draft[] = [
     "Gestión reciente de una semana exigente: priorizar y descansar, aguantar y recuperarse después, o llegar al límite o desconectarse.",
     [
       [
-        "Prioricé, descansé lo necesario y pedí ayuda.",
+        "Ordené mis prioridades, me tomé algunas pausas y pedí apoyo cuando lo necesité.",
         { flexible: 2, intermediate: 0.4, maladaptive: 0 },
       ],
       [
-        "Aguanté y me fui desgastando, aunque pude recuperarme al terminar.",
+        "Aguanté a costa de mi energía, aunque pude recuperarme al terminar.",
         { flexible: 0.3, intermediate: 1.8, maladaptive: 0.4 },
       ],
       [
-        "Me exigí hasta el límite o me desconecté por completo, y me costó volver al ritmo.",
+        "Seguí a toda marcha sin parar, o me aislé de lo demás, y me costó volver a mi ritmo.",
         { flexible: 0, intermediate: 0.4, maladaptive: 2 },
       ],
     ],
